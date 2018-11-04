@@ -77,11 +77,26 @@ class MieleAtHomeIO extends IPSModule
 
     public function TestAccess()
     {
-        $r = $this->do_ApiCall('/v1/devices');
-        echo print_r($r, true);
+		$txt = '';
 
-        $msg = $this->translate('valid account-data') . PHP_EOL;
-        echo $msg;
+		$cdata = '';
+		$msg = '';
+        $r = $this->do_ApiCall('/v1/devices', $cdata, $msg);
+
+		echo "msg=$msg" . PHP_EOL;
+		echo "cdata=$cdata" . PHP_EOL;
+
+		if ($r == false) {
+			$txt .= $this->translate('invalid account-data') . PHP_EOL;
+			$txt .= PHP_EOL;
+			if ($msg != '') {
+				$txt .= $this->translate('message') . ': ' . $msg . PHP_EOL;
+			}
+		} else {
+			$txt = $this->translate('valid account-data') . PHP_EOL;
+		}
+
+        echo $txt;
     }
 
     protected function SendData($buf)
@@ -119,7 +134,7 @@ class MieleAtHomeIO extends IPSModule
     {
     }
 
-    private function getToken()
+    private function getToken(&$msg)
     {
         $userid = $this->ReadPropertyString('userid');
         $password = $this->ReadPropertyString('password');
@@ -146,14 +161,16 @@ class MieleAtHomeIO extends IPSModule
                     'redirect_uri'  => '/v1/devices',
                 ];
 
-            $statuscode = $this->do_HttpRequest('/auth', '', $header, $postdata, 'POST', $cdata);
+			$cdata = '';
+			$msg = '';
+            $statuscode = $this->do_HttpRequest('/auth', '', $header, $postdata, 'POST', $cdata, $msg);
             if ($statuscode == 0 && $cdata == '') {
                 $statuscode = IS_INVALIDDATA;
             }
-            $this->SendDebug(__FUNCTION__, 'statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true), 0);
+            $this->SendDebug(__FUNCTION__, 'login: statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true) . ', msg=' . $msg, 0);
             if ($statuscode != 0) {
                 $this->SetStatus($statuscode);
-                return false;
+                return '';
             }
             $jdata = json_decode($cdata, true);
             $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
@@ -174,14 +191,16 @@ class MieleAtHomeIO extends IPSModule
                     'Accept: application/json; charset=utf-8',
                 ];
 
-            $statuscode = $this->do_HttpRequest('/token', $params, $header, '', 'GET', $cdata);
+			$cdata = '';
+			$msg = '';
+            $statuscode = $this->do_HttpRequest('/token', $params, $header, '', 'GET', $cdata, $msg);
             if ($statuscode == 0 && $cdata == '') {
                 $statuscode = IS_INVALIDDATA;
             }
-            $this->SendDebug(__FUNCTION__, 'statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true), 0);
+            $this->SendDebug(__FUNCTION__, '/uth: statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true) . ', msg=' . $msg, 0);
             if ($statuscode != 0) {
                 $this->SetStatus($statuscode);
-                return false;
+                return '';
             }
 
             $jdata = json_decode($cdata, true);
@@ -201,11 +220,13 @@ class MieleAtHomeIO extends IPSModule
         return $jtoken;
     }
 
-    private function do_ApiCall($func)
+    private function do_ApiCall($func, &$data, &$msg)
     {
         $language = $this->ReadPropertyString('language');
 
-        $jtoken = $this->getToken();
+		$cdata = '';
+		$msg = '';
+        $jtoken = $this->getToken($msg);
         if ($jtoken == '') {
             return false;
         }
@@ -220,21 +241,21 @@ class MieleAtHomeIO extends IPSModule
                 'Authorization: Bearer ' . $token,
             ];
 
-        $statuscode = $this->do_HttpRequest($func, $params, $header, '', 'GET', $cdata);
+        $statuscode = $this->do_HttpRequest($func, $params, $header, '', 'GET', $cdata, $msg);
         $this->SendDebug(__FUNCTION__, 'statuscode=', $statuscode . ', cdata=' . print_r($cdata, true), 0);
         if ($statuscode != 0) {
             $this->SetStatus($statuscode);
             return false;
         }
 
-        $cdata = $this->do_HttpRequest($func, $header, $postdata);
+        $statuscode = $this->do_HttpRequest($func, $header, $postdata, $cdata, $msg);
         $this->SendDebug(__FUNCTION__, 'cdata=' . print_r($cdata, true), 0);
 
         $this->SetStatus(IS_ACTIVE);
-        return $cdata;
+        return $statuscode ? false : true;
     }
 
-    private function do_HttpRequest($func, $params, $header, $postdata, $mode, &$data)
+    private function do_HttpRequest($func, $params, $header, $postdata, $mode, &$data, &$msg)
     {
         $url = 'https://api.mcs3.miele.com/thirdparty' . $func;
 
@@ -284,6 +305,7 @@ class MieleAtHomeIO extends IPSModule
 
         $statuscode = 0;
         $err = '';
+        $msg = '';
         $data = '';
 
         // 200 = ok
@@ -293,6 +315,13 @@ class MieleAtHomeIO extends IPSModule
         // 405 = method not allowed
         // 500 = internal server error
         // 503 = unavailable
+
+		if ($cdata != '') {
+			$jdata = json_decode($cdata, true);
+			if (isset($jdata['message'])) {
+				$msg = $jdata['message'];
+			}
+		}
 
         if ($httpcode == 200) {
             $data = $cdata;
@@ -309,7 +338,7 @@ class MieleAtHomeIO extends IPSModule
 
         if ($statuscode) {
             echo "url=$url => statuscode=$statuscode, err=$err\n";
-            $this->SendDebug(__FUNCTION__, ' => statuscode=' . $statuscode . ', err=' . $err, 0);
+            $this->SendDebug(__FUNCTION__, ' => statuscode=' . $statuscode . ', err=' . $err . ', msg=' . $msg, 0);
         }
 
         return $statuscode;
