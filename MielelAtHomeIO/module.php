@@ -77,24 +77,24 @@ class MieleAtHomeIO extends IPSModule
 
     public function TestAccess()
     {
-		$txt = '';
+        $txt = '';
 
-		$cdata = '';
-		$msg = '';
+        $cdata = '';
+        $msg = '';
         $r = $this->do_ApiCall('/v1/devices', $cdata, $msg);
 
-		echo "msg=$msg" . PHP_EOL;
-		echo "cdata=$cdata" . PHP_EOL;
+        echo "msg=$msg" . PHP_EOL;
+        echo "cdata=$cdata" . PHP_EOL;
 
-		if ($r == false) {
-			$txt .= $this->translate('invalid account-data') . PHP_EOL;
-			$txt .= PHP_EOL;
-			if ($msg != '') {
-				$txt .= $this->translate('message') . ': ' . $msg . PHP_EOL;
-			}
-		} else {
-			$txt = $this->translate('valid account-data') . PHP_EOL;
-		}
+        if ($r == false) {
+            $txt .= $this->translate('invalid account-data') . PHP_EOL;
+            $txt .= PHP_EOL;
+            if ($msg != '') {
+                $txt .= $this->translate('message') . ': ' . $msg . PHP_EOL;
+            }
+        } else {
+            $txt = $this->translate('valid account-data') . PHP_EOL;
+        }
 
         echo $txt;
     }
@@ -161,8 +161,8 @@ class MieleAtHomeIO extends IPSModule
                     'redirect_uri'  => '/v1/devices',
                 ];
 
-			$cdata = '';
-			$msg = '';
+            $cdata = '';
+            $msg = '';
             $statuscode = $this->do_HttpRequest('/auth', '', $header, $postdata, 'POST', $cdata, $msg);
             if ($statuscode == 0 && $cdata == '') {
                 $statuscode = IS_INVALIDDATA;
@@ -191,8 +191,8 @@ class MieleAtHomeIO extends IPSModule
                     'Accept: application/json; charset=utf-8',
                 ];
 
-			$cdata = '';
-			$msg = '';
+            $cdata = '';
+            $msg = '';
             $statuscode = $this->do_HttpRequest('/token', $params, $header, '', 'GET', $cdata, $msg);
             if ($statuscode == 0 && $cdata == '') {
                 $statuscode = IS_INVALIDDATA;
@@ -224,8 +224,8 @@ class MieleAtHomeIO extends IPSModule
     {
         $language = $this->ReadPropertyString('language');
 
-		$cdata = '';
-		$msg = '';
+        $cdata = '';
+        $msg = '';
         $jtoken = $this->getToken($msg);
         if ($jtoken == '') {
             return false;
@@ -316,12 +316,12 @@ class MieleAtHomeIO extends IPSModule
         // 500 = internal server error
         // 503 = unavailable
 
-		if ($cdata != '') {
-			$jdata = json_decode($cdata, true);
-			if (isset($jdata['message'])) {
-				$msg = $jdata['message'];
-			}
-		}
+        if ($cdata != '') {
+            $jdata = json_decode($cdata, true);
+            if (isset($jdata['message'])) {
+                $msg = $jdata['message'];
+            }
+        }
 
         if ($httpcode == 200) {
             $data = $cdata;
