@@ -36,23 +36,23 @@ class MieleAtHomeIO extends IPSModule
 
     public function GetConfigurationForm()
     {
-		$opts_language = [];
+        $opts_language = [];
         $opts_language[] = ['label' => $this->Translate('english'), 'value' => 'en'];
-		$opts_language[] = ['label' => $this->Translate('german'), 'value' => 'de'];
+        $opts_language[] = ['label' => $this->Translate('german'), 'value' => 'de'];
 
-		$formElements = [];
-		$formElements[] = ['type' => 'Label', 'label' => 'Miele@Home Account'];
-		$formElements[] = ['type' => 'ValidationTextBox', 'name' => 'userid', 'caption' => 'User-ID (email)'];
-		$formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'Password'];
-		$formElements[] = ['type' => 'Label', 'label' => 'Miele@Home API-Access'];
-		$formElements[] = ['type' => 'ValidationTextBox', 'name' => 'client_id', 'caption' => 'Client-ID'];
-		$formElements[] = ['type' => 'ValidationTextBox', 'name' => 'client_secret', 'caption' => 'Client-Secret'];
-		$formElements[] = ['type' => 'Label', 'label' => ''];
-		$formElements[] = ['type' => 'Select', 'name' => 'language', 'caption' => 'Language', 'options' => $opts_language];
+        $formElements = [];
+        $formElements[] = ['type' => 'Label', 'label' => 'Miele@Home Account'];
+        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'userid', 'caption' => 'User-ID (email)'];
+        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'Password'];
+        $formElements[] = ['type' => 'Label', 'label' => 'Miele@Home API-Access'];
+        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'client_id', 'caption' => 'Client-ID'];
+        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'client_secret', 'caption' => 'Client-Secret'];
+        $formElements[] = ['type' => 'Label', 'label' => ''];
+        $formElements[] = ['type' => 'Select', 'name' => 'language', 'caption' => 'Language', 'options' => $opts_language];
 
         $formActions = [];
         $formActions[] = ['type' => 'Button', 'caption' => 'Test access', 'onClick' => 'MieleAtHomeIO_TestAccess($id);'];
-		$formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
+        $formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
         $formActions[] = [
                             'type'    => 'Button',
                             'caption' => 'Module description',
@@ -66,7 +66,7 @@ class MieleAtHomeIO extends IPSModule
         $formStatus[] = ['code' => IS_INACTIVE, 'icon' => 'inactive', 'caption' => 'Instance is inactive'];
         $formStatus[] = ['code' => IS_NOTCREATED, 'icon' => 'inactive', 'caption' => 'Instance is not created'];
 
-		$formStatus[] = ['code' => IS_INVALIDCONFIG, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid configuration)'];
+        $formStatus[] = ['code' => IS_INVALIDCONFIG, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid configuration)'];
         $formStatus[] = ['code' => IS_UNAUTHORIZED, 'icon' => 'error', 'caption' => 'Instance is inactive (unauthorized)'];
         $formStatus[] = ['code' => IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
         $formStatus[] = ['code' => IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
@@ -75,14 +75,14 @@ class MieleAtHomeIO extends IPSModule
         return json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
     }
 
-	public function TestAccess()
-	{
-		$r = $this->do_ApiCall('/v1/devices');
-		echo print_r($r, true);
+    public function TestAccess()
+    {
+        $r = $this->do_ApiCall('/v1/devices');
+        echo print_r($r, true);
 
-		$msg = $this->translate('valid account-data') . PHP_EOL;
-		echo $msg;
-	}
+        $msg = $this->translate('valid account-data') . PHP_EOL;
+        echo $msg;
+    }
 
     protected function SendData($buf)
     {
@@ -139,48 +139,48 @@ class MieleAtHomeIO extends IPSModule
                 ];
             $postdata = [
                     'email'         => $userid,
-					'password'      => $password,
-					'client_id'     => $client_id,
-					'state'         => 'login',
-					'response_type' => 'code',
-					'redirect_uri'  => '/v1/devices',
+                    'password'      => $password,
+                    'client_id'     => $client_id,
+                    'state'         => 'login',
+                    'response_type' => 'code',
+                    'redirect_uri'  => '/v1/devices',
                 ];
 
             $statuscode = $this->do_HttpRequest('/auth', '', $header, $postdata, 'POST', $cdata);
-			if ($statuscode == 0 && $cdata == '') {
-				$statuscode = IS_INVALIDDATA;
-			}
-            $this->SendDebug(__FUNCTION__, 'statuscode=' .  $statuscode . ', cdata=' . print_r($cdata, true), 0);
+            if ($statuscode == 0 && $cdata == '') {
+                $statuscode = IS_INVALIDDATA;
+            }
+            $this->SendDebug(__FUNCTION__, 'statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true), 0);
             if ($statuscode != 0) {
-				$this->SetStatus($statuscode);
+                $this->SetStatus($statuscode);
                 return false;
             }
             $jdata = json_decode($cdata, true);
             $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
             $code = $jdata['code'];
-			$expiration = 0;
-		}
+            $expiration = 0;
+        }
 
         if ($expiration < time()) {
-			$params = [
-					'client_id'     => $client_id,
-					'client_secret' => $client_secret,
-					'code'          => $code,
-					'grant_type'    => 'authorization_code',
-					'state'         => 'token',
-					'redirect_uri'  => '/v1/devices',
-				];
+            $params = [
+                    'client_id'     => $client_id,
+                    'client_secret' => $client_secret,
+                    'code'          => $code,
+                    'grant_type'    => 'authorization_code',
+                    'state'         => 'token',
+                    'redirect_uri'  => '/v1/devices',
+                ];
             $header = [
                     'Accept: application/json; charset=utf-8',
                 ];
 
             $statuscode = $this->do_HttpRequest('/token', $params, $header, '', 'GET', $cdata);
-			if ($statuscode == 0 && $cdata == '') {
-				$statuscode = IS_INVALIDDATA;
-			}
+            if ($statuscode == 0 && $cdata == '') {
+                $statuscode = IS_INVALIDDATA;
+            }
             $this->SendDebug(__FUNCTION__, 'statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true), 0);
             if ($statuscode != 0) {
-				$this->SetStatus($statuscode);
+                $this->SetStatus($statuscode);
                 return false;
             }
 
@@ -211,21 +211,21 @@ class MieleAtHomeIO extends IPSModule
         }
         $token = $jtoken['token'];
 
-		$params = [
-				'language' => $language,
-			];
+        $params = [
+                'language' => $language,
+            ];
 
         $header = [
-				'Accept: application/json; charset=utf-8',
-				'Authorization: Bearer ' . $token,
-			];
+                'Accept: application/json; charset=utf-8',
+                'Authorization: Bearer ' . $token,
+            ];
 
-		$statuscode = $this->do_HttpRequest($func, $params, $header, '', 'GET', $cdata);
-		$this->SendDebug(__FUNCTION__, 'statuscode=', $statuscode . ', cdata=' . print_r($cdata, true), 0);
-		if ($statuscode != 0) {
-			$this->SetStatus($statuscode);
-			return false;
-		}
+        $statuscode = $this->do_HttpRequest($func, $params, $header, '', 'GET', $cdata);
+        $this->SendDebug(__FUNCTION__, 'statuscode=', $statuscode . ', cdata=' . print_r($cdata, true), 0);
+        if ($statuscode != 0) {
+            $this->SetStatus($statuscode);
+            return false;
+        }
 
         $cdata = $this->do_HttpRequest($func, $header, $postdata);
         $this->SendDebug(__FUNCTION__, 'cdata=' . print_r($cdata, true), 0);
@@ -236,17 +236,17 @@ class MieleAtHomeIO extends IPSModule
 
     private function do_HttpRequest($func, $params, $header, $postdata, $mode, &$data)
     {
-		$url = 'https://api.mcs3.miele.com/thirdparty' . $func; 
+        $url = 'https://api.mcs3.miele.com/thirdparty' . $func;
 
-		if ($params != '') {
-			$n = 0;
-			foreach ($params as $param => $value) {
-				$url .= ($n++ ? '&' : '?') . $param . '=' . rawurlencode($value);
-			}
-		}
+        if ($params != '') {
+            $n = 0;
+            foreach ($params as $param => $value) {
+                $url .= ($n++ ? '&' : '?') . $param . '=' . rawurlencode($value);
+            }
+        }
 
         $this->SendDebug(__FUNCTION__, 'http-' . $mode . ': url=' . $url, 0);
-		$this->SendDebug(__FUNCTION__, '    header=' . print_r($header, true), 0);
+        $this->SendDebug(__FUNCTION__, '    header=' . print_r($header, true), 0);
         if ($postdata != '') {
             $this->SendDebug(__FUNCTION__, '    postdata=' . json_encode($postdata), 0);
         }
@@ -255,7 +255,7 @@ class MieleAtHomeIO extends IPSModule
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         switch ($mode) {
             case 'GET':
                 break;
@@ -286,26 +286,26 @@ class MieleAtHomeIO extends IPSModule
         $err = '';
         $data = '';
 
-		// 200 = ok
-		// 400 = bad request 
-		// 401 = unauthorized
-		// 404 = not found
-		// 405 = method not allowed
-		// 500 = internal server error
-		// 503 = unavailable
+        // 200 = ok
+        // 400 = bad request
+        // 401 = unauthorized
+        // 404 = not found
+        // 405 = method not allowed
+        // 500 = internal server error
+        // 503 = unavailable
 
-		if ($httpcode == 200) {
-			$data = $cdata;
-		} elseif ($httpcode == 401) {
-			$statuscode = IS_UNAUTHORIZED;
-			$err = "got http-code $httpcode (unauthorized)";
-		} elseif ($httpcode >= 500 && $httpcode <= 599) {
-			$statuscode = IS_SERVERERROR;
-			$err = "got http-code $httpcode (server error)";
-		} else {
-			$statuscode = IS_HTTPERROR;
-			$err = "got http-code $httpcode";
-		}
+        if ($httpcode == 200) {
+            $data = $cdata;
+        } elseif ($httpcode == 401) {
+            $statuscode = IS_UNAUTHORIZED;
+            $err = "got http-code $httpcode (unauthorized)";
+        } elseif ($httpcode >= 500 && $httpcode <= 599) {
+            $statuscode = IS_SERVERERROR;
+            $err = "got http-code $httpcode (server error)";
+        } else {
+            $statuscode = IS_HTTPERROR;
+            $err = "got http-code $httpcode";
+        }
 
         if ($statuscode) {
             echo "url=$url => statuscode=$statuscode, err=$err\n";

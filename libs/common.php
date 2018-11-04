@@ -228,9 +228,9 @@ trait MieleAtHomeCommon
 
     private function bool2str($bval)
     {
-		if (is_bool($bval)) {
-			return $bval ? 'true' : 'false';
-		}
-		return $bval;
-	}
+        if (is_bool($bval)) {
+            return $bval ? 'true' : 'false';
+        }
+        return $bval;
+    }
 }
