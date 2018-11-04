@@ -54,7 +54,7 @@ class MieleAtHomeConfig extends IPSModule
             }
         }
 
-		$formElements = [];
+        $formElements = [];
 
         $formActions = [];
         $formActions[] = ['type' => 'Select', 'name' => 'controller_id', 'caption' => 'Controller', 'options' => $options];
