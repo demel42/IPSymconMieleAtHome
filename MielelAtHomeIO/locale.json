@@ -1,15 +1,29 @@
 {
 	"translations": {
 		"de": {
-			"Miele@Home Access-Details": "Miele@Home Zugangsdaten",
-			"API-Key": "API-Key",
+			"Miele@Home Account": "Miele@Home Konto",
+			"User-ID (email)": "Benutzer (EMail)",
+			"Password": "Passwort",
+			"Miele@Home API-Access": "Miele@Home API-Zugangsdaten",
+			"Client-ID": "Client-ID",
+			"Client-Secret": "Client-Secret",
+			"Language": "Sprache",
 
+			"english": "Englisch",
+			"german": "Deutsch",
+
+			"Test access": "Zugang prüfen",
 			"Module description": "Modulbeschreibung",
+
+			"valid account-data": "gültige Zugangsdaten",
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",
+			"Instance is deleted": "Instanz wird gelöscht",
 			"Instance is inactive": "Instanz ist inaktiv",
+			"Instance is not created": "Instanz wurde nicht erzeugt",
 
+			"Instance is inactive (invalid configuration)": "Instanz ist inaktiv (ungültige Konfiguration)",
 			"Instance is inactive (unauthorized)": "Instanz ist inaktiv (Authorisierung fehlerhaft)",
 			"Instance is inactive (server error)": "Instanz ist inaktiv (Serverfehler)",
 			"Instance is inactive (http error)": "Instanz ist inaktiv (HTTP-Fehler)",

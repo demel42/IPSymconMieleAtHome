@@ -22,7 +22,7 @@ class MieleAtHomeDevice extends IPSModule
         // $info = 'Controller (#' . $controller_id . ')';
         // $this->SetSummary($info);
 
-        $this->SetStatus(StatusCode_active);
+        $this->SetStatus(IS_ACTIVE);
     }
 
     public function GetConfigurationForm()
@@ -39,14 +39,17 @@ class MieleAtHomeDevice extends IPSModule
                         ];
 
         $formStatus = [];
-        $formStatus[] = ['code' => StatusCode_creating, 'icon' => 'inactive', 'caption' => 'Instance getting created'];
-        $formStatus[] = ['code' => StatusCode_active, 'icon' => 'active', 'caption' => 'Instance is active'];
-        $formStatus[] = ['code' => StatusCode_inactive, 'icon' => 'inactive', 'caption' => 'Instance is inactive'];
+        $formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created'];
+        $formStatus[] = ['code' => IS_ACTIVE, 'icon' => 'active', 'caption' => 'Instance is active'];
+        $formStatus[] = ['code' => IS_DELETING, 'icon' => 'inactive', 'caption' => 'Instance is deleted'];
+        $formStatus[] = ['code' => IS_INACTIVE, 'icon' => 'inactive', 'caption' => 'Instance is inactive'];
+        $formStatus[] = ['code' => IS_NOTCREATED, 'icon' => 'inactive', 'caption' => 'Instance is not created'];
 
-        $formStatus[] = ['code' => StatusCode_Unauthorized, 'icon' => 'error', 'caption' => 'Instance is inactive (unauthorized)'];
-        $formStatus[] = ['code' => StatusCode_ServerError, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
-        $formStatus[] = ['code' => StatusCode_HttpError, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
-        $formStatus[] = ['code' => StatusCode_InvalidData, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)'];
+		$formStatus[] = ['code' => IS_INVALIDCONFIG, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid configuration)'];
+        $formStatus[] = ['code' => IS_UNAUTHORIZED, 'icon' => 'error', 'caption' => 'Instance is inactive (unauthorized)'];
+        $formStatus[] = ['code' => IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
+        $formStatus[] = ['code' => IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
+        $formStatus[] = ['code' => IS_INVALIDDATA, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)'];
 
         return json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
     }
@@ -64,7 +67,7 @@ class MieleAtHomeDevice extends IPSModule
 
     protected function DecodeData($buf)
     {
-        $this->SetStatus(StatusCode_active);
+        $this->SetStatus(IS_ACTIVE);
     }
 
     public function ForwardData($data)

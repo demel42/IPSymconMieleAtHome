@@ -9,14 +9,12 @@ if (!defined('vtBoolean')) {
     define('vtObject', 9);
 }
 
-if (!defined('StatusCode_inactive')) {
-    define('StatusCode_creating', 101);
-    define('StatusCode_active', 102);
-    define('StatusCode_inactive', 104);
-    define('StatusCode_Unauthorized', 201);
-    define('StatusCode_ServerError', 202);
-    define('StatusCode_HttpError', 203);
-    define('StatusCode_InvalidData', 204);
+if (!defined('IS_UNAUTHORIZED')) {
+    define('IS_INVALIDCONFIG', IS_EBASE + 1);
+    define('IS_UNAUTHORIZED', IS_EBASE + 2);
+    define('IS_SERVERERROR', IS_EBASE + 3);
+    define('IS_HTTPERROR', IS_EBASE + 4);
+    define('IS_INVALIDDATA', IS_EBASE + 5);
 }
 
 trait MieleAtHomeCommon
@@ -227,4 +225,12 @@ trait MieleAtHomeCommon
         }
         return $value;
     }
+
+    private function bool2str($bval)
+    {
+		if (is_bool($bval)) {
+			return $bval ? 'true' : 'false';
+		}
+		return $bval;
+	}
 }

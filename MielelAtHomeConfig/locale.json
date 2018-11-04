@@ -5,8 +5,11 @@
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",
+			"Instance is deleted": "Instanz wird gelöscht",
 			"Instance is inactive": "Instanz ist inaktiv",
+			"Instance is not created": "Instanz wurde nicht erzeugt",
 
+			"Instance is inactive (invalid configuration)": "Instanz ist inaktiv (ungültige Konfiguration)",
 			"Instance is inactive (unauthorized)": "Instanz ist inaktiv (Authorisierung fehlerhaft)",
 			"Instance is inactive (server error)": "Instanz ist inaktiv (Serverfehler)",
 			"Instance is inactive (http error)": "Instanz ist inaktiv (HTTP-Fehler)",
