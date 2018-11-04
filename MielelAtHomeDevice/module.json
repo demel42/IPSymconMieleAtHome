@@ -1,0 +1,11 @@
+{
+	"id": "{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}",
+	"name": "MieleAtHomeDevice",
+	"type": 3,
+	"vendor": "Miele",
+	"aliases": ["Miele@Home Gerät"],
+	"parentRequirements": ["{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}"],
+	"childRequirements": [],
+	"implemented": ["{D39AEB86-E611-4752-81C7-DBF7E41E79E1}"],
+	"prefix": "MieleAtHomeDevice"
+}

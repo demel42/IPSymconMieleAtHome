@@ -1,0 +1,11 @@
+{
+	"id": "{996743FB-1712-47A3-9174-858A08A13523}",
+	"name": "MieleAtHomeIO",
+	"type": 1,
+	"vendor": "Miele",
+	"aliases": ["Miele@Home I/O"],
+	"parentRequirements": [],
+	"childRequirements": ["{D39AEB86-E611-4752-81C7-DBF7E41E79E1}"],
+	"implemented": ["{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}"],
+	"prefix": "MieleAtHomeIO"
+}
