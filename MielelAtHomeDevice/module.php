@@ -35,7 +35,7 @@ class MieleAtHomeDevice extends IPSModule
 
         $vpos = 1;
 
-		/*
+        /*
         switch ($deviceId) {
             case DEVICE_WASHING_MACHINE:	// Waschmaschine
                 break;
@@ -43,7 +43,7 @@ class MieleAtHomeDevice extends IPSModule
                 $this->SetStatus(IS_INVALIDCONFIG);
                 return;
         }
-		*/
+        */
 
         $this->MaintainVariable('State', $this->Translate('State'), vtString, '', $vpos++, true);
         $this->MaintainVariable('Failure', $this->Translate('Failure'), vtBoolean, 'Alert', $vpos++, true);

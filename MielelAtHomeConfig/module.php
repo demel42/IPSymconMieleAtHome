@@ -133,7 +133,7 @@ class MieleAtHomeConfig extends IPSModule
         $this->SendDebug(__FUNCTION__, 'device=' . print_r($device, true), 0);
 
         $deviceId = $device['type']['value_raw'];
-		/*
+        /*
         switch ($deviceId) {
             case DEVICE_WASHING_MACHINE:	// Waschmaschine
                 break;
@@ -142,7 +142,7 @@ class MieleAtHomeConfig extends IPSModule
                 $this->SetStatus(IS_INVALIDCONFIG);
                 return -1;
         }
-		*/
+        */
 
         $deviceType = $device['type']['value_localized'];
         $fabNumber = $device['deviceIdentLabel']['fabNumber'];
