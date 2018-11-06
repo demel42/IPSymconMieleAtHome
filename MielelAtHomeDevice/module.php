@@ -177,7 +177,7 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         if ($is_changed) {
-            $this->SetValue('LastContact', time());
+            $this->SetValue('LastChange', time());
         }
     }
 }
