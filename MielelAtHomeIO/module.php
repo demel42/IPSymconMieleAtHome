@@ -15,6 +15,7 @@ class MieleAtHomeIO extends IPSModule
         $this->RegisterPropertyString('client_id', '');
         $this->RegisterPropertyString('client_secret', '');
 
+        $this->RegisterPropertyString('vg_selector', '');
         $this->RegisterPropertyString('language', '');
     }
 
@@ -36,10 +37,14 @@ class MieleAtHomeIO extends IPSModule
 
     public function GetConfigurationForm()
     {
+        $opts_vg_selector = [];
+        $opts_vg_selector[] = ['label' => $this->Translate('England'), 'value' => 'en-en'];
+        $opts_vg_selector[] = ['label' => $this->Translate('Germany'), 'value' => 'de-de'];
+        $opts_vg_selector[] = ['label' => $this->Translate('Switzerland'), 'value' => 'ch-ch'];
+
         $opts_language = [];
         $opts_language[] = ['label' => $this->Translate('England'), 'value' => 'en'];
         $opts_language[] = ['label' => $this->Translate('Germany'), 'value' => 'de'];
-        $opts_language[] = ['label' => $this->Translate('Switzerland'), 'value' => 'ch'];
 
         $formElements = [];
         $formElements[] = ['type' => 'Label', 'label' => 'Miele@Home Account'];
@@ -50,6 +55,7 @@ class MieleAtHomeIO extends IPSModule
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'client_secret', 'caption' => 'Client-Secret'];
         $formElements[] = ['type' => 'Label', 'label' => ''];
         $formElements[] = ['type' => 'Select', 'name' => 'language', 'caption' => 'Language', 'options' => $opts_language];
+        $formElements[] = ['type' => 'Select', 'name' => 'vg_selector', 'caption' => 'VG-Selector', 'options' => $opts_vg_selector];
 
         $formActions = [];
         $formActions[] = ['type' => 'Button', 'caption' => 'Test access', 'onClick' => 'MieleAtHomeIO_TestAccess($id);'];
@@ -148,7 +154,7 @@ class MieleAtHomeIO extends IPSModule
         $password = $this->ReadPropertyString('password');
         $client_id = $this->ReadPropertyString('client_id');
         $client_secret = $this->ReadPropertyString('client_secret');
-        $language = $this->ReadPropertyString('language');
+        $vg_selector = $this->ReadPropertyString('vg_selector');
 
         $dtoken = $this->GetBuffer('Token');
         $jtoken = json_decode($dtoken, true);
@@ -168,7 +174,7 @@ class MieleAtHomeIO extends IPSModule
                     'state'                 => 'login',
                     'response_type'         => 'code',
                     'redirect_uri'          => '/v1/devices',
-                    'vgInformationSelector' => $language . '-' . $language,
+                    'vgInformationSelector' => $vg_selector,
                 ];
 
             $cdata = '';
