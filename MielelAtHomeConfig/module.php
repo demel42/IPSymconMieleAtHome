@@ -30,19 +30,19 @@ class MieleAtHomeConfig extends IPSModule
         $options = [];
         if ($data != '') {
             $devices = json_decode($data, true);
-			$this->SendDebug(__FUNCTION__, 'devices=' . print_r($devices, true), 0);
+            $this->SendDebug(__FUNCTION__, 'devices=' . print_r($devices, true), 0);
             foreach ($devices as $device) {
-				$this->SendDebug(__FUNCTION__, 'device=' . print_r($device, true), 0);
-				$ident = $device['ident'];
+                $this->SendDebug(__FUNCTION__, 'device=' . print_r($device, true), 0);
+                $ident = $device['ident'];
 
-				$type = $ident['type']['value_localized'];
-				$name = $ident['deviceName'];
-				$fabNumber = $ident['deviceIdentLabel']['fabNumber'];
+                $type = $ident['type']['value_localized'];
+                $name = $ident['deviceName'];
+                $fabNumber = $ident['deviceIdentLabel']['fabNumber'];
 
-				if ($name == '') {
-					$name = $type . ' (#' . $fabNumber . ')';
-				}
-				
+                if ($name == '') {
+                    $name = $type . ' (#' . $fabNumber . ')';
+                }
+
                 $options[] = ['label' => $name, 'value' => $fabNumber];
             }
         }
@@ -87,8 +87,8 @@ class MieleAtHomeConfig extends IPSModule
                 continue;
             }
             if ($jcfg['fabNumber'] == $fabNumber) {
-				$instID = $id;
-				break;
+                $instID = $id;
+                break;
             }
         }
 
@@ -114,49 +114,49 @@ class MieleAtHomeConfig extends IPSModule
 
     public function Doit(?string $fabNumber)
     {
-		if ($fabNumber == '') {
-			$this->SetStatus(IS_INVALIDCONFIG);
-			echo $this->Translate('no device selected') . PHP_EOL;
-			return -1;
-		}
+        if ($fabNumber == '') {
+            $this->SetStatus(IS_INVALIDCONFIG);
+            echo $this->Translate('no device selected') . PHP_EOL;
+            return -1;
+        }
 
         $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDeviceIdent', 'Ident' => $fabNumber];
         $data = $this->SendDataToParent(json_encode($SendData));
         $this->SendDebug(__FUNCTION__, 'data=' . $data, 0);
         if ($data == '') {
-			$this->SetStatus(IS_INVALIDCONFIG);
-			echo $this->Translate('unknown device') . ' "' . $fabNumber . '"' . PHP_EOL;
-			return -1;
-		}
+            $this->SetStatus(IS_INVALIDCONFIG);
+            echo $this->Translate('unknown device') . ' "' . $fabNumber . '"' . PHP_EOL;
+            return -1;
+        }
 
-		$device = json_decode($data, true);
+        $device = json_decode($data, true);
         $this->SendDebug(__FUNCTION__, 'device=' . print_r($device, true), 0);
 
         $deviceId = $device['type']['value_raw'];
-		switch ($deviceId) {
-			case DEVICE_WASHING_MACHINE:	// Waschmaschine
-				break;
-			default:
-				echo $this->Translate('unkown device id') . ' ' . $deviceId . ' [' . $deviceType . ']' . PHP_EOL;
-				$this->SetStatus(IS_INVALIDCONFIG);
-				return -1;
-		}
+        switch ($deviceId) {
+            case DEVICE_WASHING_MACHINE:	// Waschmaschine
+                break;
+            default:
+                echo $this->Translate('unkown device id') . ' ' . $deviceId . ' [' . $deviceType . ']' . PHP_EOL;
+                $this->SetStatus(IS_INVALIDCONFIG);
+                return -1;
+        }
 
         $deviceType = $device['type']['value_localized'];
-		$fabNumber = $device['deviceIdentLabel']['fabNumber'];
-		$techType = $device['deviceIdentLabel']['techType'];
+        $fabNumber = $device['deviceIdentLabel']['fabNumber'];
+        $techType = $device['deviceIdentLabel']['techType'];
 
         $deviceName = $device['deviceName'];
-		if ($deviceName == '') {
-			$deviceName = $deviceType;
-		}
+        if ($deviceName == '') {
+            $deviceName = $deviceType;
+        }
         $info = $deviceType . ' (' . $techType . ')';
         $properties = [
-				'deviceId'     => $deviceId,
-				'deviceType'   => $deviceType,
-				'fabNumber'    => $fabNumber,
-				'techType'     => $techType,
-			];
+                'deviceId'     => $deviceId,
+                'deviceType'   => $deviceType,
+                'fabNumber'    => $fabNumber,
+                'techType'     => $techType,
+            ];
 
         $pos = 1000;
         $instID = $this->FindOrCreateInstance('{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}', $fabNumber, $deviceName, $info, $properties, $pos++);

@@ -116,18 +116,18 @@ class MieleAtHomeIO extends IPSModule
         if (isset($jdata['Function'])) {
             switch ($jdata['Function']) {
                 case 'GetDevices':
-					$msg = '';
-					$r = $this->do_ApiCall('/v1/devices/', $ret, $msg);
+                    $msg = '';
+                    $r = $this->do_ApiCall('/v1/devices/', $ret, $msg);
                     break;
                 case 'GetDeviceIdent':
-					$ident = $jdata['Ident'];
-					$msg = '';
-					$r = $this->do_ApiCall('/v1/devices/' . $ident . '/ident/', $ret, $msg);
+                    $ident = $jdata['Ident'];
+                    $msg = '';
+                    $r = $this->do_ApiCall('/v1/devices/' . $ident . '/ident/', $ret, $msg);
                     break;
                 case 'GetDeviceStatus':
-					$ident = $jdata['Ident'];
-					$msg = '';
-					$r = $this->do_ApiCall('/v1/devices/' . $ident . '/state/', $ret, $msg);
+                    $ident = $jdata['Ident'];
+                    $msg = '';
+                    $r = $this->do_ApiCall('/v1/devices/' . $ident . '/state/', $ret, $msg);
                     break;
                 default:
                     $this->SendDebug(__FUNCTION__, 'unknown function "' . $jdata['Function'] . '"', 0);
@@ -161,13 +161,13 @@ class MieleAtHomeIO extends IPSModule
                     'Content-Type: application/x-www-form-urlencoded'
                 ];
             $postdata = [
-                    'email'         		=> $userid,
+                    'email'         		      => $userid,
                     'password'              => $password,
                     'client_id'             => $client_id,
                     'state'                 => 'login',
                     'response_type'         => 'code',
                     'redirect_uri'          => '/v1/devices',
-					'vgInformationSelector' => $language . '-' . $language,
+                    'vgInformationSelector' => $language . '-' . $language,
                 ];
 
             $cdata = '';
@@ -181,7 +181,7 @@ class MieleAtHomeIO extends IPSModule
                 $this->SetStatus($statuscode);
                 return '';
             }
-			parse_str(parse_url($cdata, PHP_URL_QUERY), $jdata);
+            parse_str(parse_url($cdata, PHP_URL_QUERY), $jdata);
             $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
             $code = $jdata['code'];
             $expiration = 0;
@@ -274,7 +274,7 @@ class MieleAtHomeIO extends IPSModule
         $this->SendDebug(__FUNCTION__, 'http-' . $mode . ': url=' . $url, 0);
         $this->SendDebug(__FUNCTION__, '    header=' . print_r($header, true), 0);
         if ($postdata != '') {
-			$postdata = http_build_query($postdata);
+            $postdata = http_build_query($postdata);
             $this->SendDebug(__FUNCTION__, '    postdata=' . $postdata, 0);
         }
 
@@ -303,7 +303,7 @@ class MieleAtHomeIO extends IPSModule
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         $cdata = curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		$redirect_url = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
+        $redirect_url = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
         curl_close($ch);
 
         $duration = round(microtime(true) - $time_start, 2);
@@ -346,7 +346,7 @@ class MieleAtHomeIO extends IPSModule
         }
 
         if ($statuscode) {
-            echo 'url=' . $url . ' => statuscode=' . $statuscode . ', err=' . $err. PHP_EOL;
+            echo 'url=' . $url . ' => statuscode=' . $statuscode . ', err=' . $err . PHP_EOL;
             $this->SendDebug(__FUNCTION__, ' => statuscode=' . $statuscode . ', err=' . $err . ', msg=' . $msg, 0);
         }
 
