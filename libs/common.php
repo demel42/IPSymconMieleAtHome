@@ -9,12 +9,21 @@ if (!defined('vtBoolean')) {
     define('vtObject', 9);
 }
 
-if (!defined('IS_UNAUTHORIZED')) {
+if (!defined('IS_INVALIDCONFIG')) {
     define('IS_INVALIDCONFIG', IS_EBASE + 1);
     define('IS_UNAUTHORIZED', IS_EBASE + 2);
     define('IS_SERVERERROR', IS_EBASE + 3);
     define('IS_HTTPERROR', IS_EBASE + 4);
     define('IS_INVALIDDATA', IS_EBASE + 5);
+}
+
+if (!defined('DEVICE_WASHING_MACHINE')) {
+    define('DEVICE_WASHING_MACHINE', 1);
+	// Clothes Dryer
+	// Dishwasher
+	// Backofen
+	// Dampfgarer
+	// Kochplatte
 }
 
 trait MieleAtHomeCommon
@@ -27,11 +36,7 @@ trait MieleAtHomeCommon
             return;
         }
 
-        if (IPS_GetKernelVersion() >= 5) {
-            $ret = parent::SetValue($Ident, $Value);
-        } else {
-            $ret = SetValue($varID, $Value);
-        }
+		$ret = parent::SetValue($Ident, $Value);
         if ($ret == false) {
             $this->SendDebug(__FUNCTION__, 'mismatch of value "' . $Value . '" for variable ' . $Ident, 0);
         }
@@ -45,14 +50,27 @@ trait MieleAtHomeCommon
             return false;
         }
 
-        if (IPS_GetKernelVersion() >= 5) {
-            $ret = parent::GetValue($Ident);
-        } else {
-            $ret = GetValue($varID);
-        }
+		$ret = parent::GetValue($Ident);
 
         return $ret;
     }
+
+	private function SaveValue($Ident, $Value, &$IsChanged) {
+		@$varID = $this->GetIDForIdent($Ident);
+		if ($varID == false) {
+			$this->SendDebug(__FUNCTION__, 'missing variable ' . $Ident, 0);
+			return;
+		}
+
+		if (parent::GetValue($Ident) != $Value)
+			$IsChanged = true; 
+
+		$ret = parent::SetValue($Ident, $Value);
+		if ($ret == false) {
+			$this->SendDebug(__FUNCTION__, 'mismatch of value "' . $Value . '" for variable ' . $Ident, 0);
+			return;
+		}
+	}
 
     private function CreateVarProfile($Name, $ProfileType, $Suffix, $MinValue, $MaxValue, $StepSize, $Digits, $Icon, $Asscociations = '')
     {
@@ -118,36 +136,17 @@ trait MieleAtHomeCommon
 
     protected function LogMessage($Message, $Severity)
     {
-        if (IPS_GetKernelVersion() >= 5) {
-            switch ($Severity) {
-                case KL_NOTIFY:
-                case KL_WARNING:
-                case KL_ERROR:
-                case KL_DEBUG:
-                    parent::LogMessage($Message, $Severity);
-                    break;
-                default:
-                    echo __CLASS__ . '::' . __FUNCTION__ . ': unknown severity ' . $Severity;
-                    break;
-            }
-        } else {
-            switch ($Severity) {
-                case KL_NOTIFY:
-                    IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'INFO: ' . $Message);
-                    break;
-                case KL_WARNING:
-                    IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'WARNUNG: ' . $Message);
-                    break;
-                case KL_ERROR:
-                    echo $Message;
-                    break;
-                case KL_DEBUG:
-                    break;
-                default:
-                    echo __CLASS__ . '::' . __FUNCTION__ . ': unknown severity ' . $Severity;
-                    break;
-            }
-        }
+		switch ($Severity) {
+			case KL_NOTIFY:
+			case KL_WARNING:
+			case KL_ERROR:
+			case KL_DEBUG:
+				parent::LogMessage($Message, $Severity);
+				break;
+			default:
+				echo __CLASS__ . '::' . __FUNCTION__ . ': unknown severity ' . $Severity;
+				break;
+		}
     }
 
     private function GetArrayElem($data, $var, $dflt)
@@ -209,20 +208,12 @@ trait MieleAtHomeCommon
 
     private function SetMultiBuffer($name, $value)
     {
-        if (IPS_GetKernelVersion() >= 5) {
-            $this->{'Multi_' . $name} = $value;
-        } else {
-            $this->SetBuffer($name, $value);
-        }
+		$this->{'Multi_' . $name} = $value;
     }
 
     private function GetMultiBuffer($name)
     {
-        if (IPS_GetKernelVersion() >= 5) {
-            $value = $this->{'Multi_' . $name};
-        } else {
-            $value = $this->GetBuffer($name);
-        }
+		$value = $this->{'Multi_' . $name};
         return $value;
     }
 

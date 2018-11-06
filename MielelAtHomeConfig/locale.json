@@ -1,7 +1,14 @@
 {
 	"translations": {
 		"de": {
+			"Device": "Gerät",
+			"Import of device": "Gerät anlegen",
 			"Module description": "Modulbeschreibung",
+
+			"no device selected": "kein Gerät ausgewählt",
+			"unknown device": "unbekannteѕ Gerät",
+			"unkown device id": "unbekannter Gerätetyp",
+			"unable to create instance": "Instanz kann nicht angelegt werden",
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",

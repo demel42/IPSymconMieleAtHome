@@ -1,7 +1,26 @@
 {
 	"translations": {
 		"de": {
+			"Device id": "Geräete-Typ-ID",
+			"Device type": "Geräte-Typ",
+			"Fabrication number": "Fabrikationsnummer",
+			"Model": "Modell",
+			"Update data every X seconds": "Daten alle X Sekunden aktualisieren",
+			"Seconds": "Sekunden",
+
+			"Update data": "Daten aktualisieren",
 			"Module description": "Modulbeschreibung",
+
+			"State": "Status",
+			"Failure": "Fehler",
+			"Elapsed time": "verstrichene Zeit",
+			"Remaining time": "verbleibende Zeit",
+			"Program": "Programm",
+			"Phase": "Phase",
+			"Temperature": "Temperatur",
+			"Spinning speed": "Drehzahl",
+
+			"last change": "letzte Änderung",
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",

@@ -2,23 +2,6 @@
 
 require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
 
-// Model of Sensor
-if (!defined('SENSOR_NORMALLY_CLOSE_START')) {
-    define('SENSOR_NORMALLY_CLOSE_START', 11);
-}
-if (!defined('SENSOR_NORMALLY_OPEN_STOP')) {
-    define('SENSOR_NORMALLY_OPEN_STOP', 12);
-}
-if (!defined('SENSOR_NORMALLY_CLOSE_STOP')) {
-    define('SENSOR_NORMALLY_CLOSE_STOP', 13);
-}
-if (!defined('SENSOR_NORMALLY_OPEN_START')) {
-    define('SENSOR_NORMALLY_OPEN_START', 14);
-}
-if (!defined('SENSOR_FLOW_METER')) {
-    define('SENSOR_FLOW_METER', 30);
-}
-
 class MieleAtHomeConfig extends IPSModule
 {
     use MieleAtHomeCommon;
@@ -39,26 +22,36 @@ class MieleAtHomeConfig extends IPSModule
 
     public function GetConfigurationForm()
     {
-        $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'LastData'];
+        $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDevices'];
         $data = $this->SendDataToParent(json_encode($SendData));
 
-        $this->SendDebug(__FUNCTION__, "data=$data", 0);
+        $this->SendDebug(__FUNCTION__, 'data=' . $data, 0);
 
         $options = [];
         if ($data != '') {
-            $controllers = json_decode($data, true);
-            foreach ($controllers as $controller) {
-                $controller_name = $controller['name'];
-                $controller_id = $controller['controller_id'];
-                $options[] = ['label' => $controller_name, 'value' => $controller_id];
+            $devices = json_decode($data, true);
+			$this->SendDebug(__FUNCTION__, 'devices=' . print_r($devices, true), 0);
+            foreach ($devices as $device) {
+				$this->SendDebug(__FUNCTION__, 'device=' . print_r($device, true), 0);
+				$ident = $device['ident'];
+
+				$type = $ident['type']['value_localized'];
+				$name = $ident['deviceName'];
+				$fabNumber = $ident['deviceIdentLabel']['fabNumber'];
+
+				if ($name == '') {
+					$name = $type . ' (#' . $fabNumber . ')';
+				}
+				
+                $options[] = ['label' => $name, 'value' => $fabNumber];
             }
         }
 
         $formElements = [];
 
         $formActions = [];
-        $formActions[] = ['type' => 'Select', 'name' => 'controller_id', 'caption' => 'Controller', 'options' => $options];
-        $formActions[] = ['type' => 'Button', 'label' => 'Import of device', 'onClick' => 'MieleAtHomeConfig_Doit($id, $controller_id);'];
+        $formActions[] = ['type' => 'Select', 'name' => 'fabNumber', 'caption' => 'Device', 'options' => $options];
+        $formActions[] = ['type' => 'Button', 'label' => 'Import of device', 'onClick' => 'MieleAtHomeConfig_Doit($id, $fabNumber);'];
         $formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
         $formActions[] = [
                             'type'    => 'Button',
@@ -82,7 +75,7 @@ class MieleAtHomeConfig extends IPSModule
         return json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
     }
 
-    private function FindOrCreateInstance($guid, $controller_id, $connector, $name, $info, $properties, $pos)
+    private function FindOrCreateInstance($guid, $fabNumber, $deviceName, $info, $properties, $pos)
     {
         $instID = '';
 
@@ -90,31 +83,26 @@ class MieleAtHomeConfig extends IPSModule
         foreach ($instIDs as $id) {
             $cfg = IPS_GetConfiguration($id);
             $jcfg = json_decode($cfg, true);
-            if (!isset($jcfg['controller_id'])) {
+            if (!isset($jcfg['fabNumber'])) {
                 continue;
             }
-            if ($jcfg['controller_id'] == $controller_id) {
-                if ($connector == '' || $jcfg['connector'] == $connector) {
-                    $instID = $id;
-                    break;
-                }
+            if ($jcfg['fabNumber'] == $fabNumber) {
+				$instID = $id;
+				break;
             }
         }
 
         if ($instID == '') {
             $instID = IPS_CreateInstance($guid);
             if ($instID == '') {
-                echo 'unable to create instance "' . $name . '"';
+                echo $this->Translate('unable to create instance') . ' "' . $deviceName . '"';
                 return $instID;
             }
-            IPS_SetProperty($instID, 'controller_id', $controller_id);
-            if (is_numeric($connector)) {
-                IPS_SetProperty($instID, 'connector', $connector);
-            }
+            IPS_SetProperty($instID, 'fabNumber', $fabNumber);
             foreach ($properties as $key => $property) {
                 IPS_SetProperty($instID, $key, $property);
             }
-            IPS_SetName($instID, $name);
+            IPS_SetName($instID, $deviceName);
             IPS_SetInfo($instID, $info);
             IPS_SetPosition($instID, $pos);
         }
@@ -124,100 +112,55 @@ class MieleAtHomeConfig extends IPSModule
         return $instID;
     }
 
-    public function Doit(?string $controller_id)
+    public function Doit(?string $fabNumber)
     {
-        $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'LastData'];
+		if ($fabNumber == '') {
+			$this->SetStatus(IS_INVALIDCONFIG);
+			echo $this->Translate('no device selected') . PHP_EOL;
+			return -1;
+		}
+
+        $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDeviceIdent', 'Ident' => $fabNumber];
         $data = $this->SendDataToParent(json_encode($SendData));
+        $this->SendDebug(__FUNCTION__, 'data=' . $data, 0);
+        if ($data == '') {
+			$this->SetStatus(IS_INVALIDCONFIG);
+			echo $this->Translate('unknown device') . ' "' . $fabNumber . '"' . PHP_EOL;
+			return -1;
+		}
 
-        $this->SendDebug(__FUNCTION__, "data=$data", 0);
+		$device = json_decode($data, true);
+        $this->SendDebug(__FUNCTION__, 'device=' . print_r($device, true), 0);
 
-        $statuscode = 0;
-        $do_abort = false;
+        $deviceId = $device['type']['value_raw'];
+		switch ($deviceId) {
+			case DEVICE_WASHING_MACHINE:	// Waschmaschine
+				break;
+			default:
+				echo $this->Translate('unkown device id') . ' ' . $deviceId . ' [' . $deviceType . ']' . PHP_EOL;
+				$this->SetStatus(IS_INVALIDCONFIG);
+				return -1;
+		}
 
-        if ($data != '') {
-            $controllers = json_decode($data, true);
-            if ($controller_id != '') {
-                $controller_found = false;
-                foreach ($controllers as $controller) {
-                    if ($controller_id == $controller['controller_id']) {
-                        $controller_found = true;
-                        break;
-                    }
-                }
-                if (!$controller_found) {
-                    $err = "controller \"$controller_id\" don't exists";
-                    $statuscode = 202;
-                }
-            } else {
-                $err = 'no controller selected';
-                $statuscode = 203;
-            }
-            if ($statuscode) {
-                echo "statuscode=$statuscode, err=$err";
-                $this->SendDebug(__FUNCTION__, $err, 0);
-                $this->SetStatus($statuscode);
-                $do_abort = true;
-            }
-        } else {
-            $err = 'no data';
-            $statuscode = 201;
-            echo "statuscode=$statuscode, err=$err";
-            $this->SendDebug(__FUNCTION__, $err, 0);
-            $this->SetStatus($statuscode);
-            $do_abort = true;
-        }
+        $deviceType = $device['type']['value_localized'];
+		$fabNumber = $device['deviceIdentLabel']['fabNumber'];
+		$techType = $device['deviceIdentLabel']['techType'];
 
-        if ($do_abort) {
-            return -1;
-        }
-
-        $this->SetStatus(102);
-
-        $this->SendDebug(__FUNCTION__, 'controller=' . print_r($controller, true), 0);
-
-        // MieleAtHomeController
-        $controller_name = $controller['name'];
-        $info = 'Controller (' . $controller_name . ')';
-        $properties = [];
+        $deviceName = $device['deviceName'];
+		if ($deviceName == '') {
+			$deviceName = $deviceType;
+		}
+        $info = $deviceType . ' (' . $techType . ')';
+        $properties = [
+				'deviceId'     => $deviceId,
+				'deviceType'   => $deviceType,
+				'fabNumber'    => $fabNumber,
+				'techType'     => $techType,
+			];
 
         $pos = 1000;
-        $instID = $this->FindOrCreateInstance('{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}', $controller_id, '', $controller_name, $info, $properties, $pos++);
+        $instID = $this->FindOrCreateInstance('{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}', $fabNumber, $deviceName, $info, $properties, $pos++);
 
-        // MieleAtHomeSensor
-        $pos = 1100;
-        $sensors = $controller['sensors'];
-        if (count($sensors) > 0) {
-            foreach ($sensors as $i => $value) {
-                $sensor = $sensors[$i];
-                $connector = $sensor['input'] + 1;
-                $sensor_name = $sensor['name'];
-                $type = $sensor['type'];
-                $mode = $sensor['mode'];
-
-                // type=1, mode=1 => normally close - start
-                // type=1, mode=2 => normally open - stop
-                // type=1, mode=3 => normally close - stop
-                // type=1, mode=4 => normally open - start
-                // type=3, mode=0 => flow meter
-
-                if ($type == 1 && $mode == 1) {
-                    $model = SENSOR_NORMALLY_CLOSE_START;
-                } elseif ($type == 1 && $mode == 2) {
-                    $model = SENSOR_NORMALLY_OPEN_STOP;
-                } elseif ($type == 1 && $mode == 3) {
-                    $model = SENSOR_NORMALLY_CLOSE_STOP;
-                } elseif ($type == 1 && $mode == 4) {
-                    $model = SENSOR_NORMALLY_OPEN_START;
-                } elseif ($type == 3 && $mode == 0) {
-                    $model = SENSOR_FLOW_METER;
-                } else {
-                    continue;
-                }
-
-                $info = $this->Translate('Sensor') . ' ' . $connector . ' (' . $controller_name . '\\' . $sensor_name . ')';
-                $properties = ['model' => $model];
-                $instID = $this->FindOrCreateInstance('C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB', $controller_id, $connector, $sensor_name, $info, $properties, $pos++);
-            }
-        }
+        $this->SetStatus(IS_ACTIVE);
     }
 }
