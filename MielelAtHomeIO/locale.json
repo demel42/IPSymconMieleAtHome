@@ -9,8 +9,9 @@
 			"Client-Secret": "Client-Secret",
 			"Language": "Sprache",
 
-			"english": "Englisch",
-			"german": "Deutsch",
+			"England": "England",
+			"Germany": "Deutschland",
+			"Switzerland": "Schweiz",
 
 			"Test access": "Zugang prüfen",
 			"Module description": "Modulbeschreibung",

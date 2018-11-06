@@ -37,8 +37,9 @@ class MieleAtHomeIO extends IPSModule
     public function GetConfigurationForm()
     {
         $opts_language = [];
-        $opts_language[] = ['label' => $this->Translate('english'), 'value' => 'en'];
-        $opts_language[] = ['label' => $this->Translate('german'), 'value' => 'de'];
+        $opts_language[] = ['label' => $this->Translate('England'), 'value' => 'en'];
+        $opts_language[] = ['label' => $this->Translate('Germany'), 'value' => 'de'];
+        $opts_language[] = ['label' => $this->Translate('Switzerland'), 'value' => 'ch'];
 
         $formElements = [];
         $formElements[] = ['type' => 'Label', 'label' => 'Miele@Home Account'];
