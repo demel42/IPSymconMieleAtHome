@@ -19,8 +19,8 @@ if (!defined('IS_INVALIDCONFIG')) {
 
 if (!defined('DEVICE_WASHING_MACHINE')) {
     define('DEVICE_WASHING_MACHINE', 1);
-    // Clothes Dryer
-    // Dishwasher
+    define('DEVICE_CLOTHES_DRYER', 2);
+    define('DEVICE_DISHWASHER', 0);
     // Backofen
     // Dampfgarer
     // Kochplatte

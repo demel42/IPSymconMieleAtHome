@@ -136,6 +136,7 @@ class MieleAtHomeConfig extends IPSModule
         /*
         switch ($deviceId) {
             case DEVICE_WASHING_MACHINE:	// Waschmaschine
+            case DEVICE_CLOTHES_DRYER:		// Trockner
                 break;
             default:
                 echo $this->Translate('unkown device id') . ' ' . $deviceId . ' [' . $deviceType . ']' . PHP_EOL;
