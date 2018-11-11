@@ -214,7 +214,7 @@ class MieleAtHomeDevice extends IPSModule
         if (isset($type2txt[$model][$type])) {
             $txt = $this->Translate($type2txt[$model][$type]);
         } else {
-            $txt = $this->Translate('unknown type') . ' ' + $type;
+            $txt = $this->Translate('unknown value') . ' ' + $type;
         }
         return $txt;
     }
@@ -289,7 +289,7 @@ class MieleAtHomeDevice extends IPSModule
         if (isset($phase2txt[$model][$phase])) {
             $txt = $this->Translate($phase2txt[$model][$phase]);
         } else {
-            $txt = $this->Translate('unknown phase') . ' ' + $phase;
+            $txt = $this->Translate('unknown value') . ' ' + $phase;
         }
         return $txt;
     }
@@ -312,7 +312,7 @@ class MieleAtHomeDevice extends IPSModule
         if (isset($step2txt[$model][$step])) {
             $txt = $this->Translate($step2txt[$model][$step]);
         } else {
-            $txt = $this->Translate('unknown step') . ' ' + $step;
+            $txt = $this->Translate('unknown value') . ' ' + $step;
         }
         return $txt;
     }
