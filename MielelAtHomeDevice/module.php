@@ -49,7 +49,7 @@ class MieleAtHomeDevice extends IPSModule
                 $this->MaintainVariable('SpinningSpeed', $this->Translate('Spinning speed'), vtInteger, 'MieleAtHome.SpinningSpeed', $vpos++, true);
                 break;
             case DEVICE_CLOTHES_DRYER:		// Trockner
-				$this->MaintainVariable('DryingStep', $this->Translate('Drying step'), vtString, '', $vpos++, true);
+                $this->MaintainVariable('DryingStep', $this->Translate('Drying step'), vtString, '', $vpos++, true);
                 break;
         }
 
@@ -140,15 +140,15 @@ class MieleAtHomeDevice extends IPSModule
             $elapsedTime = 0;
         } else {
             $programType = $this->GetArrayElem($jdata, 'programType.value_localized', '');
-			if ($programType == '') {
-				$value_raw = $this->GetArrayElem($jdata, 'programType.value_raw', 0);
-				$programType = $this->programType2text($deviceId, $value_raw);
-			}
+            if ($programType == '') {
+                $value_raw = $this->GetArrayElem($jdata, 'programType.value_raw', 0);
+                $programType = $this->programType2text($deviceId, $value_raw);
+            }
             $programPhase = $this->GetArrayElem($jdata, 'programPhase.value_localized', '');
-			if ($programPhase == '') {
-				$value_raw = $this->GetArrayElem($jdata, 'programPhase.value_raw', 0);
-				$programPhase = $this->programPhase2text($deviceId, $value_raw);
-			}
+            if ($programPhase == '') {
+                $value_raw = $this->GetArrayElem($jdata, 'programPhase.value_raw', 0);
+                $programPhase = $this->programPhase2text($deviceId, $value_raw);
+            }
             $remainingTime_H = $this->GetArrayElem($jdata, 'remainingTime.0', 0);
             $remainingTime_M = $this->GetArrayElem($jdata, 'remainingTime.1', 0);
             $remainingTime = $remainingTime_H * 60 + $remainingTime_M;
@@ -180,14 +180,14 @@ class MieleAtHomeDevice extends IPSModule
                 break;
             case DEVICE_CLOTHES_DRYER:
                 if ($off) {
-					$dryingStep = '';
-				} else {
-					$dryingStep = $this->GetArrayElem($jdata, 'dryingStep.value_localized', '');
-					if ($dryingStep == '') {
-						$value_raw = $this->GetArrayElem($jdata, 'programPhase.value_raw', 0);
-						$dryingStep = $this->dryingStep2text($deviceId, $value_raw);
-					}
-				}
+                    $dryingStep = '';
+                } else {
+                    $dryingStep = $this->GetArrayElem($jdata, 'dryingStep.value_localized', '');
+                    if ($dryingStep == '') {
+                        $value_raw = $this->GetArrayElem($jdata, 'programPhase.value_raw', 0);
+                        $dryingStep = $this->dryingStep2text($deviceId, $value_raw);
+                    }
+                }
 
                 $this->SaveValue('DryingStep', $dryingStep, $is_changed);
         }
@@ -197,123 +197,123 @@ class MieleAtHomeDevice extends IPSModule
         }
     }
 
-	private function programType2text($model, $type)
-	{
-		$type2txt = [
-				DEVICE_WASHING_MACHINE => [
-					],
-				
-				DEVICE_CLOTHES_DRYER => [
-						2 => 'Automatic plus'
-					],
-				
-				DEVICE_DISHWASHER => [
-					],
-			];
+    private function programType2text($model, $type)
+    {
+        $type2txt = [
+                DEVICE_WASHING_MACHINE => [
+                    ],
 
-		if (isset($type2txt[$model][$type])) {
-			$txt = $this->Translate($type2txt[$model][$type]);
-		} else {
-			$txt = $this->Translate('unknown type') . ' ' + $type;
-		}
-		return $txt;
-	}
+                DEVICE_CLOTHES_DRYER => [
+                        2 => 'Automatic plus'
+                    ],
 
-	private function programPhase2text($model, $phase)
-	{
-		$phase2txt = [
-			DEVICE_WASHING_MACHINE => [
-					256 => 'Not running', 
-					257 => 'Pre-wash', 
-					258 => 'Soak', 
-					259 => 'Pre-wash', 
-					260 => 'Main wash', 
-					261 => 'Rinse', 
-					262 => 'Rinse hold', 
-					263 => 'Main wash', 
-					264 => 'Cooling down', 
-					265 => 'Drain', 
-					266 => 'Spin', 
-					267 => 'Anti-crease', 
-					268 => 'Finished', 
-					269 => 'Venting', 
-					270 => 'Starch stop', 
-					271 => 'Freshen-up + moisten', 
-					272 => 'Steam smoothing', 
-					279 => 'Hygiene', 
-					280 => 'Drying', 
-					285 => 'Disinfection', 
-					295 => 'Steam smoothing', 
-				],
-			
-			DEVICE_CLOTHES_DRYER => [
-					512 => 'Not running', 
-					513 => 'Program running', 
-					514 => 'Drying', 
-					515 => 'Machine iron', 
-					516 => 'Hand iron', 
-					517 => 'Normal', 
-					518 => 'Normal plus', 
-					519 => 'Cooling down', 
-					520 => 'Hand iron', 
-					521 => 'Anti-crease', 
-					522 => 'Finished', 
-					523 => 'Extra dry', 
-					524 => 'Hand iron', 
-					526 => 'Moisten', 
-					528 => 'Timed drying', 
-					529 => 'Warm air', 
-					530 => 'Steam smoothing', 
-					531 => 'Comfort cooling', 
-					532 => 'Rinse out lint', 
-					533 => 'Rinses', 
-					534 => 'Smoothing', 
-					538 => 'Slightly dry', 
-					539 => 'Safety cooling',
-				],
-			
-				DEVICE_DISHWASHER => [
-					1792 => 'Not running',
-					1793 => 'Reactivating',
-					1794 => 'Pre-wash',
-					1795 => 'Main wash',
-					1796 => 'Rinse',
-					1797 => 'Interim rinse',
-					1798 => 'Final rinse',
-					1799 => 'Drying',
-					1800 => 'Finished',
-					1801 => 'Pre-wash',
-				],
-			];
+                DEVICE_DISHWASHER => [
+                    ],
+            ];
 
-		if (isset($phase2txt[$model][$phase])) {
-			$txt = $this->Translate($phase2txt[$model][$phase]);
-		} else {
-			$txt = $this->Translate('unknown phase') . ' ' + $phase;
-		}
-		return $txt;
-	}
+        if (isset($type2txt[$model][$type])) {
+            $txt = $this->Translate($type2txt[$model][$type]);
+        } else {
+            $txt = $this->Translate('unknown type') . ' ' + $type;
+        }
+        return $txt;
+    }
 
-	private function dryingStep2text($model, $step)
-	{
-		$step2xt = [
-				DEVICE_WASHING_MACHINE => [
-						1 => 'Cotton',
-					],
-				
-				DEVICE_CLOTHES_DRYER => [
-						2 => 'Extra dry',
-					],
-				
-				DEVICE_DISHWASHER => [
-					],
-			];
+    private function programPhase2text($model, $phase)
+    {
+        $phase2txt = [
+            DEVICE_WASHING_MACHINE => [
+                    256 => 'Not running',
+                    257 => 'Pre-wash',
+                    258 => 'Soak',
+                    259 => 'Pre-wash',
+                    260 => 'Main wash',
+                    261 => 'Rinse',
+                    262 => 'Rinse hold',
+                    263 => 'Main wash',
+                    264 => 'Cooling down',
+                    265 => 'Drain',
+                    266 => 'Spin',
+                    267 => 'Anti-crease',
+                    268 => 'Finished',
+                    269 => 'Venting',
+                    270 => 'Starch stop',
+                    271 => 'Freshen-up + moisten',
+                    272 => 'Steam smoothing',
+                    279 => 'Hygiene',
+                    280 => 'Drying',
+                    285 => 'Disinfection',
+                    295 => 'Steam smoothing',
+                ],
 
-		if (isset($step2txt[$model][$step])) {
-			$txt = $this->Translate($step2txt[$model][$step]);
-		} else {
-			$txt = $this->Translate('unknown step') . ' ' + $step;
-		}
-		return $txt;
-	}
+            DEVICE_CLOTHES_DRYER => [
+                    512 => 'Not running',
+                    513 => 'Program running',
+                    514 => 'Drying',
+                    515 => 'Machine iron',
+                    516 => 'Hand iron',
+                    517 => 'Normal',
+                    518 => 'Normal plus',
+                    519 => 'Cooling down',
+                    520 => 'Hand iron',
+                    521 => 'Anti-crease',
+                    522 => 'Finished',
+                    523 => 'Extra dry',
+                    524 => 'Hand iron',
+                    526 => 'Moisten',
+                    528 => 'Timed drying',
+                    529 => 'Warm air',
+                    530 => 'Steam smoothing',
+                    531 => 'Comfort cooling',
+                    532 => 'Rinse out lint',
+                    533 => 'Rinses',
+                    534 => 'Smoothing',
+                    538 => 'Slightly dry',
+                    539 => 'Safety cooling',
+                ],
+
+                DEVICE_DISHWASHER => [
+                    1792 => 'Not running',
+                    1793 => 'Reactivating',
+                    1794 => 'Pre-wash',
+                    1795 => 'Main wash',
+                    1796 => 'Rinse',
+                    1797 => 'Interim rinse',
+                    1798 => 'Final rinse',
+                    1799 => 'Drying',
+                    1800 => 'Finished',
+                    1801 => 'Pre-wash',
+                ],
+            ];
+
+        if (isset($phase2txt[$model][$phase])) {
+            $txt = $this->Translate($phase2txt[$model][$phase]);
+        } else {
+            $txt = $this->Translate('unknown phase') . ' ' + $phase;
+        }
+        return $txt;
+    }
+
+    private function dryingStep2text($model, $step)
+    {
+        $step2xt = [
+                DEVICE_WASHING_MACHINE => [
+                        1 => 'Cotton',
+                    ],
+
+                DEVICE_CLOTHES_DRYER => [
+                        2 => 'Extra dry',
+                    ],
+
+                DEVICE_DISHWASHER => [
+                    ],
+            ];
+
+        if (isset($step2txt[$model][$step])) {
+            $txt = $this->Translate($step2txt[$model][$step]);
+        } else {
+            $txt = $this->Translate('unknown step') . ' ' + $step;
+        }
+        return $txt;
+    }
 }
