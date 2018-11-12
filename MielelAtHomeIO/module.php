@@ -90,9 +90,6 @@ class MieleAtHomeIO extends IPSModule
         $msg = '';
         $r = $this->do_ApiCall('/v1/devices/', $cdata, $msg);
 
-        echo "msg=$msg" . PHP_EOL;
-        echo "cdata=$cdata" . PHP_EOL;
-
         if ($r == false) {
             $txt .= $this->translate('invalid account-data') . PHP_EOL;
             $txt .= PHP_EOL;
