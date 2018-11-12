@@ -136,18 +136,18 @@ class MieleAtHomeDevice extends IPSModule
         $signalFailure = $this->GetArrayElem($jdata, 'signalFailure', false);
         $this->SaveValue('Failure', $signalFailure, $is_changed);
 
-		$dt = new DateTime(date('d.m.Y H:i:00'));
-		$now = $dt->format('U');
+        $dt = new DateTime(date('d.m.Y H:i:00'));
+        $now = $dt->format('U');
 
-		$startTime = 0;
-		$endTime = 0;
+        $startTime = 0;
+        $endTime = 0;
 
         if ($off) {
             $programType = '';
             $programPhase = '';
             $remainingTime = 0;
             $elapsedTime = 0;
-		} else {
+        } else {
             $programType = $this->GetArrayElem($jdata, 'programType.value_localized', '');
             if ($programType == '') {
                 $value_raw = $this->GetArrayElem($jdata, 'programType.value_raw', 0);
@@ -159,35 +159,35 @@ class MieleAtHomeDevice extends IPSModule
                 $programPhase = $this->programPhase2text($deviceId, $value_raw);
             }
 
-			$remainingTime_H = $this->GetArrayElem($jdata, 'remainingTime.0', 0);
-			$remainingTime_M = $this->GetArrayElem($jdata, 'remainingTime.1', 0);
-			$remainingTime = $remainingTime_H * 60 + $remainingTime_M;
+            $remainingTime_H = $this->GetArrayElem($jdata, 'remainingTime.0', 0);
+            $remainingTime_M = $this->GetArrayElem($jdata, 'remainingTime.1', 0);
+            $remainingTime = $remainingTime_H * 60 + $remainingTime_M;
 
-			if ($delayed) {
-				$startTime_H = $this->GetArrayElem($jdata, 'startTime.0', 0);
-				$startTime_M = $this->GetArrayElem($jdata, 'startTime.1', 0);
-				$startDelay = ($startTime_H * 60 + $startTime_M) * 60;
+            if ($delayed) {
+                $startTime_H = $this->GetArrayElem($jdata, 'startTime.0', 0);
+                $startTime_M = $this->GetArrayElem($jdata, 'startTime.1', 0);
+                $startDelay = ($startTime_H * 60 + $startTime_M) * 60;
 
-				if ($startDelay > 0) {
-					$startTime = $now + $startDelay;
-				}
-				if ($remainingTime > 0) {
-					$endTime = $startTime + $remainingTime * 60;
-				}
-				$elapsedTime = 0;
-			} else {
-				$elapsedTime_H = $this->GetArrayElem($jdata, 'elapsedTime.0', 0);
-				$elapsedTime_M = $this->GetArrayElem($jdata, 'elapsedTime.1', 0);
-				$elapsedTime = $elapsedTime_H * 60 + $elapsedTime_M;
+                if ($startDelay > 0) {
+                    $startTime = $now + $startDelay;
+                }
+                if ($remainingTime > 0) {
+                    $endTime = $startTime + $remainingTime * 60;
+                }
+                $elapsedTime = 0;
+            } else {
+                $elapsedTime_H = $this->GetArrayElem($jdata, 'elapsedTime.0', 0);
+                $elapsedTime_M = $this->GetArrayElem($jdata, 'elapsedTime.1', 0);
+                $elapsedTime = $elapsedTime_H * 60 + $elapsedTime_M;
 
-				if ($remainingTime > 0) {
-					$endTime = $now + $remainingTime * 60;
-				}
-				if ($elapsedTime > 0) {
-					$startTime = $now - $elapsedTime * 60;
-				}
-			}
-		}	
+                if ($remainingTime > 0) {
+                    $endTime = $now + $remainingTime * 60;
+                }
+                if ($elapsedTime > 0) {
+                    $startTime = $now - $elapsedTime * 60;
+                }
+            }
+        }
 
         $this->SaveValue('ProgramType', $programType, $is_changed);
         $this->SaveValue('ProgramPhase', $programPhase, $is_changed);
