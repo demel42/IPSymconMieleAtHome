@@ -40,8 +40,10 @@ class MieleAtHomeDevice extends IPSModule
         $this->MaintainVariable('ProgramType', $this->Translate('Program'), vtString, '', $vpos++, true);
         $this->MaintainVariable('ProgramPhase', $this->Translate('Phase'), vtString, '', $vpos++, true);
 
+        $this->MaintainVariable('StartTime', $this->Translate('Start at'), vtInteger, '~UnixTimestamp', $vpos++, true);
         $this->MaintainVariable('ElapsedTime', $this->Translate('Elapsed time'), vtInteger, 'MieleAtHome.Duration', $vpos++, true);
         $this->MaintainVariable('RemainingTime', $this->Translate('Remaining time'), vtInteger, 'MieleAtHome.Duration', $vpos++, true);
+        $this->MaintainVariable('EndTime', $this->Translate('End at'), vtInteger, '~UnixTimestamp', $vpos++, true);
 
         switch ($deviceId) {
             case DEVICE_WASHING_MACHINE:	// Waschmaschine
@@ -125,6 +127,7 @@ class MieleAtHomeDevice extends IPSModule
         $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
 
         $off = $this->GetArrayElem($jdata, 'status.value_raw', 0) == 1;
+        $delayed = $this->GetArrayElem($jdata, 'status.value_raw', 0) == 4;
         $is_changed = false;
 
         $status = $this->GetArrayElem($jdata, 'status.value_localized', '');
@@ -133,12 +136,18 @@ class MieleAtHomeDevice extends IPSModule
         $signalFailure = $this->GetArrayElem($jdata, 'signalFailure', false);
         $this->SaveValue('Failure', $signalFailure, $is_changed);
 
+		$dt = new DateTime(date('d.m.Y H:i:00'));
+		$now = $dt->format('U');
+
+		$startTime = 0;
+		$endTime = 0;
+
         if ($off) {
             $programType = '';
             $programPhase = '';
             $remainingTime = 0;
             $elapsedTime = 0;
-        } else {
+		} else {
             $programType = $this->GetArrayElem($jdata, 'programType.value_localized', '');
             if ($programType == '') {
                 $value_raw = $this->GetArrayElem($jdata, 'programType.value_raw', 0);
@@ -149,18 +158,43 @@ class MieleAtHomeDevice extends IPSModule
                 $value_raw = $this->GetArrayElem($jdata, 'programPhase.value_raw', 0);
                 $programPhase = $this->programPhase2text($deviceId, $value_raw);
             }
-            $remainingTime_H = $this->GetArrayElem($jdata, 'remainingTime.0', 0);
-            $remainingTime_M = $this->GetArrayElem($jdata, 'remainingTime.1', 0);
-            $remainingTime = $remainingTime_H * 60 + $remainingTime_M;
-            $elapsedTime_H = $this->GetArrayElem($jdata, 'elapsedTime.0', 0);
-            $elapsedTime_M = $this->GetArrayElem($jdata, 'elapsedTime.1', 0);
-            $elapsedTime = $elapsedTime_H * 60 + $elapsedTime_M;
-        }
+
+			$remainingTime_H = $this->GetArrayElem($jdata, 'remainingTime.0', 0);
+			$remainingTime_M = $this->GetArrayElem($jdata, 'remainingTime.1', 0);
+			$remainingTime = $remainingTime_H * 60 + $remainingTime_M;
+
+			if ($delayed) {
+				$startTime_H = $this->GetArrayElem($jdata, 'startTime.0', 0);
+				$startTime_M = $this->GetArrayElem($jdata, 'startTime.1', 0);
+				$startDelay = ($startTime_H * 60 + $startTime_M) * 60;
+
+				if ($startDelay > 0) {
+					$startTime = $now + $startDelay;
+				}
+				if ($remainingTime > 0) {
+					$endTime = $startTime + $remainingTime * 60;
+				}
+				$elapsedTime = 0;
+			} else {
+				$elapsedTime_H = $this->GetArrayElem($jdata, 'elapsedTime.0', 0);
+				$elapsedTime_M = $this->GetArrayElem($jdata, 'elapsedTime.1', 0);
+				$elapsedTime = $elapsedTime_H * 60 + $elapsedTime_M;
+
+				if ($remainingTime > 0) {
+					$endTime = $now + $remainingTime * 60;
+				}
+				if ($elapsedTime > 0) {
+					$startTime = $now - $elapsedTime * 60;
+				}
+			}
+		}	
 
         $this->SaveValue('ProgramType', $programType, $is_changed);
         $this->SaveValue('ProgramPhase', $programPhase, $is_changed);
         $this->SaveValue('RemainingTime', $remainingTime, $is_changed);
         $this->SaveValue('ElapsedTime', $elapsedTime, $is_changed);
+        $this->SaveValue('StartTime', $startTime, $is_changed);
+        $this->SaveValue('EndTime', $endTime, $is_changed);
 
         switch ($deviceId) {
             case DEVICE_WASHING_MACHINE:
@@ -193,7 +227,7 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         if ($is_changed) {
-            $this->SetValue('LastChange', time());
+            $this->SetValue('LastChange', $now);
         }
     }
 
