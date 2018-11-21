@@ -53,12 +53,12 @@ class MieleAtHomeDevice extends IPSModule
             case DEVICE_CLOTHES_DRYER:		// Trockner
                 $this->MaintainVariable('DryingStep', $this->Translate('Drying step'), vtString, '', $vpos++, true);
                 break;
-			case DEVICE_OVEN:				// Backofen
-				break;
-			case DEVICE_OVEN_MICROWAVE:		// Backofen mit Mikrowelle
-				break;
-			case DEVICE_FRIDGE_FREEZER:		// Küh-/Gefrierkombination
-				break;
+            case DEVICE_OVEN:				// Backofen
+                break;
+            case DEVICE_OVEN_MICROWAVE:		// Backofen mit Mikrowelle
+                break;
+            case DEVICE_FRIDGE_FREEZER:		// Küh-/Gefrierkombination
+                break;
         }
 
         $this->MaintainVariable('LastChange', $this->Translate('last change'), vtInteger, '~UnixTimestamp', $vpos++, true);
@@ -230,13 +230,13 @@ class MieleAtHomeDevice extends IPSModule
                 }
 
                 $this->SaveValue('DryingStep', $dryingStep, $is_changed);
-				break;
-			case DEVICE_OVEN:
-				break;
-			case DEVICE_OVEN_MICROWAVE:
-				break;
-			case DEVICE_FRIDGE_FREEZER:
-				break;
+                break;
+            case DEVICE_OVEN:
+                break;
+            case DEVICE_OVEN_MICROWAVE:
+                break;
+            case DEVICE_FRIDGE_FREEZER:
+                break;
         }
 
         if ($is_changed) {
@@ -257,14 +257,14 @@ class MieleAtHomeDevice extends IPSModule
                 DEVICE_DISHWASHER => [
                     ],
 
-				DEVICE_OVEN => [
-					],
+                DEVICE_OVEN => [
+                    ],
 
-				DEVICE_OVEN_MICROWAVE => [
-					],
+                DEVICE_OVEN_MICROWAVE => [
+                    ],
 
-				DEVICE_FRIDGE_FREEZER => [
-					],
+                DEVICE_FRIDGE_FREEZER => [
+                    ],
             ];
 
         if (isset($type2txt[$model][$type])) {
@@ -341,14 +341,14 @@ class MieleAtHomeDevice extends IPSModule
                     1801 => 'Pre-wash',
                 ],
 
-				DEVICE_OVEN => [
-					],
+                DEVICE_OVEN => [
+                    ],
 
-				DEVICE_OVEN_MICROWAVE => [
-					],
+                DEVICE_OVEN_MICROWAVE => [
+                    ],
 
-				DEVICE_FRIDGE_FREEZER => [
-					],
+                DEVICE_FRIDGE_FREEZER => [
+                    ],
             ];
 
         if (isset($phase2txt[$model][$phase])) {
@@ -373,14 +373,14 @@ class MieleAtHomeDevice extends IPSModule
                 DEVICE_DISHWASHER => [
                     ],
 
-				DEVICE_OVEN => [
-					],
+                DEVICE_OVEN => [
+                    ],
 
-				DEVICE_OVEN_MICROWAVE => [
-					],
+                DEVICE_OVEN_MICROWAVE => [
+                    ],
 
-				DEVICE_FRIDGE_FREEZER => [
-					],
+                DEVICE_FRIDGE_FREEZER => [
+                    ],
             ];
 
         if (isset($step2txt[$model][$step])) {
