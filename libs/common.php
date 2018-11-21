@@ -20,8 +20,10 @@ if (!defined('IS_INVALIDCONFIG')) {
 if (!defined('DEVICE_WASHING_MACHINE')) {
     define('DEVICE_WASHING_MACHINE', 1);
     define('DEVICE_CLOTHES_DRYER', 2);
-    define('DEVICE_DISHWASHER', 0);
-    // Backofen
+    define('DEVICE_DISHWASHER', 7);
+    define('DEVICE_OVEN', 12);
+    define('DEVICE_OVEN_MICROWAVE', 13);
+    define('DEVICE_FRIDGE_FREEZER', 21);
     // Dampfgarer
     // Kochplatte
 }

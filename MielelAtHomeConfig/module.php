@@ -31,13 +31,12 @@ class MieleAtHomeConfig extends IPSModule
         if ($data != '') {
             $devices = json_decode($data, true);
             $this->SendDebug(__FUNCTION__, 'devices=' . print_r($devices, true), 0);
-            foreach ($devices as $device) {
+            foreach ($devices as $fabNumber => $device) {
                 $this->SendDebug(__FUNCTION__, 'device=' . print_r($device, true), 0);
                 $ident = $device['ident'];
 
                 $type = $ident['type']['value_localized'];
                 $name = $ident['deviceName'];
-                $fabNumber = $ident['deviceIdentLabel']['fabNumber'];
 
                 if ($name == '') {
                     $name = $type . ' (#' . $fabNumber . ')';
@@ -114,6 +113,7 @@ class MieleAtHomeConfig extends IPSModule
 
     public function Doit(?string $fabNumber)
     {
+        $this->SendDebug(__FUNCTION__, 'fabNumber=' . $fabNumber, 0);
         if ($fabNumber == '') {
             $this->SetStatus(IS_INVALIDCONFIG);
             echo $this->Translate('no device selected') . PHP_EOL;
@@ -133,20 +133,7 @@ class MieleAtHomeConfig extends IPSModule
         $this->SendDebug(__FUNCTION__, 'device=' . print_r($device, true), 0);
 
         $deviceId = $device['type']['value_raw'];
-        /*
-        switch ($deviceId) {
-            case DEVICE_WASHING_MACHINE:	// Waschmaschine
-            case DEVICE_CLOTHES_DRYER:		// Trockner
-                break;
-            default:
-                echo $this->Translate('unkown device id') . ' ' . $deviceId . ' [' . $deviceType . ']' . PHP_EOL;
-                $this->SetStatus(IS_INVALIDCONFIG);
-                return -1;
-        }
-        */
-
         $deviceType = $device['type']['value_localized'];
-        $fabNumber = $device['deviceIdentLabel']['fabNumber'];
         $techType = $device['deviceIdentLabel']['techType'];
 
         $deviceName = $device['deviceName'];
