@@ -20,6 +20,13 @@
 
 ## 1. Funktionsumfang
 
+Unter dem Begriff _Miele@Home_ wird von Miele die Vernetzung von entsprechend ausgestatteten Haushaltsgeräten angeboten. Zur Vernetzung dienen verscheidenen Protokolle (WLAN, Z-Wave, ...) die dann, ggfs. über einen Gateway, mit einer Cloud von Miele kommunizieren,
+Über diese Clound kann der Benutzer mit der entsprechenden App von Miele den Status der Geräte kontrollieren und in gewissem Umfang steuern.
+
+Unter dem Begriff _Miele@Home-third-party-API_ bietet Mielen einen Zugriff auf diesen Daten an. Zur Zeit (in der Version 1.0) sind nur lesende Zugriffe möglich.
+
+Mit diesem Modul können diese Daten, passend zu den Gerätetypen, in IP⁻Symcon visualisiert werden…
+
 ## 2. Voraussetzungen
 
  - IP-Symcon ab Version 5
@@ -27,6 +34,8 @@
  - Zugangsdaten zu Miele@Home-third-party-API
 
 ## 3. Installation
+
+### a. Laden des Moduls
 
 Die Konsole von IP-Symcon öffnen. Im Objektbaum unter Kerninstanzen die Instanz __*Modules*__ durch einen doppelten Mausklick öffnen.
 
@@ -40,9 +49,38 @@ und mit _OK_ bestätigen.
 
 Anschließend erscheint ein Eintrag für das Modul in der Liste der Instanz _Modules_
 
+### b. Miele-Cloud
+
+Es wird ein Account bei _Miele@Home_ benötigt, das macht man am einfachsten über die App oder legt direkt bei Miele ein Benutzerkonto an.
+Für den Zugriff der auf die _Miele@Home-third-party-API_ benötigt man zusätzliche Zugriffschlüssel; diese bekommn man, indem man eine (formlose) Mail an _developer@miele.com_ schickt (siehe auch _https://www.miele.com/developer_).
+
+### c. Einrichtung I/O-Moduls
+
+In IP-Symcon nun unterhalb von _I/O Instanzen_ die Funktion _Instanz hinzufügen_ (_CTRL+1_) auswählen, als Hersteller _Miele_ und als Gerät _Miele@Home I/O_ auswählen.
+Die geforderten Daten eintragen - wichtig, das Feld _VG-Auswahl_ muss anscheinend dem Land entsprechen, in dem das Gerät betreiebn wird. Dann den Zugriff mit _Zugang prüfen_ testen.
+
+### d. Einrichtung des Konfigurator-Moduls
+
+In IP-Symcon nun unterhalb von _Konfigurator Instanzen_ die Funktion _Instanz hinzufügen_ (_CTRL+1_) auswählen, als Hersteller _Miele_ und als Gerät _Miele@Home Konfigurator_ auswählen.
+Dann in den Auswahlbox das gewünschte Gerät auswählen und _Gerät anlegen_ betätigen.
+Der Versuch, ein bereits eingerichtetes Gerätes erneut anzulegen, führ nicht zu einer weitren Geräte-Instanz…
+
+### e. Einrichtung des Geräte-Moduls
+
+Eine manuelle Einrichtung eines Geräemoduls ist nicht erforderlich, das erfolgt über den Konfigurator.
+In dem Geräte-Modul ist ggfs nur das Abfrage-Intervall anzupassen, die anderen Felder, insbesondere die _Fabrikationsnummer_ (diese ist die Identifikation des Gerätes) und die _Geräte-Typ-ID_ (dies steuert, welche Variablen angelegt werden) müssen unverändert bleiben.
+
+Wichtig: da keine vollständige Dokumentation vorliegt, welche Geräte es gibt bzw. welche Geräte sinnvollerweise welche Variablen füllen, ist die Liste der unterstützten Geräte unvollständig und muss dann im Bedarfsfall erweitert werden.
+
 ## 4. Funktionsreferenz
 
 ## 5. Konfiguration
+
+### a. I/O-Modul
+
+### b. Konfigurator-Modul
+
+### c. Geräte-Modul
 
 ## 6. Anhang
 
