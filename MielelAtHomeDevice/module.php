@@ -21,10 +21,10 @@ class MieleAtHomeDevice extends IPSModule
         $this->CreateVarProfile('MieleAtHome.Temperature', vtInteger, ' °C', 0, 0, 0, 0, 'Temperature');
         $this->CreateVarProfile('MieleAtHome.SpinningSpeed', vtInteger, ' U/min', 0, 0, 0, 0, '');
 
-		$associations = [];
-		$associations[] = ['Wert' => false, 'Name' => $this->Translate('Closed'), 'Farbe' => -1];
-		$associations[] = ['Wert' => true, 'Name' => $this->Translate('Opened'), 'Farbe' => 0xEE0000];
-		$this->CreateVarProfile('MieleAtHome.Door', vtBoolean, '', 0, 0, 0, 1, 'Door', $associations);
+        $associations = [];
+        $associations[] = ['Wert' => false, 'Name' => $this->Translate('Closed'), 'Farbe' => -1];
+        $associations[] = ['Wert' => true, 'Name' => $this->Translate('Opened'), 'Farbe' => 0xEE0000];
+        $this->CreateVarProfile('MieleAtHome.Door', vtBoolean, '', 0, 0, 0, 1, 'Door', $associations);
 
         $this->RegisterTimer('UpdateData', 0, 'MieleAtHomeDevice_UpdateData(' . $this->InstanceID . ');');
 
@@ -48,12 +48,12 @@ class MieleAtHomeDevice extends IPSModule
         switch ($deviceId) {
             case DEVICE_WASHING_MACHINE:	// Waschmaschine
             case DEVICE_CLOTHES_DRYER:		// Trockner
-				$this->MaintainVariable('StartTime', $this->Translate('Start at'), vtInteger, '~UnixTimestamp', $vpos++, true);
-				$this->MaintainVariable('ElapsedTime', $this->Translate('Elapsed time'), vtInteger, 'MieleAtHome.Duration', $vpos++, true);
-				$this->MaintainVariable('RemainingTime', $this->Translate('Remaining time'), vtInteger, 'MieleAtHome.Duration', $vpos++, true);
-				$this->MaintainVariable('EndTime', $this->Translate('End at'), vtInteger, '~UnixTimestamp', $vpos++, true);
-				break;
-		}
+                $this->MaintainVariable('StartTime', $this->Translate('Start at'), vtInteger, '~UnixTimestamp', $vpos++, true);
+                $this->MaintainVariable('ElapsedTime', $this->Translate('Elapsed time'), vtInteger, 'MieleAtHome.Duration', $vpos++, true);
+                $this->MaintainVariable('RemainingTime', $this->Translate('Remaining time'), vtInteger, 'MieleAtHome.Duration', $vpos++, true);
+                $this->MaintainVariable('EndTime', $this->Translate('End at'), vtInteger, '~UnixTimestamp', $vpos++, true);
+                break;
+        }
 
         switch ($deviceId) {
             case DEVICE_WASHING_MACHINE:	// Waschmaschine
@@ -152,10 +152,10 @@ class MieleAtHomeDevice extends IPSModule
         $is_changed = false;
 
         $status = $this->GetArrayElem($jdata, 'status.value_localized', '');
-		if ($status == '') {
-			$value_raw = $this->GetArrayElem($jdata, 'status.value_raw', 0);
-			$status = $this->status2text($deviceId, $value_raw);
-		}
+        if ($status == '') {
+            $value_raw = $this->GetArrayElem($jdata, 'status.value_raw', 0);
+            $status = $this->status2text($deviceId, $value_raw);
+        }
         $this->SaveValue('State', $status, $is_changed);
 
         $signalFailure = $this->GetArrayElem($jdata, 'signalFailure', false);
@@ -220,12 +220,12 @@ class MieleAtHomeDevice extends IPSModule
         switch ($deviceId) {
             case DEVICE_WASHING_MACHINE:
             case DEVICE_CLOTHES_DRYER:
-				$this->SaveValue('RemainingTime', $remainingTime, $is_changed);
-				$this->SaveValue('ElapsedTime', $elapsedTime, $is_changed);
-				$this->SaveValue('StartTime', $startTime, $is_changed);
-				$this->SaveValue('EndTime', $endTime, $is_changed);
-				break;
-		}
+                $this->SaveValue('RemainingTime', $remainingTime, $is_changed);
+                $this->SaveValue('ElapsedTime', $elapsedTime, $is_changed);
+                $this->SaveValue('StartTime', $startTime, $is_changed);
+                $this->SaveValue('EndTime', $endTime, $is_changed);
+                break;
+        }
 
         switch ($deviceId) {
             case DEVICE_WASHING_MACHINE:
@@ -261,29 +261,29 @@ class MieleAtHomeDevice extends IPSModule
             case DEVICE_OVEN_MICROWAVE:
                 break;
             case DEVICE_FRIDGE_FREEZER:
-				$targetTemperature_fridge = $this->GetArrayElem($jdata, 'targetTemperature.0.value_localized', 0);
-				if ($targetTemperature_fridge == -32768) {
-					$targetTemperature_fridge = 0;
-				}
-				$targetTemperature_freezer = $this->GetArrayElem($jdata, 'targetTemperature.1.value_localized', 0);
-				if ($targetTemperature_freezer == -32768) {
-					$targetTemperature_freezer = 0;
-				}
-				$temperature_fridge = $this->GetArrayElem($jdata, 'temperature.0.value_localized', 0);
-				if ($temperature_fridge == -32768) {
-					$temperature_fridge = 0;
-				}
-				$temperature_freezer = $this->GetArrayElem($jdata, 'temperature.1.value_localized', 0);
-				if ($temperature_freezer == -32768) {
-					$temperature_freezer = 0;
-				}
-				$signalDoor = $this->GetArrayElem($jdata, 'signalDoor', false);
+                $targetTemperature_fridge = $this->GetArrayElem($jdata, 'targetTemperature.0.value_localized', 0);
+                if ($targetTemperature_fridge == -32768) {
+                    $targetTemperature_fridge = 0;
+                }
+                $targetTemperature_freezer = $this->GetArrayElem($jdata, 'targetTemperature.1.value_localized', 0);
+                if ($targetTemperature_freezer == -32768) {
+                    $targetTemperature_freezer = 0;
+                }
+                $temperature_fridge = $this->GetArrayElem($jdata, 'temperature.0.value_localized', 0);
+                if ($temperature_fridge == -32768) {
+                    $temperature_fridge = 0;
+                }
+                $temperature_freezer = $this->GetArrayElem($jdata, 'temperature.1.value_localized', 0);
+                if ($temperature_freezer == -32768) {
+                    $temperature_freezer = 0;
+                }
+                $signalDoor = $this->GetArrayElem($jdata, 'signalDoor', false);
 
-				$this->SaveValue('Frigde_TargetTemperature', $targetTemperature_fridge, $is_changed);
-				$this->SaveValue('Frigde_TargetTemperature', $targetTemperature_freezer, $is_changed);
-				$this->SaveValue('Freezer_Temperature', $temperature_fridge, $is_changed);
-				$this->SaveValue('Freezer_Temperature', $temperature_freezer, $is_changed);
-				$this->SaveValue('Door', $signalDoor, $is_changed);
+                $this->SaveValue('Frigde_TargetTemperature', $targetTemperature_fridge, $is_changed);
+                $this->SaveValue('Frigde_TargetTemperature', $targetTemperature_freezer, $is_changed);
+                $this->SaveValue('Freezer_Temperature', $temperature_fridge, $is_changed);
+                $this->SaveValue('Freezer_Temperature', $temperature_freezer, $is_changed);
+                $this->SaveValue('Door', $signalDoor, $is_changed);
                 break;
         }
 
@@ -312,9 +312,9 @@ class MieleAtHomeDevice extends IPSModule
 
                 DEVICE_FRIDGE_FREEZER => [
                         5   => 'operating',
-						13  => 'supercooling',
-						14  => 'superfrost',
-						146 => 'superfrost/cooling',
+                        13  => 'supercooling',
+                        14  => 'superfrost',
+                        146 => 'superfrost/cooling',
                     ],
             ];
 
@@ -325,6 +325,7 @@ class MieleAtHomeDevice extends IPSModule
         }
         return $txt;
     }
+
     private function programType2text($model, $type)
     {
         $type2txt = [
