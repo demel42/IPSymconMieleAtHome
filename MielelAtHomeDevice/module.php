@@ -38,16 +38,16 @@ class MieleAtHomeDevice extends IPSModule
         $deviceId = $this->ReadPropertyInteger('deviceId');
         $deviceType = $this->ReadPropertyString('deviceType');
 
-		// siehe UpdateData()
-		$with_ProgramType = false;
-		$with_ProgramPhase = false;
-		$with_times = false;
-		$with_TargetTemperature = false;
-		$with_SpinningSpeed = false;
-		$with_DryingStep = false;
-		$with_fridge = false;
-		$with_freezer = false;
-		$with_Door = false;
+        // siehe UpdateData()
+        $with_ProgramType = false;
+        $with_ProgramPhase = false;
+        $with_times = false;
+        $with_TargetTemperature = false;
+        $with_SpinningSpeed = false;
+        $with_DryingStep = false;
+        $with_fridge = false;
+        $with_freezer = false;
+        $with_Door = false;
 
         switch ($deviceId) {
             case DEVICE_WASHING_MACHINE:	// Waschmaschine
@@ -60,7 +60,7 @@ class MieleAtHomeDevice extends IPSModule
             case DEVICE_CLOTHES_DRYER:		// Trockner
                 $with_ProgramType = true;
                 $with_ProgramPhase = true;
-				$with_times = true;
+                $with_times = true;
                 $with_DryingStep = true;
                 break;
             case DEVICE_OVEN:				// Backofen
@@ -79,28 +79,28 @@ class MieleAtHomeDevice extends IPSModule
         $this->MaintainVariable('State', $this->Translate('State'), vtString, '', $vpos++, true);
         $this->MaintainVariable('Failure', $this->Translate('Failure'), vtBoolean, 'Alert', $vpos++, true);
 
-		$this->MaintainVariable('ProgramType', $this->Translate('Program'), vtString, '', $vpos++, $with_ProgramType);
+        $this->MaintainVariable('ProgramType', $this->Translate('Program'), vtString, '', $vpos++, $with_ProgramType);
 
-		$this->MaintainVariable('ProgramPhase', $this->Translate('Phase'), vtString, '', $vpos++, $with_ProgramPhase);
+        $this->MaintainVariable('ProgramPhase', $this->Translate('Phase'), vtString, '', $vpos++, $with_ProgramPhase);
 
-		$this->MaintainVariable('StartTime', $this->Translate('Start at'), vtInteger, '~UnixTimestamp', $vpos++, $with_times);
-		$this->MaintainVariable('ElapsedTime', $this->Translate('Elapsed time'), vtInteger, 'MieleAtHome.Duration', $vpos++, $with_times);
-		$this->MaintainVariable('RemainingTime', $this->Translate('Remaining time'), vtInteger, 'MieleAtHome.Duration', $vpos++, $with_times);
-		$this->MaintainVariable('EndTime', $this->Translate('End at'), vtInteger, '~UnixTimestamp', $vpos++, $with_times);
+        $this->MaintainVariable('StartTime', $this->Translate('Start at'), vtInteger, '~UnixTimestamp', $vpos++, $with_times);
+        $this->MaintainVariable('ElapsedTime', $this->Translate('Elapsed time'), vtInteger, 'MieleAtHome.Duration', $vpos++, $with_times);
+        $this->MaintainVariable('RemainingTime', $this->Translate('Remaining time'), vtInteger, 'MieleAtHome.Duration', $vpos++, $with_times);
+        $this->MaintainVariable('EndTime', $this->Translate('End at'), vtInteger, '~UnixTimestamp', $vpos++, $with_times);
 
-		$this->MaintainVariable('TargetTemperature', $this->Translate('Temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with_TargetTemperature);
+        $this->MaintainVariable('TargetTemperature', $this->Translate('Temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with_TargetTemperature);
 
-		$this->MaintainVariable('SpinningSpeed', $this->Translate('Spinning speed'), vtInteger, 'MieleAtHome.SpinningSpeed', $vpos++, $with_SpinningSpeed);
+        $this->MaintainVariable('SpinningSpeed', $this->Translate('Spinning speed'), vtInteger, 'MieleAtHome.SpinningSpeed', $vpos++, $with_SpinningSpeed);
 
-		$this->MaintainVariable('DryingStep', $this->Translate('Drying step'), vtString, '', $vpos++, $with_DryingStep);
+        $this->MaintainVariable('DryingStep', $this->Translate('Drying step'), vtString, '', $vpos++, $with_DryingStep);
 
-		$this->MaintainVariable('Fridge_TargetTemperature', $this->Translate('Fridge: target temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with_fridge);
-		$this->MaintainVariable('Fridge_Temperature', $this->Translate('Fridge: temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with_fridge);
+        $this->MaintainVariable('Fridge_TargetTemperature', $this->Translate('Fridge: target temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with_fridge);
+        $this->MaintainVariable('Fridge_Temperature', $this->Translate('Fridge: temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with_fridge);
 
-		$this->MaintainVariable('Freezer_TargetTemperature', $this->Translate('Freezer: target temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with_freezer);
-		$this->MaintainVariable('Freezer_Temperature', $this->Translate('Freezer: temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with_freezer);
+        $this->MaintainVariable('Freezer_TargetTemperature', $this->Translate('Freezer: target temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with_freezer);
+        $this->MaintainVariable('Freezer_Temperature', $this->Translate('Freezer: temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with_freezer);
 
-		$this->MaintainVariable('Door', $this->Translate('Door'), vtBoolean, 'MieleAtHome.Door', $vpos++, $with_Door);
+        $this->MaintainVariable('Door', $this->Translate('Door'), vtBoolean, 'MieleAtHome.Door', $vpos++, $with_Door);
 
         $vpos = 100;
         $this->MaintainVariable('LastChange', $this->Translate('last change'), vtInteger, '~UnixTimestamp', $vpos++, true);
@@ -176,16 +176,16 @@ class MieleAtHomeDevice extends IPSModule
             return;
         }
 
-		// siehe ApplyChanges()
-		$with_ProgramType = false;
-		$with_ProgramPhase = false;
-		$with_times = false;
-		$with_TargetTemperature = false;
-		$with_SpinningSpeed = false;
-		$with_DryingStep = false;
-		$with_fridge = false;
-		$with_freezer = false;
-		$with_Door = false;
+        // siehe ApplyChanges()
+        $with_ProgramType = false;
+        $with_ProgramPhase = false;
+        $with_times = false;
+        $with_TargetTemperature = false;
+        $with_SpinningSpeed = false;
+        $with_DryingStep = false;
+        $with_fridge = false;
+        $with_freezer = false;
+        $with_Door = false;
 
         switch ($deviceId) {
             case DEVICE_WASHING_MACHINE:	// Waschmaschine
@@ -198,7 +198,7 @@ class MieleAtHomeDevice extends IPSModule
             case DEVICE_CLOTHES_DRYER:		// Trockner
                 $with_ProgramType = true;
                 $with_ProgramPhase = true;
-				$with_times = true;
+                $with_times = true;
                 $with_DryingStep = true;
                 break;
             case DEVICE_OVEN:				// Backofen
@@ -211,7 +211,6 @@ class MieleAtHomeDevice extends IPSModule
                 $with_Door = true;
                 break;
         }
-
 
         $off = $this->GetArrayElem($jdata, 'status.value_raw', 0) == 1;
         $delayed = $this->GetArrayElem($jdata, 'status.value_raw', 0) == 4;
@@ -233,137 +232,137 @@ class MieleAtHomeDevice extends IPSModule
         $startTime = 0;
         $endTime = 0;
 
-		if ($with_ProgramType) {
-			if ($off) {
-				$programType = '';
-			} else {
-				$programType = $this->GetArrayElem($jdata, 'programType.value_localized', '');
-				if ($programType == '') {
-					$value_raw = $this->GetArrayElem($jdata, 'programType.value_raw', 0);
-					$programType = $this->programType2text($deviceId, $value_raw);
-				}
-			}
-			$this->SaveValue('ProgramType', $programType, $is_changed);
-		}
-
-		if ($with_ProgramPhase) {
-			if ($off) {
-				$programPhase = '';
-			} else {
-				$programPhase = $this->GetArrayElem($jdata, 'programPhase.value_localized', '');
-				if ($programPhase == '') {
-					$value_raw = $this->GetArrayElem($jdata, 'programPhase.value_raw', 0);
-					$programPhase = $this->programPhase2text($deviceId, $value_raw);
-				}
-			}
-			$this->SaveValue('ProgramPhase', $programPhase, $is_changed);
-		}
-
-		if ($with_times) {
-			if ($off) {
-				$remainingTime = 0;
-				$elapsedTime = 0;
-			} else {
-				$remainingTime_H = $this->GetArrayElem($jdata, 'remainingTime.0', 0);
-				$remainingTime_M = $this->GetArrayElem($jdata, 'remainingTime.1', 0);
-				$remainingTime = $remainingTime_H * 60 + $remainingTime_M;
-
-				if ($delayed) {
-					$startTime_H = $this->GetArrayElem($jdata, 'startTime.0', 0);
-					$startTime_M = $this->GetArrayElem($jdata, 'startTime.1', 0);
-					$startDelay = ($startTime_H * 60 + $startTime_M) * 60;
-
-					if ($startDelay > 0) {
-						$startTime = $now + $startDelay;
-					}
-					if ($remainingTime > 0) {
-						$endTime = $startTime + $remainingTime * 60;
-					}
-					$elapsedTime = 0;
-				} else {
-					$elapsedTime_H = $this->GetArrayElem($jdata, 'elapsedTime.0', 0);
-					$elapsedTime_M = $this->GetArrayElem($jdata, 'elapsedTime.1', 0);
-					$elapsedTime = $elapsedTime_H * 60 + $elapsedTime_M;
-
-					if ($remainingTime > 0) {
-						$endTime = $now + $remainingTime * 60;
-					}
-					if ($elapsedTime > 0) {
-						$startTime = $now - $elapsedTime * 60;
-					}
-				}
-			}
-			$this->SaveValue('RemainingTime', $remainingTime, $is_changed);
-			$this->SaveValue('ElapsedTime', $elapsedTime, $is_changed);
-			$this->SaveValue('StartTime', $startTime, $is_changed);
-			$this->SaveValue('EndTime', $endTime, $is_changed);
+        if ($with_ProgramType) {
+            if ($off) {
+                $programType = '';
+            } else {
+                $programType = $this->GetArrayElem($jdata, 'programType.value_localized', '');
+                if ($programType == '') {
+                    $value_raw = $this->GetArrayElem($jdata, 'programType.value_raw', 0);
+                    $programType = $this->programType2text($deviceId, $value_raw);
+                }
+            }
+            $this->SaveValue('ProgramType', $programType, $is_changed);
         }
 
-		if ($with_TargetTemperature) {
-			if ($off) {
-				$targetTemperature = 0;
-			} else {
-				$targetTemperature = $this->GetArrayElem($jdata, 'targetTemperature.0.value_localized', 0);
-				if ($targetTemperature == -32768) {
-					$targetTemperature = 0;
-				}
-			}
-			$this->SaveValue('TargetTemperature', $targetTemperature, $is_changed);
-		}
+        if ($with_ProgramPhase) {
+            if ($off) {
+                $programPhase = '';
+            } else {
+                $programPhase = $this->GetArrayElem($jdata, 'programPhase.value_localized', '');
+                if ($programPhase == '') {
+                    $value_raw = $this->GetArrayElem($jdata, 'programPhase.value_raw', 0);
+                    $programPhase = $this->programPhase2text($deviceId, $value_raw);
+                }
+            }
+            $this->SaveValue('ProgramPhase', $programPhase, $is_changed);
+        }
 
-		if ($with_SpinningSpeed) {
-			if ($off) {
-				$spinningSpeed = 0;
-			} else {
-				$spinningSpeed = $this->GetArrayElem($jdata, 'spinningSpeed', 0);
-			}
-			$this->SaveValue('SpinningSpeed', $spinningSpeed, $is_changed);
-		}
+        if ($with_times) {
+            if ($off) {
+                $remainingTime = 0;
+                $elapsedTime = 0;
+            } else {
+                $remainingTime_H = $this->GetArrayElem($jdata, 'remainingTime.0', 0);
+                $remainingTime_M = $this->GetArrayElem($jdata, 'remainingTime.1', 0);
+                $remainingTime = $remainingTime_H * 60 + $remainingTime_M;
 
-		if ($with_DryingStep) {
-			if ($off) {
-				$dryingStep = '';
-			} else {
-				$dryingStep = $this->GetArrayElem($jdata, 'dryingStep.value_localized', '');
-				if ($dryingStep == '') {
-					$value_raw = $this->GetArrayElem($jdata, 'programPhase.value_raw', 0);
-					$dryingStep = $this->dryingStep2text($deviceId, $value_raw);
-				}
-			}
-			$this->SaveValue('DryingStep', $dryingStep, $is_changed);
-		}
+                if ($delayed) {
+                    $startTime_H = $this->GetArrayElem($jdata, 'startTime.0', 0);
+                    $startTime_M = $this->GetArrayElem($jdata, 'startTime.1', 0);
+                    $startDelay = ($startTime_H * 60 + $startTime_M) * 60;
 
-		if ($with_fridge) {
-			$targetTemperature_fridge = $this->GetArrayElem($jdata, 'targetTemperature.0.value_localized', 0);
-			if ($targetTemperature_fridge == -32768) {
-				$targetTemperature_fridge = 0;
-			}
-			$this->SaveValue('Fridge_TargetTemperature', $targetTemperature_fridge, $is_changed);
+                    if ($startDelay > 0) {
+                        $startTime = $now + $startDelay;
+                    }
+                    if ($remainingTime > 0) {
+                        $endTime = $startTime + $remainingTime * 60;
+                    }
+                    $elapsedTime = 0;
+                } else {
+                    $elapsedTime_H = $this->GetArrayElem($jdata, 'elapsedTime.0', 0);
+                    $elapsedTime_M = $this->GetArrayElem($jdata, 'elapsedTime.1', 0);
+                    $elapsedTime = $elapsedTime_H * 60 + $elapsedTime_M;
 
-			$temperature_fridge = $this->GetArrayElem($jdata, 'temperature.0.value_localized', 0);
-			if ($temperature_fridge == -32768) {
-				$temperature_fridge = 0;
-			}
-			$this->SaveValue('Fridge_Temperature', $temperature_fridge, $is_changed);
-		}
+                    if ($remainingTime > 0) {
+                        $endTime = $now + $remainingTime * 60;
+                    }
+                    if ($elapsedTime > 0) {
+                        $startTime = $now - $elapsedTime * 60;
+                    }
+                }
+            }
+            $this->SaveValue('RemainingTime', $remainingTime, $is_changed);
+            $this->SaveValue('ElapsedTime', $elapsedTime, $is_changed);
+            $this->SaveValue('StartTime', $startTime, $is_changed);
+            $this->SaveValue('EndTime', $endTime, $is_changed);
+        }
 
-		if ($with_freezer) {
-			$targetTemperature_freezer = $this->GetArrayElem($jdata, 'targetTemperature.1.value_localized', 0);
-			if ($targetTemperature_freezer == -32768) {
-				$targetTemperature_freezer = 0;
-			}
-			$this->SaveValue('Freezer_TargetTemperature', $targetTemperature_freezer, $is_changed);
+        if ($with_TargetTemperature) {
+            if ($off) {
+                $targetTemperature = 0;
+            } else {
+                $targetTemperature = $this->GetArrayElem($jdata, 'targetTemperature.0.value_localized', 0);
+                if ($targetTemperature == -32768) {
+                    $targetTemperature = 0;
+                }
+            }
+            $this->SaveValue('TargetTemperature', $targetTemperature, $is_changed);
+        }
 
-			$temperature_freezer = $this->GetArrayElem($jdata, 'temperature.1.value_localized', 0);
-			if ($temperature_freezer == -32768) {
-				$temperature_freezer = 0;
-			}
-			$this->SaveValue('Freezer_Temperature', $temperature_freezer, $is_changed);
-		}
+        if ($with_SpinningSpeed) {
+            if ($off) {
+                $spinningSpeed = 0;
+            } else {
+                $spinningSpeed = $this->GetArrayElem($jdata, 'spinningSpeed', 0);
+            }
+            $this->SaveValue('SpinningSpeed', $spinningSpeed, $is_changed);
+        }
 
-		if ($with_Door) {
-			$signalDoor = $this->GetArrayElem($jdata, 'signalDoor', false);
-			$this->SaveValue('Door', $signalDoor, $is_changed);
+        if ($with_DryingStep) {
+            if ($off) {
+                $dryingStep = '';
+            } else {
+                $dryingStep = $this->GetArrayElem($jdata, 'dryingStep.value_localized', '');
+                if ($dryingStep == '') {
+                    $value_raw = $this->GetArrayElem($jdata, 'programPhase.value_raw', 0);
+                    $dryingStep = $this->dryingStep2text($deviceId, $value_raw);
+                }
+            }
+            $this->SaveValue('DryingStep', $dryingStep, $is_changed);
+        }
+
+        if ($with_fridge) {
+            $targetTemperature_fridge = $this->GetArrayElem($jdata, 'targetTemperature.0.value_localized', 0);
+            if ($targetTemperature_fridge == -32768) {
+                $targetTemperature_fridge = 0;
+            }
+            $this->SaveValue('Fridge_TargetTemperature', $targetTemperature_fridge, $is_changed);
+
+            $temperature_fridge = $this->GetArrayElem($jdata, 'temperature.0.value_localized', 0);
+            if ($temperature_fridge == -32768) {
+                $temperature_fridge = 0;
+            }
+            $this->SaveValue('Fridge_Temperature', $temperature_fridge, $is_changed);
+        }
+
+        if ($with_freezer) {
+            $targetTemperature_freezer = $this->GetArrayElem($jdata, 'targetTemperature.1.value_localized', 0);
+            if ($targetTemperature_freezer == -32768) {
+                $targetTemperature_freezer = 0;
+            }
+            $this->SaveValue('Freezer_TargetTemperature', $targetTemperature_freezer, $is_changed);
+
+            $temperature_freezer = $this->GetArrayElem($jdata, 'temperature.1.value_localized', 0);
+            if ($temperature_freezer == -32768) {
+                $temperature_freezer = 0;
+            }
+            $this->SaveValue('Freezer_Temperature', $temperature_freezer, $is_changed);
+        }
+
+        if ($with_Door) {
+            $signalDoor = $this->GetArrayElem($jdata, 'signalDoor', false);
+            $this->SaveValue('Door', $signalDoor, $is_changed);
         }
 
         if ($is_changed) {
