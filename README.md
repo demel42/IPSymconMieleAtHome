@@ -78,9 +78,56 @@ Wichtig: da keine vollständige Dokumentation vorliegt, welche Geräte es gibt b
 
 ### a. I/O-Modul
 
+#### Variablen
+
+| Eigenschaft               | Typ      | Standardwert | Beschreibung |
+| :-----------------------: | :-----:  | :----------: | :----------: |
+| Benutzer (EMail)          | string   |              | Miele@Home-Konto: Benutzerkennung |
+| Passwort                  | string   |              | Miele@Home-Konto: Passwort |
+| Client-ID                 | string   |              | Miele@Home API-Zugangsdaten: Client-ID |
+| Client-Secret             | string   |              | Miele@Home API-Zugangsdaten: Client-Secret |
+| VG-Selector               | string   |              | Bedenutung unklar, muss anscheinend auf dem Wert des Landes stehen, wo das Gerät gekauft/betrieben wird |
+| Sprache                   | string   |              | Sprache von Text-Ausgaben der API |
+
+#### Schaltflächen
+
+| Bezeichnung                  | Beschreibung |
+| :--------------------------: | :----------: |
+| Zugang prüfen                | Prüft, ob die Angabe korrekt sind |
+
+Test access
+
 ### b. Konfigurator-Modul
 
+| Eigenschaft               | Typ      | Standardwert | Beschreibung |
+| :-----------------------: | :-----:  | :----------: | :----------: |
+| Gerät                     |          |              | Auswahlliste der Geräte des angegebenen Miele-Kontos |
+
+| Bezeichnung                  | Beschreibung |
+| :--------------------------: | :----------: |
+| Gerät anlegen                | Erzeugt/Aktualisiert die Geräte-Instanz des ausgewählte Gerätes |
+
 ### c. Geräte-Modul
+
+| Eigenschaft               | Typ      | Standardwert | Beschreibung |
+| :-----------------------: | :-----:  | :----------: | :----------: |
+| Geräete-Typ-ID            | integer  |              | wird im Konfigurator gesetzt und darf nicht geändert werden, bestimmte die auszugebenden Felder |
+| Geräte-Typ                | string   |              | wird im Konfigurator gesetzt |
+| Fabrikationsnummer        | string   |              | wird im Konfigurator gesetzt und darf nicht geändert werden |
+| Modell                    | string   |              | wird im Konfigurator gesetzt |
+| Update-Intervall          | integer  |              | Intervall der Datenabfrage in Sekunden |
+
+| Bezeichnung                  | Beschreibung |
+| :--------------------------: | :----------: |
+| Daten aktualisieren          | Abfrage der aktuellen Daten |
+
+### Variablenprofile
+
+* Boolean<br>
+MieleAtHome.Door
+
+* Integer<br>
+MieleAtHome.Duration, MieleAtHome.Temperature, MieleAtHome.SpinningSpeed
 
 ## 6. Anhang
 
