@@ -45,8 +45,8 @@ class MieleAtHomeDevice extends IPSModule
 
         switch ($deviceId) {
             case DEVICE_WASHING_MACHINE:	// Waschmaschine
-				$this->MaintainVariable('ProgramType', $this->Translate('Program'), vtString, '', $vpos++, true);
-				$this->MaintainVariable('ProgramPhase', $this->Translate('Phase'), vtString, '', $vpos++, true);
+                $this->MaintainVariable('ProgramType', $this->Translate('Program'), vtString, '', $vpos++, true);
+                $this->MaintainVariable('ProgramPhase', $this->Translate('Phase'), vtString, '', $vpos++, true);
                 $this->MaintainVariable('StartTime', $this->Translate('Start at'), vtInteger, '~UnixTimestamp', $vpos++, true);
                 $this->MaintainVariable('ElapsedTime', $this->Translate('Elapsed time'), vtInteger, 'MieleAtHome.Duration', $vpos++, true);
                 $this->MaintainVariable('RemainingTime', $this->Translate('Remaining time'), vtInteger, 'MieleAtHome.Duration', $vpos++, true);
@@ -55,8 +55,8 @@ class MieleAtHomeDevice extends IPSModule
                 $this->MaintainVariable('SpinningSpeed', $this->Translate('Spinning speed'), vtInteger, 'MieleAtHome.SpinningSpeed', $vpos++, true);
                 break;
             case DEVICE_CLOTHES_DRYER:		// Trockner
-				$this->MaintainVariable('ProgramType', $this->Translate('Program'), vtString, '', $vpos++, true);
-				$this->MaintainVariable('ProgramPhase', $this->Translate('Phase'), vtString, '', $vpos++, true);
+                $this->MaintainVariable('ProgramType', $this->Translate('Program'), vtString, '', $vpos++, true);
+                $this->MaintainVariable('ProgramPhase', $this->Translate('Phase'), vtString, '', $vpos++, true);
                 $this->MaintainVariable('StartTime', $this->Translate('Start at'), vtInteger, '~UnixTimestamp', $vpos++, true);
                 $this->MaintainVariable('ElapsedTime', $this->Translate('Elapsed time'), vtInteger, 'MieleAtHome.Duration', $vpos++, true);
                 $this->MaintainVariable('RemainingTime', $this->Translate('Remaining time'), vtInteger, 'MieleAtHome.Duration', $vpos++, true);
@@ -76,7 +76,7 @@ class MieleAtHomeDevice extends IPSModule
                 break;
         }
 
-		$vpos = 100;
+        $vpos = 100;
         $this->MaintainVariable('LastChange', $this->Translate('last change'), vtInteger, '~UnixTimestamp', $vpos++, true);
 
         $techType = $this->ReadPropertyString('techType');
@@ -136,8 +136,8 @@ class MieleAtHomeDevice extends IPSModule
         $fabNumber = $this->ReadPropertyString('fabNumber');
         $deviceId = $this->ReadPropertyInteger('deviceId');
 
-		$SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDeviceStatus', 'Ident' => $fabNumber];
-		$data = $this->SendDataToParent(json_encode($SendData));
+        $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDeviceStatus', 'Ident' => $fabNumber];
+        $data = $this->SendDataToParent(json_encode($SendData));
 
         $this->SendDebug(__FUNCTION__, 'data=' . $data, 0);
         if ($data == '') {
@@ -230,12 +230,12 @@ class MieleAtHomeDevice extends IPSModule
                     $spinningSpeed = $this->GetArrayElem($jdata, 'spinningSpeed', 0);
                 }
 
-				$this->SaveValue('ProgramType', $programType, $is_changed);
-				$this->SaveValue('ProgramPhase', $programPhase, $is_changed);
-				$this->SaveValue('RemainingTime', $remainingTime, $is_changed);
-				$this->SaveValue('ElapsedTime', $elapsedTime, $is_changed);
-				$this->SaveValue('StartTime', $startTime, $is_changed);
-				$this->SaveValue('EndTime', $endTime, $is_changed);
+                $this->SaveValue('ProgramType', $programType, $is_changed);
+                $this->SaveValue('ProgramPhase', $programPhase, $is_changed);
+                $this->SaveValue('RemainingTime', $remainingTime, $is_changed);
+                $this->SaveValue('ElapsedTime', $elapsedTime, $is_changed);
+                $this->SaveValue('StartTime', $startTime, $is_changed);
+                $this->SaveValue('EndTime', $endTime, $is_changed);
                 $this->SaveValue('TargetTemperature', $targetTemperature, $is_changed);
                 $this->SaveValue('SpinningSpeed', $spinningSpeed, $is_changed);
                 break;
@@ -250,12 +250,12 @@ class MieleAtHomeDevice extends IPSModule
                     }
                 }
 
-				$this->SaveValue('ProgramType', $programType, $is_changed);
-				$this->SaveValue('ProgramPhase', $programPhase, $is_changed);
-				$this->SaveValue('RemainingTime', $remainingTime, $is_changed);
-				$this->SaveValue('ElapsedTime', $elapsedTime, $is_changed);
-				$this->SaveValue('StartTime', $startTime, $is_changed);
-				$this->SaveValue('EndTime', $endTime, $is_changed);
+                $this->SaveValue('ProgramType', $programType, $is_changed);
+                $this->SaveValue('ProgramPhase', $programPhase, $is_changed);
+                $this->SaveValue('RemainingTime', $remainingTime, $is_changed);
+                $this->SaveValue('ElapsedTime', $elapsedTime, $is_changed);
+                $this->SaveValue('StartTime', $startTime, $is_changed);
+                $this->SaveValue('EndTime', $endTime, $is_changed);
                 $this->SaveValue('DryingStep', $dryingStep, $is_changed);
                 break;
             case DEVICE_OVEN:
