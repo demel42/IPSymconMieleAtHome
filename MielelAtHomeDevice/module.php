@@ -62,6 +62,11 @@ class MieleAtHomeDevice extends IPSModule
                 $with_ProgramPhase = true;
                 $with_times = true;
                 $with_DryingStep = true;
+                brea;
+			case DEVICE_DISHWASHER:			// Geschirrspüler
+                $with_ProgramType = true;
+                $with_ProgramPhase = true;
+                $with_times = true;
                 break;
             case DEVICE_OVEN:				// Backofen
                 break;
@@ -201,6 +206,11 @@ class MieleAtHomeDevice extends IPSModule
                 $with_times = true;
                 $with_DryingStep = true;
                 break;
+			case DEVICE_DISHWASHER:			// Geschirrspüler
+                $with_ProgramType = true;
+                $with_ProgramPhase = true;
+                $with_times = true;
+                break;
             case DEVICE_OVEN:				// Backofen
                 break;
             case DEVICE_OVEN_MICROWAVE:		// Backofen mit Mikrowelle
@@ -262,6 +272,8 @@ class MieleAtHomeDevice extends IPSModule
             if ($off) {
                 $remainingTime = 0;
                 $elapsedTime = 0;
+                $startTime = 0;
+                $endTime = 0;
             } else {
                 $remainingTime_H = $this->GetArrayElem($jdata, 'remainingTime.0', 0);
                 $remainingTime_M = $this->GetArrayElem($jdata, 'remainingTime.1', 0);
@@ -408,6 +420,7 @@ class MieleAtHomeDevice extends IPSModule
     {
         $type2txt = [
                 DEVICE_WASHING_MACHINE => [
+                        1 => 'Cotton',
                     ],
 
                 DEVICE_CLOTHES_DRYER => [
@@ -415,6 +428,7 @@ class MieleAtHomeDevice extends IPSModule
                     ],
 
                 DEVICE_DISHWASHER => [
+                        2 => 'Intensiv'
                     ],
 
                 DEVICE_OVEN => [
@@ -523,7 +537,6 @@ class MieleAtHomeDevice extends IPSModule
     {
         $step2xt = [
                 DEVICE_WASHING_MACHINE => [
-                        1 => 'Cotton',
                     ],
 
                 DEVICE_CLOTHES_DRYER => [
