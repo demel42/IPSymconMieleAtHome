@@ -5,6 +5,11 @@
 			"Device type": "Geräte-Typ",
 			"Fabrication number": "Fabrikationsnummer",
 			"Model": "Modell",
+			"mapping code to text of field ...": "Status-Code selbst in Text umsetzen von Feld ...",
+			" ... Status": " ... Status",
+			" ... Program": " ... Programm",
+			" ... Phase": " ... Phase",
+			" ... Drying step": " ... Trockenstufe",
 			"Update data every X seconds": "Daten alle X Sekunden aktualisieren",
 			"Seconds": "Sekunden",
 
@@ -16,9 +21,9 @@
 			"Elapsed time": "verstrichene Zeit",
 			"End at": "Ende um",
 			"Failure": "Fehler",
-			"Freezer: target temperature": "Gefrierschrank: Zieltemperatur",
+			"Freezer: target temperature": "Gefrierschrank: Soll-Temperatur",
 			"Freezer: temperature": "Gefrierschrank: Temperatur",
-			"Fridge: target temperature": "Kühlschrank: Zieltemperatur",
+			"Fridge: target temperature": "Kühlschrank: Soll-Temperatur",
 			"Fridge: temperature": "Kühlschrank: Temperatur",
 			"Phase": "Phase",
 			"Program": "Programm",
@@ -26,6 +31,7 @@
 			"Spinning speed": "Drehzahl",
 			"Start at": "Start um",
 			"State": "Status",
+			"Target temperature": "Soll-Temperatur",
 			"Temperature": "Temperatur",
 
 			"last change": "letzte Änderung",
@@ -74,6 +80,11 @@
 			"Timed drying": "Zeitgesteuertes trocknen",
 			"Venting": "Entlüften",
 			"Warm air": "Warme Luft",
+
+			"Normal operation mode": "Normalbetrieb",
+			"Own program": "Eigenes Programm",
+			"Automatic program": "Automatik-Programm",
+			"Cleaning-/Care program": "Reinigungs/Pflege-Programm",
 
 			"unknown value": "unbekannter Wert",
 

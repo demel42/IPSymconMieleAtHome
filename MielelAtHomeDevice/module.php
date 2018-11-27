@@ -17,6 +17,11 @@ class MieleAtHomeDevice extends IPSModule
 
         $this->RegisterPropertyInteger('update_interval', 60);
 
+        $this->RegisterPropertyBoolean('map_status', false);
+        $this->RegisterPropertyBoolean('map_programType', false);
+        $this->RegisterPropertyBoolean('map_programPhase', false);
+        $this->RegisterPropertyBoolean('map_dryingStep', false);
+
         $this->CreateVarProfile('MieleAtHome.Duration', vtInteger, ' min', 0, 0, 0, 0, 'Hourglass');
         $this->CreateVarProfile('MieleAtHome.Temperature', vtInteger, ' °C', 0, 0, 0, 0, 'Temperature');
         $this->CreateVarProfile('MieleAtHome.SpinningSpeed', vtInteger, ' U/min', 0, 0, 0, 0, '');
@@ -31,6 +36,58 @@ class MieleAtHomeDevice extends IPSModule
         $this->ConnectParent('{996743FB-1712-47A3-9174-858A08A13523}');
     }
 
+	private function device2with($deviceId) 
+	{
+		$with['ProgramType'] = false;
+		$with['ProgramPhase'] = false;
+		$with['times'] = false;
+		$with['wash_temp'] = false;
+		$with['SpinningSpeed'] = false;
+		$with['DryingStep'] = false;
+		$with['oven_temp'] = false;
+		$with['fridge_temp'] = false;
+		$with['freezer_temp'] = false;
+		$with['Door'] = false;
+
+		switch ($deviceId) {
+			case DEVICE_WASHING_MACHINE:    // Waschmaschine
+				$with['ProgramType'] = true;
+				$with['ProgramPhase'] = true;
+				$with['times'] = true;
+				$with['wash_temp'] = true;
+				$with['SpinningSpeed'] = true;
+				break;
+			case DEVICE_CLOTHES_DRYER:      // Trockner
+				$with['ProgramType'] = true;
+				$with['ProgramPhase'] = true;
+				$with['times'] = true;
+				$with['DryingStep'] = true;
+				brea;
+			case DEVICE_DISHWASHER:         // Geschirrspüler
+				$with['ProgramType'] = true;
+				$with['ProgramPhase'] = true;
+				$with['times'] = true;
+				break;
+			case DEVICE_OVEN:               // Backofen
+				$with['ProgramType'] = true;
+				$with['ProgramPhase'] = true;
+				$with['times'] = true;
+				$with['oven_temp'] = true;
+				break;
+			case DEVICE_OVEN_MICROWAVE:     // Backofen mit Mikrowelle
+				$with['ProgramType'] = true;
+				$with['ProgramPhase'] = true;
+				$with['times'] = true;
+				break;
+			case DEVICE_FRIDGE_FREEZER:     // Küh-/Gefrierkombination
+				$with['fridge_temp'] = true;
+				$with['freezer_temp'] = true;
+				$with['Door'] = true;
+				break;
+		}
+		return $with;
+	}
+
     public function ApplyChanges()
     {
         parent::ApplyChanges();
@@ -38,74 +95,40 @@ class MieleAtHomeDevice extends IPSModule
         $deviceId = $this->ReadPropertyInteger('deviceId');
         $deviceType = $this->ReadPropertyString('deviceType');
 
-        // siehe UpdateData()
-        $with_ProgramType = false;
-        $with_ProgramPhase = false;
-        $with_times = false;
-        $with_TargetTemperature = false;
-        $with_SpinningSpeed = false;
-        $with_DryingStep = false;
-        $with_fridge = false;
-        $with_freezer = false;
-        $with_Door = false;
+		$with = $this->device2with($deviceId);
 
-        switch ($deviceId) {
-            case DEVICE_WASHING_MACHINE:	// Waschmaschine
-                $with_ProgramType = true;
-                $with_ProgramPhase = true;
-                $with_times = true;
-                $with_TargetTemperature = true;
-                $with_SpinningSpeed = true;
-                break;
-            case DEVICE_CLOTHES_DRYER:		// Trockner
-                $with_ProgramType = true;
-                $with_ProgramPhase = true;
-                $with_times = true;
-                $with_DryingStep = true;
-                brea;
-            case DEVICE_DISHWASHER:			// Geschirrspüler
-                $with_ProgramType = true;
-                $with_ProgramPhase = true;
-                $with_times = true;
-                break;
-            case DEVICE_OVEN:				// Backofen
-                break;
-            case DEVICE_OVEN_MICROWAVE:		// Backofen mit Mikrowelle
-                break;
-            case DEVICE_FRIDGE_FREEZER:		// Küh-/Gefrierkombination
-                $with_fridge = true;
-                $with_freezer = true;
-                $with_Door = true;
-                break;
-        }
+		$this->SendDebug(__FUNCTION__, 'with=' . print_r($with, true), 0);
 
         $vpos = 1;
 
         $this->MaintainVariable('State', $this->Translate('State'), vtString, '', $vpos++, true);
         $this->MaintainVariable('Failure', $this->Translate('Failure'), vtBoolean, 'Alert', $vpos++, true);
 
-        $this->MaintainVariable('ProgramType', $this->Translate('Program'), vtString, '', $vpos++, $with_ProgramType);
+        $this->MaintainVariable('ProgramType', $this->Translate('Program'), vtString, '', $vpos++, $with['ProgramType']);
 
-        $this->MaintainVariable('ProgramPhase', $this->Translate('Phase'), vtString, '', $vpos++, $with_ProgramPhase);
+        $this->MaintainVariable('ProgramPhase', $this->Translate('Phase'), vtString, '', $vpos++, $with['ProgramPhase']);
 
-        $this->MaintainVariable('StartTime', $this->Translate('Start at'), vtInteger, '~UnixTimestamp', $vpos++, $with_times);
-        $this->MaintainVariable('ElapsedTime', $this->Translate('Elapsed time'), vtInteger, 'MieleAtHome.Duration', $vpos++, $with_times);
-        $this->MaintainVariable('RemainingTime', $this->Translate('Remaining time'), vtInteger, 'MieleAtHome.Duration', $vpos++, $with_times);
-        $this->MaintainVariable('EndTime', $this->Translate('End at'), vtInteger, '~UnixTimestamp', $vpos++, $with_times);
+        $this->MaintainVariable('StartTime', $this->Translate('Start at'), vtInteger, '~UnixTimestamp', $vpos++, $with['times']);
+        $this->MaintainVariable('ElapsedTime', $this->Translate('Elapsed time'), vtInteger, 'MieleAtHome.Duration', $vpos++, $with['times']);
+        $this->MaintainVariable('RemainingTime', $this->Translate('Remaining time'), vtInteger, 'MieleAtHome.Duration', $vpos++, $with['times']);
+        $this->MaintainVariable('EndTime', $this->Translate('End at'), vtInteger, '~UnixTimestamp', $vpos++, $with['times']);
 
-        $this->MaintainVariable('TargetTemperature', $this->Translate('Temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with_TargetTemperature);
+        $this->MaintainVariable('Wash_TargetTemperature', $this->Translate('Temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with['wash_temp']);
 
-        $this->MaintainVariable('SpinningSpeed', $this->Translate('Spinning speed'), vtInteger, 'MieleAtHome.SpinningSpeed', $vpos++, $with_SpinningSpeed);
+        $this->MaintainVariable('SpinningSpeed', $this->Translate('Spinning speed'), vtInteger, 'MieleAtHome.SpinningSpeed', $vpos++, $with['SpinningSpeed']);
 
-        $this->MaintainVariable('DryingStep', $this->Translate('Drying step'), vtString, '', $vpos++, $with_DryingStep);
+        $this->MaintainVariable('DryingStep', $this->Translate('Drying step'), vtString, '', $vpos++, $with['DryingStep']);
 
-        $this->MaintainVariable('Fridge_TargetTemperature', $this->Translate('Fridge: target temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with_fridge);
-        $this->MaintainVariable('Fridge_Temperature', $this->Translate('Fridge: temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with_fridge);
+        $this->MaintainVariable('Fridge_TargetTemperature', $this->Translate('Fridge: target temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with['fridge_temp']);
+        $this->MaintainVariable('Fridge_Temperature', $this->Translate('Fridge: temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with['fridge_temp']);
 
-        $this->MaintainVariable('Freezer_TargetTemperature', $this->Translate('Freezer: target temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with_freezer);
-        $this->MaintainVariable('Freezer_Temperature', $this->Translate('Freezer: temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with_freezer);
+        $this->MaintainVariable('Freezer_TargetTemperature', $this->Translate('Freezer: target temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with['freezer_temp']);
+        $this->MaintainVariable('Freezer_Temperature', $this->Translate('Freezer: temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with['freezer_temp']);
 
-        $this->MaintainVariable('Door', $this->Translate('Door'), vtBoolean, 'MieleAtHome.Door', $vpos++, $with_Door);
+        $this->MaintainVariable('Door', $this->Translate('Door'), vtBoolean, 'MieleAtHome.Door', $vpos++, $with['Door']);
+
+        $this->MaintainVariable('Oven_TargetTemperature', $this->Translate('Target temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with['oven_temp']);
+        $this->MaintainVariable('Oven_Temperature', $this->Translate('Temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with['oven_temp']);
 
         $vpos = 100;
         $this->MaintainVariable('LastChange', $this->Translate('last change'), vtInteger, '~UnixTimestamp', $vpos++, true);
@@ -126,6 +149,13 @@ class MieleAtHomeDevice extends IPSModule
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'deviceType', 'caption' => 'Device type'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'fabNumber', 'caption' => 'Fabrication number'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'techType', 'caption' => 'Model'];
+
+        $formElements[] = ['type' => 'Label', 'label' => 'mapping code to text of field ...'];
+
+		$formElements[] = ['type' => 'CheckBox', 'name' => 'map_status', 'caption' => ' ... Status'];
+		$formElements[] = ['type' => 'CheckBox', 'name' => 'map_programType', 'caption' => ' ... Program'];
+		$formElements[] = ['type' => 'CheckBox', 'name' => 'map_programPhase', 'caption' => ' ... Phase'];
+		$formElements[] = ['type' => 'CheckBox', 'name' => 'map_dryingStep', 'caption' => ' ... Drying step'];
 
         $formElements[] = ['type' => 'Label', 'label' => 'Update data every X seconds'];
         $formElements[] = ['type' => 'IntervalBox', 'name' => 'update_interval', 'caption' => 'Seconds'];
@@ -167,6 +197,11 @@ class MieleAtHomeDevice extends IPSModule
         $fabNumber = $this->ReadPropertyString('fabNumber');
         $deviceId = $this->ReadPropertyInteger('deviceId');
 
+        $map_status = $this->ReadPropertyBoolean('map_status');
+        $map_programType = $this->ReadPropertyBoolean('map_programType');
+        $map_programPhase = $this->ReadPropertyBoolean('map_programPhase');
+        $map_dryingStep = $this->ReadPropertyBoolean('map_dryingStep');
+
         $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDeviceStatus', 'Ident' => $fabNumber];
         $data = $this->SendDataToParent(json_encode($SendData));
 
@@ -181,52 +216,14 @@ class MieleAtHomeDevice extends IPSModule
             return;
         }
 
-        // siehe ApplyChanges()
-        $with_ProgramType = false;
-        $with_ProgramPhase = false;
-        $with_times = false;
-        $with_TargetTemperature = false;
-        $with_SpinningSpeed = false;
-        $with_DryingStep = false;
-        $with_fridge = false;
-        $with_freezer = false;
-        $with_Door = false;
-
-        switch ($deviceId) {
-            case DEVICE_WASHING_MACHINE:	// Waschmaschine
-                $with_ProgramType = true;
-                $with_ProgramPhase = true;
-                $with_times = true;
-                $with_TargetTemperature = true;
-                $with_SpinningSpeed = true;
-                break;
-            case DEVICE_CLOTHES_DRYER:		// Trockner
-                $with_ProgramType = true;
-                $with_ProgramPhase = true;
-                $with_times = true;
-                $with_DryingStep = true;
-                break;
-            case DEVICE_DISHWASHER:			// Geschirrspüler
-                $with_ProgramType = true;
-                $with_ProgramPhase = true;
-                $with_times = true;
-                break;
-            case DEVICE_OVEN:				// Backofen
-                break;
-            case DEVICE_OVEN_MICROWAVE:		// Backofen mit Mikrowelle
-                break;
-            case DEVICE_FRIDGE_FREEZER:		// Küh-/Gefrierkombination
-                $with_fridge = true;
-                $with_freezer = true;
-                $with_Door = true;
-                break;
-        }
+		$with = $this->device2with($deviceId);
+		$this->SendDebug(__FUNCTION__, 'with=' . print_r($with, true), 0);
 
         $off = $this->GetArrayElem($jdata, 'status.value_raw', 0) == 1;
         $delayed = $this->GetArrayElem($jdata, 'status.value_raw', 0) == 4;
         $is_changed = false;
 
-        $status = $this->GetArrayElem($jdata, 'status.value_localized', '');
+        $status = $map_status ? '' : $this->GetArrayElem($jdata, 'status.value_localized', '');
         if ($status == '') {
             $value_raw = $this->GetArrayElem($jdata, 'status.value_raw', 0);
             $status = $this->status2text($deviceId, $value_raw);
@@ -242,11 +239,11 @@ class MieleAtHomeDevice extends IPSModule
         $startTime = 0;
         $endTime = 0;
 
-        if ($with_ProgramType) {
+        if ($with['ProgramType']) {
             if ($off) {
                 $programType = '';
             } else {
-                $programType = $this->GetArrayElem($jdata, 'programType.value_localized', '');
+                $programType = $map_programType ? '' : $this->GetArrayElem($jdata, 'programType.value_localized', '');
                 if ($programType == '') {
                     $value_raw = $this->GetArrayElem($jdata, 'programType.value_raw', 0);
                     $programType = $this->programType2text($deviceId, $value_raw);
@@ -255,11 +252,11 @@ class MieleAtHomeDevice extends IPSModule
             $this->SaveValue('ProgramType', $programType, $is_changed);
         }
 
-        if ($with_ProgramPhase) {
+        if ($with['ProgramPhase']) {
             if ($off) {
                 $programPhase = '';
             } else {
-                $programPhase = $this->GetArrayElem($jdata, 'programPhase.value_localized', '');
+                $programPhase = $map_programPhase ? '' : $this->GetArrayElem($jdata, 'programPhase.value_localized', '');
                 if ($programPhase == '') {
                     $value_raw = $this->GetArrayElem($jdata, 'programPhase.value_raw', 0);
                     $programPhase = $this->programPhase2text($deviceId, $value_raw);
@@ -268,7 +265,7 @@ class MieleAtHomeDevice extends IPSModule
             $this->SaveValue('ProgramPhase', $programPhase, $is_changed);
         }
 
-        if ($with_times) {
+        if ($with['times']) {
             if ($off) {
                 $remainingTime = 0;
                 $elapsedTime = 0;
@@ -310,7 +307,7 @@ class MieleAtHomeDevice extends IPSModule
             $this->SaveValue('EndTime', $endTime, $is_changed);
         }
 
-        if ($with_TargetTemperature) {
+        if ($with['wash_temp']) {
             if ($off) {
                 $targetTemperature = 0;
             } else {
@@ -319,10 +316,10 @@ class MieleAtHomeDevice extends IPSModule
                     $targetTemperature = 0;
                 }
             }
-            $this->SaveValue('TargetTemperature', $targetTemperature, $is_changed);
+            $this->SaveValue('Wash_TargetTemperature', $targetTemperature, $is_changed);
         }
 
-        if ($with_SpinningSpeed) {
+        if ($with['SpinningSpeed']) {
             if ($off) {
                 $spinningSpeed = 0;
             } else {
@@ -331,11 +328,11 @@ class MieleAtHomeDevice extends IPSModule
             $this->SaveValue('SpinningSpeed', $spinningSpeed, $is_changed);
         }
 
-        if ($with_DryingStep) {
+        if ($with['DryingStep']) {
             if ($off) {
                 $dryingStep = '';
             } else {
-                $dryingStep = $this->GetArrayElem($jdata, 'dryingStep.value_localized', '');
+                $dryingStep = $map_dryingStep ? '' : $this->GetArrayElem($jdata, 'dryingStep.value_localized', '');
                 if ($dryingStep == '') {
                     $value_raw = $this->GetArrayElem($jdata, 'programPhase.value_raw', 0);
                     $dryingStep = $this->dryingStep2text($deviceId, $value_raw);
@@ -344,37 +341,51 @@ class MieleAtHomeDevice extends IPSModule
             $this->SaveValue('DryingStep', $dryingStep, $is_changed);
         }
 
-        if ($with_fridge) {
-            $targetTemperature_fridge = $this->GetArrayElem($jdata, 'targetTemperature.0.value_localized', 0);
-            if ($targetTemperature_fridge == -32768) {
-                $targetTemperature_fridge = 0;
+        if ($with['fridge_temp']) {
+            $targetTemperature = $this->GetArrayElem($jdata, 'targetTemperature.0.value_localized', 0);
+            if ($targetTemperature == -32768) {
+                $targetTemperature = 0;
             }
-            $this->SaveValue('Fridge_TargetTemperature', $targetTemperature_fridge, $is_changed);
+            $this->SaveValue('Fridge_TargetTemperature', $targetTemperature, $is_changed);
 
-            $temperature_fridge = $this->GetArrayElem($jdata, 'temperature.0.value_localized', 0);
-            if ($temperature_fridge == -32768) {
-                $temperature_fridge = 0;
+            $temperature = $this->GetArrayElem($jdata, 'temperature.0.value_localized', 0);
+            if ($temperature == -32768) {
+                $temperature = 0;
             }
-            $this->SaveValue('Fridge_Temperature', $temperature_fridge, $is_changed);
+            $this->SaveValue('Fridge_Temperature', $temperature, $is_changed);
         }
 
-        if ($with_freezer) {
-            $targetTemperature_freezer = $this->GetArrayElem($jdata, 'targetTemperature.1.value_localized', 0);
-            if ($targetTemperature_freezer == -32768) {
-                $targetTemperature_freezer = 0;
+        if ($with['freezer_temp']) {
+            $targetTemperature = $this->GetArrayElem($jdata, 'targetTemperature.1.value_localized', 0);
+            if ($targetTemperature == -32768) {
+                $targetTemperature = 0;
             }
-            $this->SaveValue('Freezer_TargetTemperature', $targetTemperature_freezer, $is_changed);
+            $this->SaveValue('Freezer_TargetTemperature', $targetTemperature, $is_changed);
 
-            $temperature_freezer = $this->GetArrayElem($jdata, 'temperature.1.value_localized', 0);
-            if ($temperature_freezer == -32768) {
-                $temperature_freezer = 0;
+            $temperature = $this->GetArrayElem($jdata, 'temperature.1.value_localized', 0);
+            if ($temperature == -32768) {
+                $temperature = 0;
             }
-            $this->SaveValue('Freezer_Temperature', $temperature_freezer, $is_changed);
+            $this->SaveValue('Freezer_Temperature', $temperature, $is_changed);
         }
 
-        if ($with_Door) {
+        if ($with['Door']) {
             $signalDoor = $this->GetArrayElem($jdata, 'signalDoor', false);
             $this->SaveValue('Door', $signalDoor, $is_changed);
+        }
+
+        if ($with['oven_temp']) {
+            $targetTemperature = $this->GetArrayElem($jdata, 'targetTemperature.0.value_localized', 0);
+            if ($targetTemperature == -32768) {
+                $targetTemperature = 0;
+            }
+            $this->SaveValue('Oven_TargetTemperature', $targetTemperature, $is_changed);
+
+            $temperature= $this->GetArrayElem($jdata, 'temperature.0.value_localized', 0);
+            if ($temperature== -32768) {
+                $temperature= 0;
+            }
+            $this->SaveValue('Oven_Temperature', $temperature, $is_changed);
         }
 
         if ($is_changed) {
@@ -420,15 +431,18 @@ class MieleAtHomeDevice extends IPSModule
     {
         $type2txt = [
                 DEVICE_WASHING_MACHINE => [
-                        1 => 'Cotton',
+						0 => 'Normal operation mode',
+						1 => 'Own program',
+						2 => 'Automatic program',
+						3 => 'Cleaning-/Care program',
                     ],
 
                 DEVICE_CLOTHES_DRYER => [
-                        2 => 'Automatic plus'
+                        2 => 'Automatic plus',
                     ],
 
                 DEVICE_DISHWASHER => [
-                        2 => 'Intensiv'
+                        2 => 'Intensiv',
                     ],
 
                 DEVICE_OVEN => [

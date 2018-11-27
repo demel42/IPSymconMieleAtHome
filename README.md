@@ -1,7 +1,7 @@
 # IPSymconMieleAtHome
 
 [![IPS-Version](https://img.shields.io/badge/Symcon_Version-5.0-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Module-Version](https://img.shields.io/badge/Modul_Version-1.0-blue.svg)
+![Module-Version](https://img.shields.io/badge/Modul_Version-1.1-blue.svg)
 ![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![StyleCI](https://github.styleci.io/repos/126683101/shield?branch=master)](https://github.styleci.io/repos/xxx)
@@ -115,11 +115,29 @@ Test access
 | Geräte-Typ                | string   |              | wird im Konfigurator gesetzt |
 | Fabrikationsnummer        | string   |              | wird im Konfigurator gesetzt und darf nicht geändert werden |
 | Modell                    | string   |              | wird im Konfigurator gesetzt |
-| Update-Intervall          | integer  |              | Intervall der Datenabfrage in Sekunden |
+| Update-Intervall          | integer  | 60           | Intervall der Datenabfrage in Sekunden |
+|                           |          |              | |
+| Code in Text übersetzen   |          |              | Übersetzte Statustexte aus der API ignoreiren und selbst umsetzen |
+|  ... Status               | boolean  | false        | |
+|  ... Programm             | boolean  | false        | |
+|  ... Phase                | boolean  | false        | |
+|  ... Trockenstufe         | boolean  | false        | |
 
 | Bezeichnung                  | Beschreibung |
 | :--------------------------: | :----------: |
 | Daten aktualisieren          | Abfrage der aktuellen Daten |
+
+
+Bisher unterstützte Gerätetypen
+
+| Geräete-Typ-ID | Geräte-Typ |
+| :------------: | :-: |
+| 1 | Washmaschine |
+| 2 | Wäschetrockner |
+| 7 | Geschirrspüler |
+| 12 | Backofen |
+| 13 | Backofen mit Mikrowelle |
+| 21 | Kühl/Gefrier-Kombination |
 
 ### Variablenprofile
 
@@ -146,6 +164,9 @@ Verweise:
 - https://www.miele.com/developer/index.html
 
 ## 7. Versions-Historie
+
+- 1.1 @ 27.11.2018 17:03<br>
+  - optional die Statuscodes selbst übersetzen
 
 - 1.0 @ 04.11.2018 10:49<br>
   Initiale Version
