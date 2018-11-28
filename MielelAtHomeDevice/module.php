@@ -73,11 +73,14 @@ class MieleAtHomeDevice extends IPSModule
                 $with['ProgramPhase'] = true;
                 $with['times'] = true;
                 $with['oven_temp'] = true;
+                $with['Door'] = true;
                 break;
             case DEVICE_OVEN_MICROWAVE:     // Backofen mit Mikrowelle
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
                 $with['times'] = true;
+                $with['oven_temp'] = true;
+                $with['Door'] = true;
                 break;
             case DEVICE_FRIDGE_FREEZER:     // Küh-/Gefrierkombination
                 $with['fridge_temp'] = true;
