@@ -62,7 +62,7 @@ class MieleAtHomeDevice extends IPSModule
                 $with['ProgramPhase'] = true;
                 $with['times'] = true;
                 $with['DryingStep'] = true;
-                brea;
+                break;
             case DEVICE_DISHWASHER:         // Geschirrspüler
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
