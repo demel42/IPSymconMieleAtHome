@@ -1,12 +1,10 @@
 <?php
 
-if (!defined('vtBoolean')) {
-    define('vtBoolean', 0);
-    define('vtInteger', 1);
-    define('vtFloat', 2);
-    define('vtString', 3);
-    define('vtArray', 8);
-    define('vtObject', 9);
+if (!defined('VARIABLETYPE_BOOLEAN')) {
+    define('VARIABLETYPE_BOOLEAN', 0);
+    define('VARIABLETYPE_INTEGER', 1);
+    define('VARIABLETYPE_FLOAT', 2);
+    define('VARIABLETYPE_STRING', 3);
 }
 
 if (!defined('IS_INVALIDCONFIG')) {

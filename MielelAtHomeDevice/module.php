@@ -22,14 +22,14 @@ class MieleAtHomeDevice extends IPSModule
         $this->RegisterPropertyBoolean('map_programPhase', false);
         $this->RegisterPropertyBoolean('map_dryingStep', false);
 
-        $this->CreateVarProfile('MieleAtHome.Duration', vtInteger, ' min', 0, 0, 0, 0, 'Hourglass');
-        $this->CreateVarProfile('MieleAtHome.Temperature', vtInteger, ' °C', 0, 0, 0, 0, 'Temperature');
-        $this->CreateVarProfile('MieleAtHome.SpinningSpeed', vtInteger, ' U/min', 0, 0, 0, 0, '');
+        $this->CreateVarProfile('MieleAtHome.Duration', VARIABLETYPE_INTEGER, ' min', 0, 0, 0, 0, 'Hourglass');
+        $this->CreateVarProfile('MieleAtHome.Temperature', VARIABLETYPE_INTEGER, ' °C', 0, 0, 0, 0, 'Temperature');
+        $this->CreateVarProfile('MieleAtHome.SpinningSpeed', VARIABLETYPE_INTEGER, ' U/min', 0, 0, 0, 0, '');
 
         $associations = [];
         $associations[] = ['Wert' => false, 'Name' => $this->Translate('Closed'), 'Farbe' => -1];
         $associations[] = ['Wert' => true, 'Name' => $this->Translate('Opened'), 'Farbe' => 0xEE0000];
-        $this->CreateVarProfile('MieleAtHome.Door', vtBoolean, '', 0, 0, 0, 1, 'Door', $associations);
+        $this->CreateVarProfile('MieleAtHome.Door', VARIABLETYPE_BOOLEAN, '', 0, 0, 0, 1, 'Door', $associations);
 
         $this->RegisterTimer('UpdateData', 0, 'MieleAtHomeDevice_UpdateData(' . $this->InstanceID . ');');
 
@@ -104,37 +104,37 @@ class MieleAtHomeDevice extends IPSModule
 
         $vpos = 1;
 
-        $this->MaintainVariable('State', $this->Translate('State'), vtString, '', $vpos++, true);
-        $this->MaintainVariable('Failure', $this->Translate('Failure'), vtBoolean, 'Alert', $vpos++, true);
+        $this->MaintainVariable('State', $this->Translate('State'), VARIABLETYPE_STRING, '', $vpos++, true);
+        $this->MaintainVariable('Failure', $this->Translate('Failure'), VARIABLETYPE_BOOLEAN, 'Alert', $vpos++, true);
 
-        $this->MaintainVariable('ProgramType', $this->Translate('Program'), vtString, '', $vpos++, $with['ProgramType']);
+        $this->MaintainVariable('ProgramType', $this->Translate('Program'), VARIABLETYPE_STRING, '', $vpos++, $with['ProgramType']);
 
-        $this->MaintainVariable('ProgramPhase', $this->Translate('Phase'), vtString, '', $vpos++, $with['ProgramPhase']);
+        $this->MaintainVariable('ProgramPhase', $this->Translate('Phase'), VARIABLETYPE_STRING, '', $vpos++, $with['ProgramPhase']);
 
-        $this->MaintainVariable('StartTime', $this->Translate('Start at'), vtInteger, '~UnixTimestamp', $vpos++, $with['times']);
-        $this->MaintainVariable('ElapsedTime', $this->Translate('Elapsed time'), vtInteger, 'MieleAtHome.Duration', $vpos++, $with['times']);
-        $this->MaintainVariable('RemainingTime', $this->Translate('Remaining time'), vtInteger, 'MieleAtHome.Duration', $vpos++, $with['times']);
-        $this->MaintainVariable('EndTime', $this->Translate('End at'), vtInteger, '~UnixTimestamp', $vpos++, $with['times']);
+        $this->MaintainVariable('StartTime', $this->Translate('Start at'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, $with['times']);
+        $this->MaintainVariable('ElapsedTime', $this->Translate('Elapsed time'), VARIABLETYPE_INTEGER, 'MieleAtHome.Duration', $vpos++, $with['times']);
+        $this->MaintainVariable('RemainingTime', $this->Translate('Remaining time'), VARIABLETYPE_INTEGER, 'MieleAtHome.Duration', $vpos++, $with['times']);
+        $this->MaintainVariable('EndTime', $this->Translate('End at'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, $with['times']);
 
-        $this->MaintainVariable('Wash_TargetTemperature', $this->Translate('Temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with['wash_temp']);
+        $this->MaintainVariable('Wash_TargetTemperature', $this->Translate('Temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $with['wash_temp']);
 
-        $this->MaintainVariable('SpinningSpeed', $this->Translate('Spinning speed'), vtInteger, 'MieleAtHome.SpinningSpeed', $vpos++, $with['SpinningSpeed']);
+        $this->MaintainVariable('SpinningSpeed', $this->Translate('Spinning speed'), VARIABLETYPE_INTEGER, 'MieleAtHome.SpinningSpeed', $vpos++, $with['SpinningSpeed']);
 
-        $this->MaintainVariable('DryingStep', $this->Translate('Drying step'), vtString, '', $vpos++, $with['DryingStep']);
+        $this->MaintainVariable('DryingStep', $this->Translate('Drying step'), VARIABLETYPE_STRING, '', $vpos++, $with['DryingStep']);
 
-        $this->MaintainVariable('Fridge_TargetTemperature', $this->Translate('Fridge: target temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with['fridge_temp']);
-        $this->MaintainVariable('Fridge_Temperature', $this->Translate('Fridge: temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with['fridge_temp']);
+        $this->MaintainVariable('Fridge_TargetTemperature', $this->Translate('Fridge: target temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $with['fridge_temp']);
+        $this->MaintainVariable('Fridge_Temperature', $this->Translate('Fridge: temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $with['fridge_temp']);
 
-        $this->MaintainVariable('Freezer_TargetTemperature', $this->Translate('Freezer: target temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with['freezer_temp']);
-        $this->MaintainVariable('Freezer_Temperature', $this->Translate('Freezer: temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with['freezer_temp']);
+        $this->MaintainVariable('Freezer_TargetTemperature', $this->Translate('Freezer: target temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $with['freezer_temp']);
+        $this->MaintainVariable('Freezer_Temperature', $this->Translate('Freezer: temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $with['freezer_temp']);
 
-        $this->MaintainVariable('Door', $this->Translate('Door'), vtBoolean, 'MieleAtHome.Door', $vpos++, $with['Door']);
+        $this->MaintainVariable('Door', $this->Translate('Door'), VARIABLETYPE_BOOLEAN, 'MieleAtHome.Door', $vpos++, $with['Door']);
 
-        $this->MaintainVariable('Oven_TargetTemperature', $this->Translate('Target temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with['oven_temp']);
-        $this->MaintainVariable('Oven_Temperature', $this->Translate('Temperature'), vtInteger, 'MieleAtHome.Temperature', $vpos++, $with['oven_temp']);
+        $this->MaintainVariable('Oven_TargetTemperature', $this->Translate('Target temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $with['oven_temp']);
+        $this->MaintainVariable('Oven_Temperature', $this->Translate('Temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $with['oven_temp']);
 
         $vpos = 100;
-        $this->MaintainVariable('LastChange', $this->Translate('last change'), vtInteger, '~UnixTimestamp', $vpos++, true);
+        $this->MaintainVariable('LastChange', $this->Translate('last change'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
 
         $techType = $this->ReadPropertyString('techType');
         $fabNumber = $this->ReadPropertyString('fabNumber');
