@@ -4,7 +4,7 @@
 ![Module-Version](https://img.shields.io/badge/Modul_Version-1.2-blue.svg)
 ![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-[![StyleCI](https://github.styleci.io/repos/126683101/shield?branch=master)](https://github.styleci.io/repos/xxx)
+[![StyleCI](https://github.styleci.io/repos/126683101/shield?branch=master)](https://github.styleci.io/repos/156072156)
 
 ## Dokumentation
 
@@ -93,9 +93,7 @@ Wichtig: da keine vollständige Dokumentation vorliegt, welche Geräte es gibt b
 
 | Bezeichnung                  | Beschreibung |
 | :--------------------------: | :----------: |
-| Zugang prüfen                | Prüft, ob die Angabe korrekt sind |
-
-Test access
+| Zugang prüfen                | Prüft, ob die Angaben korrekt sind |
 
 ### b. Konfigurator-Modul
 
