@@ -165,7 +165,7 @@ class MieleAtHomeIO extends IPSModule
                     'Content-Type: application/x-www-form-urlencoded'
                 ];
             $postdata = [
-                    'email'         		      => $userid,
+                    'email'                 => $userid,
                     'password'              => $password,
                     'client_id'             => $client_id,
                     'state'                 => 'login',
@@ -210,7 +210,7 @@ class MieleAtHomeIO extends IPSModule
             if ($statuscode == 0 && $cdata == '') {
                 $statuscode = IS_INVALIDDATA;
             }
-            $this->SendDebug(__FUNCTION__, '/uth: statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true) . ', msg=' . $msg, 0);
+            $this->SendDebug(__FUNCTION__, 'token: statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true) . ', msg=' . $msg, 0);
             if ($statuscode != 0) {
                 $this->SetStatus($statuscode);
                 return '';

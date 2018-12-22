@@ -165,6 +165,7 @@ Verweise:
 
 - 1.3 @ 22.12.2018 12:25<br>
   - Fehler in der http-Kommunikation nun nicht mehr mit _echo_ (also als **ERROR**) sondern mit _LogMessage_ als **NOTIFY**
+  - Fix in einer DebugMessage
 
 - 1.2 @ 21.12.2018 13:10<br>
   - Standard-Konstanten verwenden
