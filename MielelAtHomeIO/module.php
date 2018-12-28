@@ -138,7 +138,7 @@ class MieleAtHomeIO extends IPSModule
                     $action = $jdata['Action'];
                     $msg = '';
                     $r = $this->do_ActionCall('/v1/devices/' . $ident . '/actions', $action, $ret, $msg);
-					$ret = json_encode([ 'Status' => $r, 'Message'=> $msg]);
+                    $ret = json_encode(['Status' => $r, 'Message'=> $msg]);
                     break;
                 default:
                     $this->SendDebug(__FUNCTION__, 'unknown function "' . $jdata['Function'] . '"', 0);
@@ -286,12 +286,12 @@ class MieleAtHomeIO extends IPSModule
             ];
 
         $header = [
-				'Accept: */*',
-				'Content-Type: application/json',
+                'Accept: */*',
+                'Content-Type: application/json',
                 'Authorization: Bearer ' . $token,
             ];
 
-		$postdata = $opts != '' ? json_encode($opts) : '';
+        $postdata = $opts != '' ? json_encode($opts) : '';
 
         $msg = '';
         $statuscode = $this->do_HttpRequest($func, $params, $header, $postdata, 'PUT', $data, $msg);
@@ -319,8 +319,9 @@ class MieleAtHomeIO extends IPSModule
         $this->SendDebug(__FUNCTION__, 'http-' . $mode . ': url=' . $url, 0);
         $this->SendDebug(__FUNCTION__, '    header=' . print_r($header, true), 0);
         if ($postdata != '') {
-			if (is_array($postdata))
-				$postdata = http_build_query($postdata);
+            if (is_array($postdata)) {
+                $postdata = http_build_query($postdata);
+            }
             $this->SendDebug(__FUNCTION__, '    postdata=' . $postdata, 0);
         }
 
@@ -368,7 +369,7 @@ class MieleAtHomeIO extends IPSModule
         }
 
         if ($httpcode == 200 || $httpcode == 204) {
-			$data = $cdata;
+            $data = $cdata;
         } elseif ($httpcode == 302) {
             $data = $redirect_url;
         } elseif ($httpcode == 401) {
