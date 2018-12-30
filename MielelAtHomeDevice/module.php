@@ -2,6 +2,15 @@
 
 require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
 
+if (!defined('ACTION_START')) {
+	define('ACTION_START', 1);
+	define('ACTION_PAUSE', 2);
+	define('ACTION_STOP', 3);
+
+    define('LIGHT_ENABLE', 1);
+    define('LIGHT_DISABLE', 2);
+}
+
 class MieleAtHomeDevice extends IPSModule
 {
     use MieleAtHomeCommon;
@@ -17,7 +26,6 @@ class MieleAtHomeDevice extends IPSModule
 
         $this->RegisterPropertyInteger('update_interval', 60);
 
-        $this->RegisterPropertyBoolean('map_status', false);
         $this->RegisterPropertyBoolean('map_programType', false);
         $this->RegisterPropertyBoolean('map_programPhase', false);
         $this->RegisterPropertyBoolean('map_dryingStep', false);
@@ -55,9 +63,25 @@ class MieleAtHomeDevice extends IPSModule
         $this->CreateVarProfile('MieleAtHome.Door', VARIABLETYPE_BOOLEAN, '', 0, 0, 0, 1, 'Door', $associations);
 
         $associations = [];
-        $associations[] = ['Wert' => 1, 'Name' => $this->Translate('Enabled'), 'Farbe' => -1];
-        $associations[] = ['Wert' => 2, 'Name' => $this->Translate('Disabled'), 'Farbe' => -1];
+        $associations[] = ['Wert' => LIGHT_ENABLE, 'Name' => $this->Translate('On'), 'Farbe' => -1];
+        $associations[] = ['Wert' => LIGHT_DISABLE, 'Name' => $this->Translate('Off'), 'Farbe' => -1];
         $this->CreateVarProfile('MieleAtHome.Light', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, 'Light', $associations);
+
+		$associations = [];
+		$associations[] = ['Wert' => ACTION_START, 'Name' => $this->Translate('Start'), 'Farbe' => -1];
+		$associations[] = ['Wert' => ACTION_PAUSE, 'Name' => $this->Translate('Pause'), 'Farbe' => -1];
+		$associations[] = ['Wert' => ACTION_STOP, 'Name' => $this->Translate('Stop'), 'Farbe' => -1];
+		$this->CreateVarProfile('MieleAtHome.Action', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations);
+
+		$associations = [];
+		$associations[] = ['Wert' => ACTION_START, 'Name' => $this->Translate('Start'), 'Farbe' => -1];
+		$associations[] = ['Wert' => ACTION_STOP, 'Name' => $this->Translate('Stop'), 'Farbe' => -1];
+		$this->CreateVarProfile('MieleAtHome.Superfreezing', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations);
+
+		$associations = [];
+		$associations[] = ['Wert' => ACTION_START, 'Name' => $this->Translate('Start'), 'Farbe' => -1];
+		$associations[] = ['Wert' => ACTION_STOP, 'Name' => $this->Translate('Stop'), 'Farbe' => -1];
+		$this->CreateVarProfile('MieleAtHome.Supercooling', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations);
 
         $this->RegisterTimer('UpdateData', 0, 'MieleAtHomeDevice_UpdateData(' . $this->InstanceID . ');');
 
@@ -79,6 +103,11 @@ class MieleAtHomeDevice extends IPSModule
         $with['Door'] = false;
         $with['Light'] = false;
 
+        $with['action'] = false;
+        $with['starttime'] = false;
+        $with['action_superfreezing'] = false;
+        $with['action_supercooling'] = false;
+
         switch ($deviceId) {
             case DEVICE_WASHING_MACHINE:    // Waschmaschine
                 $with['ProgramType'] = true;
@@ -87,6 +116,8 @@ class MieleAtHomeDevice extends IPSModule
                 $with['wash_temp'] = true;
                 $with['SpinningSpeed'] = true;
                 $with['Door'] = true;
+				$with['action'] = true;
+				$with['starttime'] = true;
                 break;
             case DEVICE_TUMBLE_DRYER:      // Trockner
                 $with['ProgramType'] = true;
@@ -94,12 +125,16 @@ class MieleAtHomeDevice extends IPSModule
                 $with['times'] = true;
                 $with['DryingStep'] = true;
                 $with['Door'] = true;
+				$with['action'] = true;
+				$with['starttime'] = true;
                 break;
             case DEVICE_DISHWASHER:         // Geschirrspüler
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
                 $with['times'] = true;
                 $with['Door'] = true;
+				$with['action'] = true;
+				$with['starttime'] = true;
                 break;
             case DEVICE_OVEN:               // Backofen
                 $with['ProgramType'] = true;
@@ -119,6 +154,8 @@ class MieleAtHomeDevice extends IPSModule
                 $with['fridge_temp'] = true;
                 $with['freezer_temp'] = true;
                 $with['Door'] = true;
+				$with['action_superfreezing'] = true;
+				$with['action_supercooling'] = true;
                 break;
         }
         return $with;
@@ -138,17 +175,20 @@ class MieleAtHomeDevice extends IPSModule
         $vpos = 1;
 
         $this->MaintainVariable('State', $this->Translate('State'), VARIABLETYPE_INTEGER, 'MieleAtHome.Status', $vpos++, true);
-        $this->MaintainVariable('StateAsText', $this->Translate('State'), VARIABLETYPE_STRING, '', $vpos++, true);
         $this->MaintainVariable('Failure', $this->Translate('Failure'), VARIABLETYPE_BOOLEAN, 'Alert', $vpos++, true);
+
+		$this->MaintainVariable('Action', $this->Translate('Action'), VARIABLETYPE_INTEGER, 'MieleAtHome.Action', $vpos++, $with['action']);
+		$this->MaintainVariable('Superfreezing', $this->Translate('Superfreezing'), VARIABLETYPE_INTEGER, 'MieleAtHome.Superfreezing', $vpos++, $with['action_superfreezing']);
+		$this->MaintainVariable('Supercooling', $this->Translate('Supercooling'), VARIABLETYPE_INTEGER, 'MieleAtHome.Supercooling', $vpos++, $with['action_supercooling']);
 
         $this->MaintainVariable('ProgramType', $this->Translate('Program'), VARIABLETYPE_STRING, '', $vpos++, $with['ProgramType']);
 
         $this->MaintainVariable('ProgramPhase', $this->Translate('Phase'), VARIABLETYPE_STRING, '', $vpos++, $with['ProgramPhase']);
 
-        $this->MaintainVariable('StartTime', $this->Translate('Start at'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, $with['times']);
+        $this->MaintainVariable('StartTime', $this->Translate('Start at'), VARIABLETYPE_INTEGER, '~UnixTimestampTime', $vpos++, $with['times']);
         $this->MaintainVariable('ElapsedTime', $this->Translate('Elapsed time'), VARIABLETYPE_INTEGER, 'MieleAtHome.Duration', $vpos++, $with['times']);
         $this->MaintainVariable('RemainingTime', $this->Translate('Remaining time'), VARIABLETYPE_INTEGER, 'MieleAtHome.Duration', $vpos++, $with['times']);
-        $this->MaintainVariable('EndTime', $this->Translate('End at'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, $with['times']);
+        $this->MaintainVariable('EndTime', $this->Translate('End at'), VARIABLETYPE_INTEGER, '~UnixTimestampTime', $vpos++, $with['times']);
 
         $this->MaintainVariable('Wash_TargetTemperature', $this->Translate('Temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $with['wash_temp']);
 
@@ -181,6 +221,17 @@ class MieleAtHomeDevice extends IPSModule
         $this->SetStatus(IS_ACTIVE);
 
         $this->SetUpdateInterval();
+
+		if ($with['action'])
+			$this->MaintainAction('Action', true);
+		if ($with['starttime'])
+			$this->MaintainAction('StartTime', true);
+		if ($with['action_superfreezing'])
+			$this->MaintainAction('Superfreezing', true);
+		if ($with['action_supercooling'])
+			$this->MaintainAction('Supercooling', true);
+		if ($with['Light'])
+			$this->MaintainAction('Light', true);
     }
 
     public function GetConfigurationForm()
@@ -193,7 +244,6 @@ class MieleAtHomeDevice extends IPSModule
 
         $formElements[] = ['type' => 'Label', 'label' => 'mapping code to text of field ...'];
 
-        $formElements[] = ['type' => 'CheckBox', 'name' => 'map_status', 'caption' => ' ... Status'];
         $formElements[] = ['type' => 'CheckBox', 'name' => 'map_programType', 'caption' => ' ... Program'];
         $formElements[] = ['type' => 'CheckBox', 'name' => 'map_programPhase', 'caption' => ' ... Phase'];
         $formElements[] = ['type' => 'CheckBox', 'name' => 'map_dryingStep', 'caption' => ' ... Drying step'];
@@ -239,7 +289,6 @@ class MieleAtHomeDevice extends IPSModule
         $fabNumber = $this->ReadPropertyString('fabNumber');
         $deviceId = $this->ReadPropertyInteger('deviceId');
 
-        $map_status = $this->ReadPropertyBoolean('map_status');
         $map_programType = $this->ReadPropertyBoolean('map_programType');
         $map_programPhase = $this->ReadPropertyBoolean('map_programPhase');
         $map_dryingStep = $this->ReadPropertyBoolean('map_dryingStep');
@@ -267,20 +316,23 @@ class MieleAtHomeDevice extends IPSModule
         $is_changed = false;
 
         $value_raw = $this->GetArrayElem($jdata, 'status.value_raw', 0);
-        $status = $map_status ? '' : $this->GetArrayElem($jdata, 'status.value_localized', '');
-        if ($status == '') {
-            $status = $this->status2text($deviceId, $value_raw);
-        }
-        $this->SaveValue('StateAsText', $status, $is_changed);
         $r = IPS_GetVariableProfile('MieleAtHome.Status');
-        $st = STATUS_UNKNOWN;
+        $status = STATUS_UNKNOWN;
         foreach ($r['Associations'] as $a) {
             if ($a['Value'] == $value_raw) {
-                $st = $value_raw;
+                $status = $value_raw;
                 break;
             }
         }
-        $this->SaveValue('State', $st, $is_changed);
+        $this->SaveValue('State', $status, $is_changed);
+		if ($status == STATUS_UNKNOWN) {
+            $e = 'unknown value ' . $value_raw;
+			$value_localized = $this->GetArrayElem($jdata, 'status.value_localized', '');
+			if ($value_localized != '')
+				$e .= ' (' . $value_localized . ')';
+            $this->SendDebug(__FUNCTION__, $e, 0);
+            $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_WARNING);
+		}
 
         $signalFailure = $this->GetArrayElem($jdata, 'signalFailure', false);
         $this->SaveValue('Failure', $signalFailure, $is_changed);
@@ -461,47 +513,80 @@ class MieleAtHomeDevice extends IPSModule
         if ($is_changed) {
             $this->SetValue('LastChange', $now);
         }
-    }
 
-    private function status2text($model, $status)
-    {
-        $status2txt = [
-                0 => [
-                        STATUS_RESERVED            => 'Reserved',
-                        STATUS_OFF                 => 'Off',
-                        STATUS_ON                  => 'On',
-                        STATUS_PROGRAMMED          => 'Programmed',
-                        STATUS_WAITING_TO_START    => 'Waiting to start',
-                        STATUS_RUNNING             => 'Running',
-                        STATUS_PAUSE               => 'Pause',
-                        STATUS_END_PROGRAMMED      => 'End programmed',
-                        STATUS_FAILURE             => 'Failure',
-                        STATUS_PROGRAM_INTERRUPTED => 'Program interrupted',
-                        STATUS_IDLE                => 'Idle',
-                        STATUS_RINSE_HOLD          => 'Rinse hold',
-                        STATUS_SERVICE             => 'Service',
-                        STATUS_SUPERFREEZING       => 'Superfreezing',
-                        STATUS_SUPERCOOLING        => 'Supercooling',
-                        STATUS_SUPERHEATING        => 'Superheating',
-                        STATUS_NOT_CONNECTED       => 'Not connected'
-                    ],
+		if ($with['action']) {
+			if ($this->CheckAction('Start', false)) {
+				$b = true;
+				$v = ACTION_START;
+			} else if ($this->CheckAction('Stop', false)) {
+				$b = true;
+				$v = ACTION_STOP;
+			} else if ($this->CheckAction('Pause', false)) {
+				$b = true;
+				$v = ACTION_PAUSE;
+			} else {
+				$b = false;
+				$v = ACTION_START;
+			}
+			$this->SetValue('Action', $v);
+			$this->MaintainAction('Action', $b);
+			$this->SendDebug(__FUNCTION__, 'Action=' . $b, 0);
+		}
 
-                DEVICE_FRIDGE_FREEZER => [
-                        STATUS_SUPERCOOLING_SUPERFREEZING => 'Superfreezing/cooling',
-                    ],
-            ];
+		if ($with['action_superfreezing']) {
+			if ($this->CheckAction('StartSuperfreezing', false)) {
+				$b = true;
+				$v = ACTION_START;
+			} else if ($this->CheckAction('StopSuperfreezing', false)) {
+				$b = true;
+				$v = ACTION_STOP;
+			} else {
+				$b = false;
+				$v = ACTION_START;
+			}
+			$this->SetValue('Superfreezing', $v);
+			$this->MaintainAction('Superfreezing', $b);
+		}
 
-        if (isset($status2txt[$model][$status])) {
-            $txt = $this->Translate($status2txt[$model][$status]);
-        } elseif (isset($status2txt[0][$status])) {
-            $txt = $this->Translate($status2txt[0][$status]);
-        } else {
-            $txt = $this->Translate('unknown value') . ' ' . $status;
-            $e = 'unknown value ' . $status;
-            $this->SendDebug(__FUNCTION__, $e, 0);
-            $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_WARNING);
-        }
-        return $txt;
+		if ($with['action_supercooling']) {
+			if ($this->CheckAction('StartSupercooling', false)) {
+				$b = true;
+				$v = ACTION_START;
+			} else if ($this->CheckAction('StopSupercooling', false)) {
+				$b = true;
+				$v = ACTION_STOP;
+			} else {
+				$b = false;
+				$v = ACTION_START;
+			}
+			$this->SetValue('Supercooling', $v);
+			$this->MaintainAction('Supercooling', $b);
+		}
+
+		if ($with['Light']) {
+			if ($this->CheckAction('LightEnable', false)) {
+				$b = true;
+				$v = LIGHT_ENABLE;
+			} else if ($this->CheckAction('LightDisable', false)) {
+				$b = true;
+				$v = LIGHT_DISABLE;
+			} else {
+				$b = false;
+				$v = LIGHT_DISABLE;
+			}
+			$this->SetValue('Light', $v);
+			$this->MaintainAction('Light', $b);
+		}
+
+		if ($with['starttime']) {
+			if ($this->CheckAction('SetStarttime', false)) {
+				$b = true;
+			} else {
+				$b = false;
+			}
+			$this->MaintainAction('StartTime', $b);
+			$this->SendDebug(__FUNCTION__, 'StartTime=' . $b, 0);
+		}
     }
 
     private function programType2text($model, $type)
@@ -665,23 +750,149 @@ class MieleAtHomeDevice extends IPSModule
         return $txt;
     }
 
-    private function CallAction($func, $deviceIds, $states, $action)
+    private function CheckAction($func, $verbose)
     {
-        $this->SendDebug(__FUNCTION__, 'func=' . $func . ', action=' . print_r($action, true) . ', states=' . print_r($states, true) . ', deviceIds=' . print_r($deviceIds, true), 0);
+        $deviceIdsMap = [
+				'Start' => [
+						DEVICE_WASHING_MACHINE,
+						DEVICE_TUMBLE_DRYER,
+						DEVICE_DISHWASHER,
+						DEVICE_WASHER_DRYER,
+					],
+				'Stop' => [
+						DEVICE_WASHING_MACHINE,
+						DEVICE_TUMBLE_DRYER,
+						DEVICE_DISHWASHER,
+						DEVICE_OVEN_MICROWAVE,
+						DEVICE_COFFEE_SYSTEM,
+						DEVICE_HOOD,
+						DEVICE_WASHER_DRYER,
+						DEVICE_STEAM_OVEN_COMBINATION,
+						DEVICE_STEAM_OVEN_MICROWAVE_COMBINATION,
+						DEVICE_DIALOGOVEN,
+					],
+				'Pause' => [
+						DEVICE_WASHING_MACHINE,
+						DEVICE_TUMBLE_DRYER,
+						DEVICE_DISHWASHER,
+						DEVICE_OVEN_MICROWAVE,
+						DEVICE_COFFEE_SYSTEM,
+						DEVICE_HOOD,
+						DEVICE_WASHER_DRYER,
+						DEVICE_STEAM_OVEN_COMBINATION,
+						DEVICE_STEAM_OVEN_MICROWAVE_COMBINATION,
+						DEVICE_DIALOGOVEN,
+					],
+				'StartSuperfreezing' => [
+						DEVICE_FREEZER,
+						DEVICE_FRIDGE_FREEZER,
+						DEVICE_WINE_CABINET_FREEZER_COMBINATION
+					],
+				'StopSuperfreezing' => [
+						DEVICE_FREEZER,
+						DEVICE_FRIDGE_FREEZER,
+						DEVICE_WINE_CABINET_FREEZER_COMBINATION
+					],
+				'StartSupercooling' => [
+						STATUS_RUNNING
+					],
+				'StopSupercooling' => [
+						STATUS_SUPERCOOLING,
+						STATUS_SUPERCOOLING_SUPERFREEZING
+					],
+				'LightEnable' => [
+						DEVICE_COFFEE_SYSTEM,
+						DEVICE_HOOD,
+						DEVICE_WINE_CABINET,
+						DEVICE_WINE_CONDITIONING_UNIT,
+						DEVICE_WINE_STORAGE_CONDITIONING_UNIT,
+						DEVICE_WINE_CABINET_FREEZER_COMBINATION,
+					],
+				'LightDisable' => [
+						DEVICE_COFFEE_SYSTEM,
+						DEVICE_HOOD,
+						DEVICE_WINE_CABINET,
+						DEVICE_WINE_CONDITIONING_UNIT,
+						DEVICE_WINE_STORAGE_CONDITIONING_UNIT,
+						DEVICE_WINE_CABINET_FREEZER_COMBINATION,
+					],
+				'SetStarttime' => [
+						DEVICE_WASHING_MACHINE,
+						DEVICE_TUMBLE_DRYER,
+						DEVICE_DISHWASHER,
+					],
+			];
+
+        $statesMap = [
+				'Start' => [
+						STATUS_WAITING_TO_START,
+						STATUS_PROGRAMMED,
+						STATUS_PAUSE,
+					],
+				'Stop' => [
+						STATUS_WAITING_TO_START,
+						STATUS_RUNNING,
+						STATUS_PAUSE,
+					],
+				'Pause' => [
+						STATUS_WAITING_TO_START,
+						STATUS_PROGRAMMED,
+						STATUS_RUNNING,
+					],
+				'StartSuperfreezing' => [
+						STATUS_RUNNING
+					],
+				'StopSuperfreezing' => [
+						STATUS_SUPERFREEZING,
+						STATUS_SUPERCOOLING_SUPERFREEZING
+					],
+				'StartSupercooling' => [
+						DEVICE_FRIDGE,
+						DEVICE_FRIDGE_FREEZER
+					],
+				'StopSupercooling' => [
+						DEVICE_FRIDGE,
+						DEVICE_FRIDGE_FREEZER
+					],
+				'LightEnable' => [
+						STATUS_RUNNING
+					],
+				'LightDisable' => [
+						STATUS_RUNNING
+					],
+				'SetStarttime' => [
+						STATUS_WAITING_TO_START,
+						STATUS_PROGRAMMED,
+					],
+            ];
+
+		$deviceIds = isset($deviceIdsMap[$func]) ? $deviceIdsMap[$func] : [];
+		$states = isset($statesMap[$func]) ? $statesMap[$func] : [];
+
+        $this->SendDebug(__FUNCTION__, 'func=' . $func . ', states=' . print_r($states, true) . ', deviceIds=' . print_r($deviceIds, true), 0);
 
         $deviceId = $this->ReadPropertyInteger('deviceId');
         if ($deviceIds != [] && !in_array($deviceId, $deviceIds)) {
-            $this->SendDebug(__FUNCTION__, 'func ' . $func . ': deviceId ' . $deviceId . ' is not in ' . implode(',', $deviceIds), 0);
-            $this->LogMessage(__FUNCTION__ . ': func ' . $func . ' is not allowed for deviceId ' . $deviceId, KL_WARNING);
+            $this->SendDebug(__FUNCTION__, 'func ' . $func . ': deviceId ' . $deviceId . ' is not one of [' . implode(',', $deviceIds) . ']', 0);
+			if ($verbose)
+				$this->LogMessage(__FUNCTION__ . ': func ' . $func . ' is not allowed for deviceId ' . $deviceId, KL_WARNING);
             return false;
         }
 
         $state = $this->GetValue('State');
         if ($states != [] && !in_array($state, $states)) {
-            $this->SendDebug(__FUNCTION__, 'func ' . $func . ': state ' . $state . ' is not in ' . implode(',', $states), 0);
-            $this->LogMessage(__FUNCTION__ . ': func ' . $func . ' is not allowed for state ' . $state, KL_WARNING);
+            $this->SendDebug(__FUNCTION__, 'func ' . $func . ': state ' . $state . ' is not one of [' . implode(',', $states) . ']', 0);
+			if ($verbose)
+				$this->LogMessage(__FUNCTION__ . ': func ' . $func . ' is not allowed for state ' . $state, KL_WARNING);
             return false;
         }
+
+		return true;
+	}
+
+    private function CallAction($func, $action)
+    {
+        $this->SendDebug(__FUNCTION__, 'func=' . $func . ', action=' . print_r($action, true), 0);
 
         $fabNumber = $this->ReadPropertyString('fabNumber');
 
@@ -697,203 +908,207 @@ class MieleAtHomeDevice extends IPSModule
 
     public function Start()
     {
-        $deviceIds = [
-                DEVICE_WASHING_MACHINE,
-                DEVICE_TUMBLE_DRYER,
-                DEVICE_DISHWASHER,
-                DEVICE_WASHER_DRYER,
-            ];
-
-        $states = [
-                STATUS_WAITING_TO_START,
-            ];
+		if (!$this->CheckAction(__FUNCTION__, true)) {
+			return false;
+		}
 
         $action = [
                 'processAction' => 1
             ];
 
-        return $this->CallAction(__FUNCTION__, $deviceIds, $states, $action);
+        return $this->CallAction(__FUNCTION__, $action);
     }
 
     public function Stop()
     {
-        $deviceIds = [
-                DEVICE_WASHING_MACHINE,
-                DEVICE_TUMBLE_DRYER,
-                DEVICE_DISHWASHER,
-                DEVICE_OVEN_MICROWAVE,
-                DEVICE_COFFEE_SYSTEM,
-                DEVICE_HOOD,
-                DEVICE_WASHER_DRYER,
-                DEVICE_STEAM_OVEN_COMBINATION,
-                DEVICE_STEAM_OVEN_MICROWAVE_COMBINATION,
-                DEVICE_DIALOGOVEN,
-            ];
-
-        $states = [
-                STATUS_WAITING_TO_START,
-                STATUS_RUNNING,
-                STATUS_PAUSE,
-            ];
+		if (!$this->CheckAction(__FUNCTION__, true)) {
+			return false;
+		}
 
         $action = [
                 'processAction' => 2
             ];
 
-        return $this->CallAction(__FUNCTION__, $deviceIds, $states, $action);
+        return $this->CallAction(__FUNCTION__, $action);
     }
 
     public function Pause()
     {
-        $deviceIds = [
-            ];
-
-        $states = [
-            ];
+		if (!$this->CheckAction(__FUNCTION__, true)) {
+			return false;
+		}
 
         $action = [
                 'processAction' => 3
             ];
 
-        return $this->CallAction(__FUNCTION__, $deviceIds, $states, $action);
+        return $this->CallAction(__FUNCTION__, $action);
     }
 
     public function StartSuperfreezing()
     {
-        $deviceIds = [
-                DEVICE_FREEZER,
-                DEVICE_FRIDGE_FREEZER,
-                DEVICE_WINE_CABINET_FREEZER_COMBINATION
-            ];
-
-        $states = [
-                STATUS_RUNNING
-            ];
+		if (!$this->CheckAction(__FUNCTION__, true)) {
+			return false;
+		}
 
         $action = [
                 'processAction' => 4
             ];
 
-        return $this->CallAction(__FUNCTION__, $deviceIds, $states, $action);
+        return $this->CallAction(__FUNCTION__, $action);
     }
 
     public function StopSuperfreezing()
     {
-        $deviceIds = [
-                DEVICE_FREEZER,
-                DEVICE_FRIDGE_FREEZER,
-                DEVICE_WINE_CABINET_FREEZER_COMBINATION
-            ];
-
-        $states = [
-                STATUS_SUPERFREEZING,
-                STATUS_SUPERCOOLING_SUPERFREEZING
-            ];
+		if (!$this->CheckAction(__FUNCTION__, true)) {
+			return false;
+		}
 
         $action = [
                 'processAction' => 5
             ];
 
-        return $this->CallAction(__FUNCTION__, $deviceIds, $states, $action);
+        return $this->CallAction(__FUNCTION__, $action);
     }
 
     public function StartSupercooling()
     {
-        $deviceIds = [
-                DEVICE_FRIDGE,
-                DEVICE_FRIDGE_FREEZER
-            ];
-
-        $states = [
-                STATUS_RUNNING
-            ];
+		if (!$this->CheckAction(__FUNCTION__, true)) {
+			return false;
+		}
 
         $action = [
                 'processAction' => 6
             ];
 
-        return $this->CallAction(__FUNCTION__, $deviceIds, $states, $action);
+        return $this->CallAction(__FUNCTION__, $action);
     }
 
     public function StopSupercooling()
     {
-        $deviceIds = [
-                DEVICE_FRIDGE,
-                DEVICE_FRIDGE_FREEZER
-            ];
-
-        $states = [
-                STATUS_SUPERCOOLING,
-                STATUS_SUPERCOOLING_SUPERFREEZING
-            ];
+		if (!$this->CheckAction(__FUNCTION__, true)) {
+			return false;
+		}
 
         $action = [
                 'processAction' => 7
             ];
 
-        return $this->CallAction(__FUNCTION__, $deviceIds, $states, $action);
+        return $this->CallAction(__FUNCTION__, $action);
     }
 
     public function LightEnable()
     {
-        $deviceIds = [
-                DEVICE_COFFEE_SYSTEM,
-                DEVICE_HOOD,
-                DEVICE_WINE_CABINET,
-                DEVICE_WINE_CONDITIONING_UNIT,
-                DEVICE_WINE_STORAGE_CONDITIONING_UNIT,
-                DEVICE_WINE_CABINET_FREEZER_COMBINATION,
-            ];
-
-        $states = [
-                STATUS_RUNNING
-            ];
+		if (!$this->CheckAction(__FUNCTION__, true)) {
+			return false;
+		}
 
         $action = [
                 'light' => 1
             ];
 
-        return $this->CallAction(__FUNCTION__, $deviceIds, $states, $action);
+        return $this->CallAction(__FUNCTION__, $action);
     }
 
     public function LightDisable()
     {
-        $deviceIds = [
-                DEVICE_COFFEE_SYSTEM,
-                DEVICE_HOOD,
-                DEVICE_WINE_CABINET,
-                DEVICE_WINE_CONDITIONING_UNIT,
-                DEVICE_WINE_STORAGE_CONDITIONING_UNIT,
-                DEVICE_WINE_CABINET_FREEZER_COMBINATION,
-            ];
-
-        $states = [
-                STATUS_RUNNING
-            ];
+		if (!$this->CheckAction(__FUNCTION__, true)) {
+			return false;
+		}
 
         $action = [
                 'light' => 2
             ];
 
-        return $this->CallAction(__FUNCTION__, $deviceIds, $states, $action);
+        return $this->CallAction(__FUNCTION__, $action);
     }
 
     public function SetStarttime(int $hour, int $min)
     {
-        $deviceIds = [
-                DEVICE_WASHING_MACHINE,
-                DEVICE_TUMBLE_DRYER,
-                DEVICE_DISHWASHER,
-            ];
-
-        $states = [
-                STATUS_RUNNING
-            ];
+		if (!$this->CheckAction(__FUNCTION__, true)) {
+			return false;
+		}
 
         $action = [
                 'startTime' => [$hour, $min]
             ];
 
-        return $this->CallAction(__FUNCTION__, $deviceIds, $states, $action);
+        return $this->CallAction(__FUNCTION__, $action);
+    }
+
+    public function RequestAction($Ident, $Value)
+    {
+        switch ($Ident) {
+            case 'StartTime':
+                $hour = date('H', $Value);
+                $min = date('i', $Value);
+                $r = $this->SetStarttime($hour, $min);
+				if ($r)
+					$this->SetValue($Ident, $Value);
+                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' (' . $hour . ':' . $min . ') => ret=' . $r, 0);
+                break;
+            case 'Action':
+				switch ($Value) {
+                	case ACTION_START:
+						$r = $this->Start();
+						break;
+                	case ACTION_PAUSE:
+						$r = $this->Pause();
+						break;
+                	case ACTION_STOP:
+						$r = $this->Stop();
+						break;
+					default:
+						$r = false;
+						break;
+                }
+                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' => ret=' . $r, 0);
+                break;
+            case 'Superfreezing':
+				switch ($Value) {
+                	case ACTION_START:
+						$r = $this->StartSuperfreezing();
+						break;
+                	case ACTION_STOP:
+						$r = $this->StopSuperfreezing();
+						break;
+					default:
+						$r = false;
+						break;
+                }
+                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' => ret=' . $r, 0);
+                break;
+            case 'Supercooling':
+				switch ($Value) {
+                	case ACTION_START:
+						$r = $this->StartSupercooling();
+						break;
+                	case ACTION_STOP:
+						$r = $this->StopSupercooling();
+						break;
+					default:
+						$r = false;
+						break;
+                }
+                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' => ret=' . $r, 0);
+                break;
+            case 'Light':
+				switch ($Value) {
+                	case LIGHT_ENABLE:
+						$r = $this->LightEnable();
+						break;
+                	case LIGHT_DISABLE:
+						$r = $this->LightDisable();
+						break;
+					default:
+						$r = false;
+						break;
+                }
+                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' => ret=' . $r, 0);
+                break;
+            default:
+                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $Ident, 0);
+                break;
+        }
     }
 }

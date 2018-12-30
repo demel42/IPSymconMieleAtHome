@@ -6,7 +6,6 @@
 			"Fabrication number": "Fabrikationsnummer",
 			"Model": "Modell",
 			"mapping code to text of field ...": "Status-Code selbst in Text umsetzen von Feld ...",
-			" ... Status": " ... Status",
 			" ... Program": " ... Programm",
 			" ... Phase": " ... Phase",
 			" ... Drying step": " ... Trockenstufe",
@@ -36,6 +35,8 @@
 			"Target temperature": "Soll-Temperatur",
 			"Temperature": "Temperatur",
 			"Ventilation step": "Entlüftungsstufe",
+
+			"Action": "Aktion",
 
 			"last change": "letzte Änderung",
 
@@ -117,9 +118,6 @@
 			"Step 2": "Stufe 2",
 			"Step 3": "Stufe 3",
 			"Step 4": "Stufe 4",
-
-			"Enabled": "Eingeschaltet",
-			"Disabled": "Ausgeschaltet",
 
 			"unknown value": "unbekannter Wert",
 

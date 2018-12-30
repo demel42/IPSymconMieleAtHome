@@ -1,7 +1,7 @@
 # IPSymconMieleAtHome
 
 [![IPS-Version](https://img.shields.io/badge/Symcon_Version-5.0-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Module-Version](https://img.shields.io/badge/Modul_Version-1.4-blue.svg)
+![Module-Version](https://img.shields.io/badge/Modul_Version-1.5-blue.svg)
 ![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![StyleCI](https://github.styleci.io/repos/126683101/shield?branch=master)](https://github.styleci.io/repos/156072156)
@@ -166,7 +166,8 @@ Bisher unterstützte Gerätetypen
 MieleAtHome.Door
 
 * Integer<br>
-MieleAtHome.Duration, MieleAtHome.Light, MieleAtHome.SpinningSpeed, MieleAtHome.Status, MieleAtHome.Temperature
+MieleAtHome.Duration, MieleAtHome.Light, MieleAtHome.SpinningSpeed, MieleAtHome.Status, MieleAtHome.Temperature,
+MieleAtHome.Action, MieleAtHome.Superfreezing, MieleAtHome.Supercooling
 
 ## 6. Anhang
 
@@ -186,12 +187,16 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.5 @ 30.12.2018 16:57<br>
+  - die Aktionen (HTTP-PUT-Aufrufe) stehen nun als Variablen mit Standard-Aktionen zur Verfügung
+  - der _Status_ ist nun kein String mehr sondern ein Integer mit entsprechendem Variablenprofil
+
 - 1.4 @ 28.12.2018 15:33<br>
   - Anpassung an aktuelle API-Dokumentation
-  - Ergängzung um die neuen HTTP-PUT-Aufrufe
+  - Ergänzung um die neuen HTTP-PUT-Aufrufe
 
 - 1.3 @ 22.12.2018 12:25<br>
-  - Fehler in der http-Kommunikation nun nicht mehr mit _echo_ (also als **ERROR**) sondern mit _LogMessage_ als **NOTIFY**
+  - Fehler in der http-Kommunikation nun nicht mehr mit _echo_ (also als **ERROR**) sondern mit _LogMessage_ als **NOTIFY** ausgegeben
   - Fix in einer DebugMessage
 
 - 1.2 @ 21.12.2018 13:10<br>
