@@ -41,6 +41,7 @@ class MieleAtHomeIO extends IPSModule
         $opts_vg_selector[] = ['label' => $this->Translate('England'), 'value' => 'en-en'];
         $opts_vg_selector[] = ['label' => $this->Translate('Germany'), 'value' => 'de-de'];
         $opts_vg_selector[] = ['label' => $this->Translate('Switzerland'), 'value' => 'ch-ch'];
+        $opts_vg_selector[] = ['label' => $this->Translate('Austria'), 'value' => 'au-au'];
 
         $opts_language = [];
         $opts_language[] = ['label' => $this->Translate('England'), 'value' => 'en'];
