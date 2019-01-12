@@ -10,10 +10,13 @@
 			"Language": "Sprache",
 			"VG-Selector": "VG-Auswahl",
 
+			"Austria": "Österreich",
+			"Belgium": "Belgien",
 			"England": "England",
 			"Germany": "Deutschland",
+			"Luxembourg": "Luxemburg",
+			"Netherlands": "Niederlande",
 			"Switzerland": "Schweiz",
-			"Austria": "Österreich",
 
 			"Test access": "Zugang prüfen",
 			"Module description": "Modulbeschreibung",

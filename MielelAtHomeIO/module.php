@@ -38,10 +38,13 @@ class MieleAtHomeIO extends IPSModule
     public function GetConfigurationForm()
     {
         $opts_vg_selector = [];
-        $opts_vg_selector[] = ['label' => $this->Translate('England'), 'value' => 'en-en'];
-        $opts_vg_selector[] = ['label' => $this->Translate('Germany'), 'value' => 'de-de'];
-        $opts_vg_selector[] = ['label' => $this->Translate('Switzerland'), 'value' => 'ch-ch'];
-        $opts_vg_selector[] = ['label' => $this->Translate('Austria'), 'value' => 'au-au'];
+        $opts_vg_selector[] = ['label' => $this->Translate('England'), 'value' => 'en-GB'];
+        $opts_vg_selector[] = ['label' => $this->Translate('Germany'), 'value' => 'de-DE'];
+        $opts_vg_selector[] = ['label' => $this->Translate('Switzerland'), 'value' => 'de-CH'];
+        $opts_vg_selector[] = ['label' => $this->Translate('Austria'), 'value' => 'de-AT'];
+        $opts_vg_selector[] = ['label' => $this->Translate('Netherlands'), 'value' => 'nl-NL'];
+        $opts_vg_selector[] = ['label' => $this->Translate('Belgium'), 'value' => 'nl-BE'];
+        $opts_vg_selector[] = ['label' => $this->Translate('Luxembourg'), 'value' => 'de-LU'];
 
         $opts_language = [];
         $opts_language[] = ['label' => $this->Translate('England'), 'value' => 'en'];
@@ -163,53 +166,23 @@ class MieleAtHomeIO extends IPSModule
 
         $dtoken = $this->GetBuffer('Token');
         $jtoken = json_decode($dtoken, true);
-        $code = isset($jtoken['code']) ? $jtoken['code'] : '';
         $token = isset($jtoken['token']) ? $jtoken['token'] : '';
         $expiration = isset($jtoken['expiration']) ? $jtoken['expiration'] : 0;
-
-        if ($code == '') {
-            $header = [
-                    'Accept: application/json; charset=utf-8',
-                    'Content-Type: application/x-www-form-urlencoded'
-                ];
-            $postdata = [
-                    'email'                 => $userid,
-                    'password'              => $password,
-                    'client_id'             => $client_id,
-                    'state'                 => 'login',
-                    'response_type'         => 'code',
-                    'redirect_uri'          => '/v1/devices',
-                    'vgInformationSelector' => $vg_selector,
-                ];
-
-            $cdata = '';
-            $msg = '';
-            $statuscode = $this->do_HttpRequest('/thirdparty/auth', '', $header, $postdata, 'POST', $cdata, $msg);
-            if ($statuscode == 0 && $cdata == '') {
-                $statuscode = IS_INVALIDDATA;
-            }
-            $this->SendDebug(__FUNCTION__, 'login: statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true) . ', msg=' . $msg, 0);
-            if ($statuscode != 0) {
-                $this->SetStatus($statuscode);
-                return '';
-            }
-            parse_str(parse_url($cdata, PHP_URL_QUERY), $jdata);
-            $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
-            $code = $jdata['code'];
-            $expiration = 0;
-        }
 
         if ($expiration < time()) {
             $params = [
                     'client_id'     => $client_id,
                     'client_secret' => $client_secret,
-                    'code'          => $code,
-                    'grant_type'    => 'authorization_code',
+                    'grant_type'    => 'password',
+					'username'      => $userid,
+					'password'      => $password,
                     'state'         => 'token',
                     'redirect_uri'  => '/v1/devices',
+                    'vg'            => $vg_selector,
                 ];
             $header = [
                     'Accept: application/json; charset=utf-8',
+					'Content-Type: application/x-www-form-urlencoded'
                 ];
 
             $cdata = '';
@@ -231,7 +204,6 @@ class MieleAtHomeIO extends IPSModule
             $expires_in = $jdata['expires_in'];
 
             $jtoken = [
-                    'code'             => $code,
                     'token'            => $token,
                     'expiration'       => time() + $expires_in
                 ];
@@ -346,6 +318,7 @@ class MieleAtHomeIO extends IPSModule
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $mode);
                 break;
         }
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         $cdata = curl_exec($ch);
