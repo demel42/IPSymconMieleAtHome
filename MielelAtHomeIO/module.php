@@ -174,15 +174,15 @@ class MieleAtHomeIO extends IPSModule
                     'client_id'     => $client_id,
                     'client_secret' => $client_secret,
                     'grant_type'    => 'password',
-					'username'      => $userid,
-					'password'      => $password,
+                    'username'      => $userid,
+                    'password'      => $password,
                     'state'         => 'token',
                     'redirect_uri'  => '/v1/devices',
                     'vg'            => $vg_selector,
                 ];
             $header = [
                     'Accept: application/json; charset=utf-8',
-					'Content-Type: application/x-www-form-urlencoded'
+                    'Content-Type: application/x-www-form-urlencoded'
                 ];
 
             $cdata = '';
