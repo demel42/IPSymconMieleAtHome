@@ -26,10 +26,10 @@ class MieleAtHomeDevice extends IPSModule
 
         $this->RegisterPropertyInteger('update_interval', 60);
 
-        $this->RegisterPropertyBoolean('map_programType', false);
+        $this->RegisterPropertyBoolean('map_programType', true);
         $this->RegisterPropertyBoolean('map_programPhase', false);
-        $this->RegisterPropertyBoolean('map_dryingStep', false);
-        $this->RegisterPropertyBoolean('map_ventilationStep', false);
+        $this->RegisterPropertyBoolean('map_dryingStep', true);
+        $this->RegisterPropertyBoolean('map_ventilationStep', true);
 
         $this->CreateVarProfile('MieleAtHome.Duration', VARIABLETYPE_INTEGER, ' min', 0, 0, 0, 0, 'Hourglass');
         $this->CreateVarProfile('MieleAtHome.Temperature', VARIABLETYPE_INTEGER, ' °C', 0, 0, 0, 0, 'Temperature');
@@ -707,14 +707,17 @@ class MieleAtHomeDevice extends IPSModule
 
     private function dryingStep2text($model, $step)
     {
-        $step2xt = [
+		$this->SendDebug(__FUNCTION__, 'model=' . $model . ', step=' . $step, 0);
+        $step2txt = [
                 0 => [
+                        0 => 'Extra Dry',
                         1 => 'Normal Plus',
                         2 => 'Normal',
                         3 => 'Slightly Dry',
                         4 => 'Hand iron level 1',
                         5 => 'Hand iron level 2',
                         6 => 'Machine iron',
+                        7 => 'Smooth',
                     ],
             ];
 
@@ -733,7 +736,7 @@ class MieleAtHomeDevice extends IPSModule
 
     private function ventilationStep2text($model, $step)
     {
-        $step2xt = [
+        $step2txt = [
                 0 => [
                         0 => 'None',
                         1 => 'Step 1',

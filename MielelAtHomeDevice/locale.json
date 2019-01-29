@@ -89,7 +89,7 @@
 			"Waiting to start": "Warte auf Start",
 			"Running": "In Betrieb",
 			"Pause": "Pause",
-			"End programmed": "Ende programmiert",
+			"End programmed": "Ende",
 			"Failure": "Fehler",
 			"Program interrupted": "Programm unterbrochen",
 			"Idle": "Untätig",
@@ -106,12 +106,14 @@
 			"Automatic program": "Automatik-Programm",
 			"Cleaning-/Care program": "Reinigungs/Pflege-Programm",
 
+			"Extra Dry": "Extra Trocken",
 			"Normal Plus": "Normal Plus",
 			"Normal": "Normal",
 			"Slightly Dry": "Leicht trocken",
 			"Hand iron level 1": "Bügeleisen 1",
 			"Hand iron level 2": "Bügeleisen 2",
 			"Machine iron": "Bügelmaschine",
+			"Smooth": "Glätten",
 
 			"None": "Aus",
 			"Step 1": "Stufe 1",
