@@ -707,7 +707,7 @@ class MieleAtHomeDevice extends IPSModule
 
     private function dryingStep2text($model, $step)
     {
-		$this->SendDebug(__FUNCTION__, 'model=' . $model . ', step=' . $step, 0);
+        $this->SendDebug(__FUNCTION__, 'model=' . $model . ', step=' . $step, 0);
         $step2txt = [
                 0 => [
                         0 => 'Extra Dry',
