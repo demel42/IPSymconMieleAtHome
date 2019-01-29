@@ -189,7 +189,7 @@ Verweise:
 
 - 1.8 @ 23.01.2019 18:18<br>
   - curl_errno() abfragen
-  - Trockner: Trockenstufe 7 ('Glätten') hinzugefügt (fehlt in der API-Doku)
+  - Trockner: Trockenstufe 7 ('Glätten') hinzugefügt (fehlt in der API-Doku), Übersetzung angepasst
 
 - 1.7 @ 12.01.2019 12:56<br>
   - geänderte Login-Methode implementiert<br>
