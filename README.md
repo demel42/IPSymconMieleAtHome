@@ -104,7 +104,7 @@ siehe https://www.miele.com/developer/swagger-ui/put_additional_info.html
 
 | Eigenschaft               | Typ      | Standardwert | Beschreibung |
 | :-----------------------: | :-----:  | :----------: | :----------: |
-| Modul ist deaktiviert     | boolean  | false        | Modul temporär deaktivieren |
+| Instanz ist deaktiviert   | boolean  | false        | Instanz temporär deaktivieren |
 |                           |          |              | |
 | Benutzer (EMail)          | string   |              | Miele@Home-Konto: Benutzerkennung |
 | Passwort                  | string   |              | Miele@Home-Konto: Passwort |
@@ -192,7 +192,7 @@ Verweise:
 ## 7. Versions-Historie
 
 - 1.9 @ 21.03.2019 17:04<br>
-  - Schalter, um ein Modul (temporär) zu deaktivieren
+  - Schalter, um eine Instanz (temporär) zu deaktivieren
   - Konfigurations-Element IntervalBox -> NumberSpinner
 
 - 1.8 @ 23.01.2019 18:18<br>
