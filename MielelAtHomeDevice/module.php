@@ -151,13 +151,13 @@ class MieleAtHomeDevice extends IPSModule
                 $with['times'] = true;
                 $with['oven_temp'] = true;
                 $with['Door'] = true;
-				break;
-			case DEVICE_STEAM_OVEN_COMBINATION: // Dampfgarar mit Backofen-Funktion
-				$with['ProgramType'] = true;
-				$with['ProgramPhase'] = true;
-				$with['times'] = true;
-				$with['oven_temp'] = true;
-				$with['Door'] = true;
+                break;
+            case DEVICE_STEAM_OVEN_COMBINATION: // Dampfgarar mit Backofen-Funktion
+                $with['ProgramType'] = true;
+                $with['ProgramPhase'] = true;
+                $with['times'] = true;
+                $with['oven_temp'] = true;
+                $with['Door'] = true;
                 break;
             case DEVICE_FRIDGE_FREEZER:     // Küh-/Gefrierkombination
                 $with['fridge_temp'] = true;
@@ -630,7 +630,7 @@ class MieleAtHomeDevice extends IPSModule
 
                 DEVICE_TUMBLE_DRYER => [
                         2 => 'Automatic plus',
-						3 => 'Cotton',
+                        3 => 'Cotton',
                     ],
 
                 DEVICE_DISHWASHER => [
