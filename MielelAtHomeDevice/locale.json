@@ -1,6 +1,8 @@
 {
 	"translations": {
 		"de": {
+			"Instance is disabled": "Instanz ist deaktiviert",
+
 			"Device id": "Geräete-Typ-ID",
 			"Device type": "Geräte-Typ",
 			"Fabrication number": "Fabrikationsnummer",

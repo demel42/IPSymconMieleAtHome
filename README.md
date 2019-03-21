@@ -1,7 +1,7 @@
 # IPSymconMieleAtHome
 
 [![IPS-Version](https://img.shields.io/badge/Symcon_Version-5.0-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Module-Version](https://img.shields.io/badge/Modul_Version-1.8-blue.svg)
+![Module-Version](https://img.shields.io/badge/Modul_Version-1.9-blue.svg)
 ![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![StyleCI](https://github.styleci.io/repos/126683101/shield?branch=master)](https://github.styleci.io/repos/156072156)
@@ -104,6 +104,8 @@ siehe https://www.miele.com/developer/swagger-ui/put_additional_info.html
 
 | Eigenschaft               | Typ      | Standardwert | Beschreibung |
 | :-----------------------: | :-----:  | :----------: | :----------: |
+| Modul ist deaktiviert     | boolean  | false        | Modul temporär deaktivieren |
+|                           |          |              | |
 | Benutzer (EMail)          | string   |              | Miele@Home-Konto: Benutzerkennung |
 | Passwort                  | string   |              | Miele@Home-Konto: Passwort |
 | Client-ID                 | string   |              | Miele@Home API-Zugangsdaten: Client-ID |
@@ -131,6 +133,8 @@ siehe https://www.miele.com/developer/swagger-ui/put_additional_info.html
 
 | Eigenschaft               | Typ      | Standardwert | Beschreibung |
 | :-----------------------: | :-----:  | :----------: | :----------: |
+| Modul ist deaktiviert     | boolean  | false        | Modul temporär deaktivieren |
+|                           |          |              | |
 | Geräete-Typ-ID            | integer  |              | wird im Konfigurator gesetzt und darf nicht geändert werden, bestimmte die auszugebenden Felder |
 | Geräte-Typ                | string   |              | wird im Konfigurator gesetzt |
 | Fabrikationsnummer        | string   |              | wird im Konfigurator gesetzt und darf nicht geändert werden |
@@ -186,6 +190,10 @@ Verweise:
 - https://www.miele.com/developer/index.html
 
 ## 7. Versions-Historie
+
+- 1.9 @ 21.03.2019 17:04<br>
+  - Schalter, um ein Modul (temporär) zu deaktivieren
+  - Konfigurations-Element IntervalBox -> NumberSpinner
 
 - 1.8 @ 23.01.2019 18:18<br>
   - curl_errno() abfragen

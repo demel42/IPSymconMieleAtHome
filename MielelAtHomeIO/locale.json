@@ -1,6 +1,9 @@
 {
 	"translations": {
 		"de": {
+			"Instance is disabled": "Instanz ist deaktiviert",
+			"instance is inactive": "Instanz ist inaktiv",
+
 			"Miele@Home Account": "Miele@Home Konto",
 			"User-ID (email)": "Benutzer (EMail)",
 			"Password": "Passwort",

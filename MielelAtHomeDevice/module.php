@@ -19,6 +19,8 @@ class MieleAtHomeDevice extends IPSModule
     {
         parent::Create();
 
+		$this->RegisterPropertyBoolean('module_disable', false);
+
         $this->RegisterPropertyInteger('deviceId', 0);
         $this->RegisterPropertyString('deviceType', '');
         $this->RegisterPropertyString('fabNumber', '');
@@ -218,6 +220,13 @@ class MieleAtHomeDevice extends IPSModule
         $fabNumber = $this->ReadPropertyString('fabNumber');
         $this->SetSummary($techType . ' (#' . $fabNumber . ')');
 
+		$module_disable = $this->ReadPropertyBoolean('module_disable');
+		if ($module_disable) {
+			$this->SetTimerInterval('UpdateData', 0);
+			$this->SetStatus(IS_INACTIVE);
+			return;
+		}
+
         $this->SetStatus(IS_ACTIVE);
 
         $this->SetUpdateInterval();
@@ -242,6 +251,7 @@ class MieleAtHomeDevice extends IPSModule
     public function GetConfigurationForm()
     {
         $formElements = [];
+		$formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Instance is disabled'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'deviceId', 'caption' => 'Device id'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'deviceType', 'caption' => 'Device type'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'fabNumber', 'caption' => 'Fabrication number'];
@@ -255,7 +265,7 @@ class MieleAtHomeDevice extends IPSModule
         $formElements[] = ['type' => 'CheckBox', 'name' => 'map_ventilationStep', 'caption' => ' ... Ventilation step'];
 
         $formElements[] = ['type' => 'Label', 'label' => 'Update data every X seconds'];
-        $formElements[] = ['type' => 'IntervalBox', 'name' => 'update_interval', 'caption' => 'Seconds'];
+        $formElements[] = ['type' => 'NumberSpinner', 'name' => 'update_interval', 'caption' => 'Seconds'];
 
         $formActions = [];
         $formActions[] = ['type' => 'Button', 'label' => 'Update data', 'onClick' => 'MieleAtHomeDevice_UpdateData($id);'];
@@ -291,6 +301,12 @@ class MieleAtHomeDevice extends IPSModule
 
     public function UpdateData()
     {
+		$inst = IPS_GetInstance($this->InstanceID);
+		if ($inst['InstanceStatus'] == IS_INACTIVE) {
+			$this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+			return;
+		}
+
         $fabNumber = $this->ReadPropertyString('fabNumber');
         $deviceId = $this->ReadPropertyInteger('deviceId');
 
@@ -903,6 +919,12 @@ class MieleAtHomeDevice extends IPSModule
 
     private function CallAction($func, $action)
     {
+		$inst = IPS_GetInstance($this->InstanceID);
+		if ($inst['InstanceStatus'] == IS_INACTIVE) {
+			$this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+			return;
+		}
+
         $this->SendDebug(__FUNCTION__, 'func=' . $func . ', action=' . print_r($action, true), 0);
 
         $fabNumber = $this->ReadPropertyString('fabNumber');
