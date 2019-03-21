@@ -10,7 +10,7 @@ class MieleAtHomeIO extends IPSModule
     {
         parent::Create();
 
-		$this->RegisterPropertyBoolean('module_disable', false);
+        $this->RegisterPropertyBoolean('module_disable', false);
 
         $this->RegisterPropertyString('userid', '');
         $this->RegisterPropertyString('password', '');
@@ -30,11 +30,11 @@ class MieleAtHomeIO extends IPSModule
         $client_id = $this->ReadPropertyString('client_id');
         $client_secret = $this->ReadPropertyString('client_secret');
 
-		$module_disable = $this->ReadPropertyBoolean('module_disable');
-		if ($module_disable) {
-			$this->SetStatus(IS_INACTIVE);
-			return;
-		}
+        $module_disable = $this->ReadPropertyBoolean('module_disable');
+        if ($module_disable) {
+            $this->SetStatus(IS_INACTIVE);
+            return;
+        }
 
         if ($userid != '' && $password != '' && $client_id != '' && $client_secret != '') {
             $this->SetStatus(IS_ACTIVE);
@@ -59,7 +59,7 @@ class MieleAtHomeIO extends IPSModule
         $opts_language[] = ['label' => $this->Translate('Germany'), 'value' => 'de'];
 
         $formElements = [];
-		$formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Instance is disabled'];
+        $formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Instance is disabled'];
         $formElements[] = ['type' => 'Label', 'label' => 'Miele@Home Account'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'userid', 'caption' => 'User-ID (email)'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'Password'];
@@ -99,12 +99,12 @@ class MieleAtHomeIO extends IPSModule
     {
         $txt = '';
 
-		$inst = IPS_GetInstance($this->InstanceID);
-		if ($inst['InstanceStatus'] == IS_INACTIVE) {
-			$this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
-			echo $this->translate('Instance is inactive') . PHP_EOL;
-			return;
-		}
+        $inst = IPS_GetInstance($this->InstanceID);
+        if ($inst['InstanceStatus'] == IS_INACTIVE) {
+            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+            echo $this->translate('Instance is inactive') . PHP_EOL;
+            return;
+        }
 
         $cdata = '';
         $msg = '';
@@ -132,11 +132,11 @@ class MieleAtHomeIO extends IPSModule
 
     public function ForwardData($data)
     {
-		$inst = IPS_GetInstance($this->InstanceID);
-		if ($inst['InstanceStatus'] == IS_INACTIVE) {
-			$this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
-			return;
-		}
+        $inst = IPS_GetInstance($this->InstanceID);
+        if ($inst['InstanceStatus'] == IS_INACTIVE) {
+            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+            return;
+        }
 
         $jdata = json_decode($data, true);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($jdata, true), 0);
