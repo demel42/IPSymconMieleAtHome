@@ -151,6 +151,13 @@ class MieleAtHomeDevice extends IPSModule
                 $with['times'] = true;
                 $with['oven_temp'] = true;
                 $with['Door'] = true;
+				break;
+			case DEVICE_STEAM_OVEN_COMBINATION: // Dampfgarar mit Backofen-Funktion
+				$with['ProgramType'] = true;
+				$with['ProgramPhase'] = true;
+				$with['times'] = true;
+				$with['oven_temp'] = true;
+				$with['Door'] = true;
                 break;
             case DEVICE_FRIDGE_FREEZER:     // Küh-/Gefrierkombination
                 $with['fridge_temp'] = true;
@@ -353,7 +360,7 @@ class MieleAtHomeDevice extends IPSModule
                 $e .= ' (' . $value_localized . ')';
             }
             $this->SendDebug(__FUNCTION__, $e, 0);
-            $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_WARNING);
+            $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_NOTIFY);
         }
 
         $signalFailure = $this->GetArrayElem($jdata, 'signalFailure', false);
@@ -623,6 +630,7 @@ class MieleAtHomeDevice extends IPSModule
 
                 DEVICE_TUMBLE_DRYER => [
                         2 => 'Automatic plus',
+						3 => 'Cotton',
                     ],
 
                 DEVICE_DISHWASHER => [
@@ -638,7 +646,7 @@ class MieleAtHomeDevice extends IPSModule
             $txt = $this->Translate('unknown value') . ' ' . $type;
             $e = 'unknown value ' . $type;
             $this->SendDebug(__FUNCTION__, $e, 0);
-            $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_WARNING);
+            $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_NOTIFY);
         }
         return $txt;
     }
@@ -716,7 +724,7 @@ class MieleAtHomeDevice extends IPSModule
             $txt = $this->Translate('unknown value') . ' ' . $phase;
             $e = 'unknown value ' . $phase;
             $this->SendDebug(__FUNCTION__, $e, 0);
-            $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_WARNING);
+            $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_NOTIFY);
         }
         return $txt;
     }
@@ -745,7 +753,7 @@ class MieleAtHomeDevice extends IPSModule
             $txt = $this->Translate('unknown value') . ' ' . $step;
             $e = 'unknown value ' . $step;
             $this->SendDebug(__FUNCTION__, $e, 0);
-            $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_WARNING);
+            $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_NOTIFY);
         }
         return $txt;
     }
@@ -770,7 +778,7 @@ class MieleAtHomeDevice extends IPSModule
             $txt = $this->Translate('unknown value') . ' ' . $step;
             $e = 'unknown value ' . $step;
             $this->SendDebug(__FUNCTION__, $e, 0);
-            $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_WARNING);
+            $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_NOTIFY);
         }
         return $txt;
     }

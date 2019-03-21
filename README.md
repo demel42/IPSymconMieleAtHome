@@ -194,6 +194,7 @@ Verweise:
 - 1.9 @ 21.03.2019 17:04<br>
   - Schalter, um eine Instanz (temporär) zu deaktivieren
   - Konfigurations-Element IntervalBox -> NumberSpinner
+  - Dampfgarer/Backofen-Kombination hinzugefügt, diverse WARNING auf NOTIFY verringert
 
 - 1.8 @ 23.01.2019 18:18<br>
   - curl_errno() abfragen
