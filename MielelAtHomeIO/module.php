@@ -367,7 +367,7 @@ class MieleAtHomeIO extends IPSModule
         }
 
         if ($cerrno) {
-            $statuscode = IS_HTTPERROR;
+            $statuscode = IS_SERVERERROR;
             $err = 'got curl-errno ' . $cerrno . ' (' . $cerror . ')';
         } elseif ($httpcode == 200 || $httpcode == 204) {
             $data = $cdata;
