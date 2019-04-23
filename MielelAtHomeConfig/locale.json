@@ -3,6 +3,8 @@
 		"de": {
 			"Device": "Gerät",
 			"Import of device": "Gerät anlegen",
+			"Triggering the function creates the instance for the selected device. Are you sure?":
+				"Durch Auslösen der Funktion wird die Instanz für das ausgewählte Gerät angelegt. Sind Sie sich sicher?",
 			"Module description": "Modulbeschreibung",
 
 			"no device selected": "kein Gerät ausgewählt",
