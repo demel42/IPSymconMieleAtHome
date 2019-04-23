@@ -654,9 +654,9 @@ class MieleAtHomeDevice extends IPSModule
     private function programPhase2text($model, $phase)
     {
         $phase2txt = [
-			0 => [
-					0 => 'Ready',
-				],
+            0 => [
+                    0 => 'Ready',
+                ],
             DEVICE_WASHING_MACHINE => [
                     256 => 'Not running',
                     257 => 'Pre-wash',
@@ -739,7 +739,7 @@ class MieleAtHomeDevice extends IPSModule
 
         if (isset($phase2txt[$model][$phase])) {
             $txt = $this->Translate($phase2txt[$model][$phase]);
-		} elseif (isset($phase2txt[0][$phase])) {
+        } elseif (isset($phase2txt[0][$phase])) {
             $txt = $this->Translate($phase2txt[0][$phase]);
         } else {
             $txt = $this->Translate('unknown value') . ' ' . $phase;
