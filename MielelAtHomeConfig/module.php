@@ -51,11 +51,11 @@ class MieleAtHomeConfig extends IPSModule
         $formActions = [];
         $formActions[] = ['type' => 'Select', 'name' => 'fabNumber', 'caption' => 'Device', 'options' => $options];
         $formActions[] = [
-							'type'    => 'Button',
-							'caption' => 'Import of device',
-							'confirm' => 'Triggering the function creates the instance for the selected device. Are you sure?',
-							'onClick' => 'MieleAtHomeConfig_Doit($id, $fabNumber);'
-						];
+                            'type'    => 'Button',
+                            'caption' => 'Import of device',
+                            'confirm' => 'Triggering the function creates the instance for the selected device. Are you sure?',
+                            'onClick' => 'MieleAtHomeConfig_Doit($id, $fabNumber);'
+                        ];
         $formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
         $formActions[] = [
                             'type'    => 'Button',
