@@ -102,61 +102,61 @@ siehe https://www.miele.com/developer/swagger-ui/put_additional_info.html
 
 #### Variablen
 
-| Eigenschaft               | Typ      | Standardwert | Beschreibung |
-| :-----------------------: | :-----:  | :----------: | :----------: |
-| Instanz ist deaktiviert   | boolean  | false        | Instanz temporär deaktivieren |
-|                           |          |              | |
-| Benutzer (EMail)          | string   |              | Miele@Home-Konto: Benutzerkennung |
-| Passwort                  | string   |              | Miele@Home-Konto: Passwort |
-| Client-ID                 | string   |              | Miele@Home API-Zugangsdaten: Client-ID |
-| Client-Secret             | string   |              | Miele@Home API-Zugangsdaten: Client-Secret |
-| VG-Selector               | string   |              | Bedenutung unklar, muss anscheinend auf dem Wert des Landes stehen, wo das Gerät gekauft/betrieben wird |
-| Sprache                   | string   |              | Sprache von Text-Ausgaben der API |
+| Eigenschaft             | Typ     | Standardwert | Beschreibung |
+| :---------------------- | :------ | :----------- | :----------- |
+| Instanz ist deaktiviert | boolean | false        | Instanz temporär deaktivieren |
+|                         |         |              | |
+| Benutzer (EMail)        | string  |              | Miele@Home-Konto: Benutzerkennung |
+| Passwort                | string  |              | Miele@Home-Konto: Passwort |
+| Client-ID               | string  |              | Miele@Home API-Zugangsdaten: Client-ID |
+| Client-Secret           | string  |              | Miele@Home API-Zugangsdaten: Client-Secret |
+| VG-Selector             | string  |              | Bedenutung unklar, muss anscheinend auf dem Wert des Landes stehen, wo das Gerät gekauft/betrieben wird |
+| Sprache                 | string  |              | Sprache von Text-Ausgaben der API |
 
 #### Schaltflächen
 
-| Bezeichnung                  | Beschreibung |
-| :--------------------------: | :----------: |
-| Zugang prüfen                | Prüft, ob die Angaben korrekt sind |
+| Bezeichnung   | Beschreibung |
+| :------------ | :----------- |
+| Zugang prüfen | Prüft, ob die Angaben korrekt sind |
 
 ### b. Konfigurator-Modul
 
-| Eigenschaft               | Typ      | Standardwert | Beschreibung |
-| :-----------------------: | :-----:  | :----------: | :----------: |
-| Gerät                     |          |              | Auswahlliste der Geräte des angegebenen Miele-Kontos |
+| Eigenschaft | Beschreibung |
+| :---------- | :----------- |
+| Gerät       | Auswahlliste der Geräte des angegebenen Miele-Kontos |
 
-| Bezeichnung                  | Beschreibung |
-| :--------------------------: | :----------: |
-| Gerät anlegen                | Erzeugt/Aktualisiert die Geräte-Instanz des ausgewählte Gerätes |
+| Bezeichnung   | Beschreibung |
+| :------------ | :----------- |
+| Gerät anlegen | Erzeugt/Aktualisiert die Geräte-Instanz des ausgewählte Gerätes |
 
 ### c. Geräte-Modul
 
-| Eigenschaft               | Typ      | Standardwert | Beschreibung |
-| :-----------------------: | :-----:  | :----------: | :----------: |
-| Modul ist deaktiviert     | boolean  | false        | Modul temporär deaktivieren |
-|                           |          |              | |
-| Geräete-Typ-ID            | integer  |              | wird im Konfigurator gesetzt und darf nicht geändert werden, bestimmte die auszugebenden Felder |
-| Geräte-Typ                | string   |              | wird im Konfigurator gesetzt |
-| Fabrikationsnummer        | string   |              | wird im Konfigurator gesetzt und darf nicht geändert werden |
-| Modell                    | string   |              | wird im Konfigurator gesetzt |
-| Update-Intervall          | integer  | 60           | Intervall der Datenabfrage in Sekunden |
-|                           |          |              | |
-| Code in Text übersetzen   |          |              | Übersetzte Statustexte aus der API ignoreiren und selbst umsetzen |
-|  ... Status               | boolean  | false        | |
-|  ... Programm             | boolean  | false        | |
-|  ... Phase                | boolean  | false        | |
-|  ... Trockenstufe         | boolean  | false        | |
-|  ... Entlüftungsstufe     | boolean  | false        | |
+| Eigenschaft             | Typ     | Standardwert | Beschreibung |
+| :---------------------- | :-----  | :----------- | :----------- |
+| Modul ist deaktiviert   | boolean | false        | Modul temporär deaktivieren |
+|                         |         |              | |
+| Geräete-Typ-ID          | integer |              | wird im Konfigurator gesetzt und darf nicht geändert werden, bestimmte die auszugebenden Felder |
+| Geräte-Typ              | string  |              | wird im Konfigurator gesetzt |
+| Fabrikationsnummer      | string  |              | wird im Konfigurator gesetzt und darf nicht geändert werden |
+| Modell                  | string  |              | wird im Konfigurator gesetzt |
+| Update-Intervall        | integer | 60           | Intervall der Datenabfrage in Sekunden |
+|                         |         |              | |
+| Code in Text übersetzen |         |              | Übersetzte Statustexte aus der API ignoreiren und selbst umsetzen |
+|  ... Status             | boolean | false        | |
+|  ... Programm           | boolean | false        | |
+|  ... Phase              | boolean | false        | |
+|  ... Trockenstufe       | boolean | false        | |
+|  ... Entlüftungsstufe   | boolean | false        | |
 
-| Bezeichnung                  | Beschreibung |
-| :--------------------------: | :----------: |
-| Daten aktualisieren          | Abfrage der aktuellen Daten |
+| Bezeichnung         | Beschreibung |
+| :------------------ | :----------- |
+| Daten aktualisieren | Abfrage der aktuellen Daten |
 
 
 Bisher unterstützte Gerätetypen
 
 | Geräete-Typ-ID | Geräte-Typ |
-| :------------: | :-: |
+| :------------- | :--------- |
 | 1 | Waschmaschine |
 | 2 | Wäschetrockner |
 | 7 | Geschirrspüler |
