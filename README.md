@@ -194,7 +194,7 @@ Verweise:
 - 1.11 @ 23.04.2019 17:59<br>
   - weitere Text für Phase bei Backofen/Dampfgarer
   - Tabellenausrichtung in README.md
-  - Konfigurator um Sicherheitsabfrage er
+  - Konfigurator um Sicherheitsabfrage erweitert
 
 - 1.10 @ 29.03.2019 16:19<br>
   - SetValue() abgesichert
