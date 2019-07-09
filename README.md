@@ -152,25 +152,25 @@ Wichtig: da keine vollständige Dokumentation vorliegt, welche Geräte es gibt b
 
 siehe https://www.miele.com/developer/swagger-ui/put_additional_info.html
 
-`boolean MieleAtHomeDevice_Start(integer $InstanzID)`<br>
+`boolean MieleAtHome_Start(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_Stop(integer $InstanzID)`<br>
+`boolean MieleAtHome_Stop(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_Pause(integer $InstanzID)`<br>
+`boolean MieleAtHome_Pause(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_StartSuperfreezing(integer $InstanzID)`<br>
+`boolean MieleAtHome_StartSuperfreezing(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_StopSuperfreezing(integer $InstanzID)`<br>
+`boolean MieleAtHome_StopSuperfreezing(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_StartSupercooling(integer $InstanzID)`<br>
+`boolean MieleAtHome_StartSupercooling(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_StopSupercooling(integer $InstanzID)`<br>
+`boolean MieleAtHome_StopSupercooling(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_LightEnable(integer $InstanzID)`<br>
+`boolean MieleAtHome_LightEnable(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_LightDisable(integer $InstanzID)`<br>
+`boolean MieleAtHome_LightDisable(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_SetStarttime(integer $InstanzID, int $hour, int $min)`<br>
+`boolean MieleAtHome_SetStarttime(integer $InstanzID, int $hour, int $min)`<br>
 
 ## 5. Konfiguration
 
