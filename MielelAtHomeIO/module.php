@@ -339,7 +339,7 @@ class MieleAtHomeIO extends IPSModule
 					[
 						'type' => 'Button',
 						'caption' => 'Register',
-						'onClick' => 'echo MieleAtHomeIO_Register($id);'
+						'onClick' => 'echo MieleAtHome_Register($id);'
 					],
 					[
 						'type' => 'Label',
@@ -361,7 +361,7 @@ class MieleAtHomeIO extends IPSModule
 					[
 						'type' => 'Button',
 						'caption' => 'Register',
-						'onClick' => 'MieleAtHomeIO_TestAccess($id);'
+						'onClick' => 'MieleAtHome_TestAccess($id);'
 					],
 					[
 						'type' => 'Label',
