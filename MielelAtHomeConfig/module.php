@@ -122,15 +122,18 @@ class MieleAtHomeConfig extends IPSModule
      */
     public function GetConfigurationForm()
     {
-        // return current form
-        $Form = json_encode([
-            'elements' => $this->FormHead(),
-            'actions'  => $this->FormActions(),
-            'status'   => $this->FormStatus()
-        ]);
-        $this->SendDebug('FORM', $Form, 0);
-        $this->SendDebug('FORM', json_last_error_msg(), 0);
-        return $Form;
+		$formElements = $this->GetFormElements();
+		$formActions =  $this->GetFormActions();
+		$formStatus = $this->GetFormStatus();
+
+		$form = json_encode([ 'elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus ]);
+		if ($form == '') {
+			$this->SendDebug(__FUNCTION__, 'json_error=' . json_last_error_msg(), 0);
+			$this->SendDebug(__FUNCTION__, '=> formElements=' . print_r($formElements, true), 0);
+			$this->SendDebug(__FUNCTION__, '=> formActions=' . print_r($formActions, true), 0);
+			$this->SendDebug(__FUNCTION__, '=> formStatus=' . print_r($formStatus, true), 0);
+		}
+		return $form;
     }
 
     /**
@@ -138,7 +141,7 @@ class MieleAtHomeConfig extends IPSModule
      *
      * @return array
      */
-    protected function FormHead()
+    protected function GetFormElements()
     {
         $form = [
             [
@@ -209,7 +212,7 @@ class MieleAtHomeConfig extends IPSModule
      *
      * @return array
      */
-    protected function FormActions()
+    protected function GetFormActions()
     {
         $form = [
             [
@@ -227,69 +230,6 @@ class MieleAtHomeConfig extends IPSModule
                 'onClick' => 'echo "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md";'
             ]
         ];
-        return $form;
-    }
-
-    /**
-     * return from status.
-     *
-     * @return array
-     */
-    protected function FormStatus()
-    {
-        $form = [
-            [
-                'code'    => IS_CREATING,
-                'icon'    => 'inactive',
-                'caption' => 'Instance getting created'
-            ],
-            [
-                'code'    => IS_ACTIVE,
-                'icon'    => 'active',
-                'caption' => 'Instance is active'
-            ],
-            [
-                'code'    => IS_DELETING,
-                'icon'    => 'inactive',
-                'caption' => 'Instance is deleted'
-            ],
-            [
-                'code'    => IS_INACTIVE,
-                'icon'    => 'inactive',
-                'caption' => 'Instance is inactive'
-            ],
-            [
-                'code'    => IS_NOTCREATED,
-                'icon'    => 'inactive',
-                'caption' => 'Instance is not created'
-            ],
-            [
-                'code'    => IS_INVALIDCONFIG,
-                'icon'    => 'error',
-                'caption' => 'Instance is inactive (invalid configuration)'
-            ],
-            [
-                'code'    => IS_UNAUTHORIZED,
-                'icon'    => 'error',
-                'caption' => 'Instance is inactive (unauthorized)'
-            ],
-            [
-                'code'    => IS_SERVERERROR,
-                'icon'    => 'error',
-                'caption' => 'Instance is inactive (server error)'
-            ],
-            [
-                'code'    => IS_HTTPERROR,
-                'icon'    => 'error',
-                'caption' => 'Instance is inactive (http error)'
-            ],
-            [
-                'code'    => IS_INVALIDDATA,
-                'icon'    => 'error',
-                'caption' => 'Instance is inactive (invalid data)'
-            ]
-        ];
-
         return $form;
     }
 }

@@ -1,8 +1,9 @@
 <?php
 
-if (!defined('OAUTH_CONNECTION')) {
-    define('OAUTH_CONNECTION', 1);
-    define('DEVELOPER_CONNECTION', 2);
+if (!defined('CONNECTION_UNDEFINED')) {
+    define('CONNECTION_UNDEFINED', 0);
+    define('CONNECTION_OAUTH', 1);
+    define('CONNECTION_DEVELOPER', 2);
 }
 
 if (!defined('VARIABLETYPE_BOOLEAN')) {
@@ -262,5 +263,24 @@ trait MieleAtHomeCommon
             return $bval ? 'true' : 'false';
         }
         return $bval;
+    }
+
+	private function GetFormStatus()
+    {
+        $formStatus = [];
+
+		$formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created' ];
+		$formStatus[] = ['code' => IS_ACTIVE, 'icon' => 'active', 'caption' => 'Instance is active' ];
+		$formStatus[] = ['code' => IS_DELETING, 'icon' => 'inactive', 'caption' => 'Instance is deleted' ];
+		$formStatus[] = ['code' => IS_INACTIVE, 'icon' => 'inactive', 'caption' => 'Instance is inactive' ];
+
+		$formStatus[] = ['code' => IS_NOTCREATED, 'icon' => 'inactive', 'caption' => 'Instance is not created' ];
+		$formStatus[] = ['code' => IS_INVALIDCONFIG, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid configuration)' ];
+		$formStatus[] = ['code' => IS_UNAUTHORIZED, 'icon' => 'error', 'caption' => 'Instance is inactive (unauthorized)' ];
+		$formStatus[] = ['code' => IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)' ];
+		$formStatus[] = ['code' => IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)' ];
+		$formStatus[] = ['code' => IS_INVALIDDATA, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)' ];
+
+        return $formStatus;
     }
 }

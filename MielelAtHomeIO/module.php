@@ -23,34 +23,41 @@ class MieleAtHomeIO extends IPSModule
 
         $this->RegisterPropertyString('vg_selector', '');
         $this->RegisterPropertyString('language', '');
+
         $this->RegisterPropertyString('Token', '');
-        $this->RegisterPropertyInteger('OAuth_Type', 0);
+        $this->RegisterPropertyInteger('OAuth_Type', CONNECTION_UNDEFINED);
     }
 
     public function ApplyChanges()
     {
         parent::ApplyChanges();
 
-        $this->RegisterOAuth($this->oauthIdentifer);
         $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
         $userid = $this->ReadPropertyString('userid');
         $password = $this->ReadPropertyString('password');
         $client_id = $this->ReadPropertyString('client_id');
         $client_secret = $this->ReadPropertyString('client_secret');
+        $client_secret = $this->ReadPropertyString('client_secret');
+		$token = $this->ReadPropertyString('Token');
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
             $this->SetStatus(IS_INACTIVE);
             return;
         }
-        if ($oauth_type == 2) {
+        if ($oauth_type == CONNECTION_DEVELOPER) {
             if ($userid != '' && $password != '' && $client_id != '' && $client_secret != '') {
                 $this->SetStatus(IS_ACTIVE);
             } else {
                 $this->SetStatus(IS_INVALIDCONFIG);
             }
         } else {
-            $this->SetStatus(IS_ACTIVE);
+			if ($token != '') {
+                $this->SetStatus(IS_ACTIVE);
+            } else {
+                $this->SetStatus(IS_INVALIDCONFIG);
+			}
+			$this->RegisterOAuth($this->oauthIdentifer);
         }
     }
 
@@ -134,12 +141,18 @@ class MieleAtHomeIO extends IPSModule
      */
     public function GetConfigurationForm()
     {
-        // return current form
-        return json_encode([
-            'elements' => $this->FormHead(),
-            'actions'  => $this->FormActions(),
-            'status'   => $this->FormStatus()
-        ]);
+		$formElements = $this->GetFormElements();
+		$formActions =  $this->GetFormActions();
+		$formStatus = $this->GetFormStatus();
+
+		$form = json_encode([ 'elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus ]);
+		if ($form == '') {
+			$this->SendDebug(__FUNCTION__, 'json_error=' . json_last_error_msg(), 0);
+			$this->SendDebug(__FUNCTION__, '=> formElements=' . print_r($formElements, true), 0);
+			$this->SendDebug(__FUNCTION__, '=> formActions=' . print_r($formActions, true), 0);
+			$this->SendDebug(__FUNCTION__, '=> formStatus=' . print_r($formStatus, true), 0);
+		}
+		return $form;
     }
 
     /**
@@ -147,7 +160,7 @@ class MieleAtHomeIO extends IPSModule
      *
      * @return array
      */
-    protected function FormHead()
+    protected function GetFormElements()
     {
         $form = [
             [
@@ -181,7 +194,7 @@ class MieleAtHomeIO extends IPSModule
 
         $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
 
-        if ($oauth_type == OAUTH_CONNECTION) {
+        if ($oauth_type == CONNECTION_OAUTH) {
             $form = array_merge_recursive(
                 $form,
                 [
@@ -205,7 +218,7 @@ class MieleAtHomeIO extends IPSModule
             );
         }
 
-        if ($oauth_type == DEVELOPER_CONNECTION) {
+        if ($oauth_type == CONNECTION_DEVELOPER) {
             $form = array_merge_recursive(
                 $form,
                 [
@@ -313,11 +326,11 @@ class MieleAtHomeIO extends IPSModule
      *
      * @return array
      */
-    protected function FormActions()
+    protected function GetFormActions()
     {
         $form = [];
         $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
-        if ($oauth_type == OAUTH_CONNECTION) {
+        if ($oauth_type == CONNECTION_OAUTH) {
             $form = array_merge_recursive(
                 $form,
                 [
@@ -338,7 +351,7 @@ class MieleAtHomeIO extends IPSModule
             );
         }
 
-        if ($oauth_type == DEVELOPER_CONNECTION) {
+        if ($oauth_type == CONNECTION_DEVELOPER) {
             $form = array_merge_recursive(
                 $form,
                 [
@@ -368,69 +381,6 @@ class MieleAtHomeIO extends IPSModule
                 ]
             ]
         );
-
-        return $form;
-    }
-
-    /**
-     * return from status.
-     *
-     * @return array
-     */
-    protected function FormStatus()
-    {
-        $form = [
-            [
-                'code'    => IS_CREATING,
-                'icon'    => 'inactive',
-                'caption' => 'Instance getting created'
-            ],
-            [
-                'code'    => IS_ACTIVE,
-                'icon'    => 'active',
-                'caption' => 'Instance is active'
-            ],
-            [
-                'code'    => IS_DELETING,
-                'icon'    => 'inactive',
-                'caption' => 'Instance is deleted'
-            ],
-            [
-                'code'    => IS_INACTIVE,
-                'icon'    => 'inactive',
-                'caption' => 'Instance is inactive'
-            ],
-            [
-                'code'    => IS_NOTCREATED,
-                'icon'    => 'inactive',
-                'caption' => 'Instance is not created'
-            ],
-            [
-                'code'    => IS_INVALIDCONFIG,
-                'icon'    => 'error',
-                'caption' => 'Instance is inactive (invalid configuration)'
-            ],
-            [
-                'code'    => IS_UNAUTHORIZED,
-                'icon'    => 'error',
-                'caption' => 'Instance is inactive (unauthorized)'
-            ],
-            [
-                'code'    => IS_SERVERERROR,
-                'icon'    => 'error',
-                'caption' => 'Instance is inactive (server error)'
-            ],
-            [
-                'code'    => IS_HTTPERROR,
-                'icon'    => 'error',
-                'caption' => 'Instance is inactive (http error)'
-            ],
-            [
-                'code'    => IS_INVALIDDATA,
-                'icon'    => 'error',
-                'caption' => 'Instance is inactive (invalid data)'
-            ]
-        ];
 
         return $form;
     }
@@ -582,14 +532,15 @@ class MieleAtHomeIO extends IPSModule
     private function getToken(&$msg)
     {
         $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
-        if ($oauth_type == OAUTH_CONNECTION) {
+
+        if ($oauth_type == CONNECTION_OAUTH) {
             $token = $this->ReadPropertyString('Token');
             $jtoken = [
                 'token'            => $token
             ];
         }
 
-        if ($oauth_type == DEVELOPER_CONNECTION) {
+        if ($oauth_type == CONNECTION_DEVELOPER) {
             $userid = $this->ReadPropertyString('userid');
             $password = $this->ReadPropertyString('password');
             $client_id = $this->ReadPropertyString('client_id');
