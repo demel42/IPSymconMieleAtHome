@@ -1,8 +1,8 @@
 <?php
 
 if (!defined('OAUTH_CONNECTION')) {
-	define('OAUTH_CONNECTION', 1);
-	define('DEVELOPER_CONNECTION', 2);
+    define('OAUTH_CONNECTION', 1);
+    define('DEVELOPER_CONNECTION', 2);
 }
 
 if (!defined('VARIABLETYPE_BOOLEAN')) {
