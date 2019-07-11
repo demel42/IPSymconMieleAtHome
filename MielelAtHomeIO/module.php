@@ -38,7 +38,7 @@ class MieleAtHomeIO extends IPSModule
         $client_id = $this->ReadPropertyString('client_id');
         $client_secret = $this->ReadPropertyString('client_secret');
         $client_secret = $this->ReadPropertyString('client_secret');
-		$token = $this->ReadPropertyString('Token');
+        $token = $this->ReadPropertyString('Token');
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
@@ -52,12 +52,12 @@ class MieleAtHomeIO extends IPSModule
                 $this->SetStatus(IS_INVALIDCONFIG);
             }
         } else {
-			if ($token != '') {
+            if ($token != '') {
                 $this->SetStatus(IS_ACTIVE);
             } else {
                 $this->SetStatus(IS_INVALIDCONFIG);
-			}
-			$this->RegisterOAuth($this->oauthIdentifer);
+            }
+            $this->RegisterOAuth($this->oauthIdentifer);
         }
     }
 
@@ -141,18 +141,18 @@ class MieleAtHomeIO extends IPSModule
      */
     public function GetConfigurationForm()
     {
-		$formElements = $this->GetFormElements();
-		$formActions =  $this->GetFormActions();
-		$formStatus = $this->GetFormStatus();
+        $formElements = $this->GetFormElements();
+        $formActions = $this->GetFormActions();
+        $formStatus = $this->GetFormStatus();
 
-		$form = json_encode([ 'elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus ]);
-		if ($form == '') {
-			$this->SendDebug(__FUNCTION__, 'json_error=' . json_last_error_msg(), 0);
-			$this->SendDebug(__FUNCTION__, '=> formElements=' . print_r($formElements, true), 0);
-			$this->SendDebug(__FUNCTION__, '=> formActions=' . print_r($formActions, true), 0);
-			$this->SendDebug(__FUNCTION__, '=> formStatus=' . print_r($formStatus, true), 0);
-		}
-		return $form;
+        $form = json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
+        if ($form == '') {
+            $this->SendDebug(__FUNCTION__, 'json_error=' . json_last_error_msg(), 0);
+            $this->SendDebug(__FUNCTION__, '=> formElements=' . print_r($formElements, true), 0);
+            $this->SendDebug(__FUNCTION__, '=> formActions=' . print_r($formActions, true), 0);
+            $this->SendDebug(__FUNCTION__, '=> formStatus=' . print_r($formStatus, true), 0);
+        }
+        return $form;
     }
 
     /**
