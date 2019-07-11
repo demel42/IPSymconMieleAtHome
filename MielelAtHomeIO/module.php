@@ -27,7 +27,7 @@ class MieleAtHomeIO extends IPSModule
         $this->RegisterPropertyString('Token', '');
         $this->RegisterPropertyInteger('OAuth_Type', CONNECTION_UNDEFINED);
 
-		$this->RegisterMessage(0, IPS_KERNELMESSAGE);
+        $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
 
     public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
@@ -35,9 +35,9 @@ class MieleAtHomeIO extends IPSModule
         parent::MessageSink($TimeStamp, $SenderID, $Message, $Data);
 
         if ($Message == IPS_KERNELMESSAGE && $Data[0] == KR_READY) {
-			$oauth_type = $this->ReadPropertyInteger('OAuth_Type');
-			if ($oauth_type == CONNECTION_OAUTH) {
-				$this->RegisterOAuth($this->oauthIdentifer);
+            $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
+            if ($oauth_type == CONNECTION_OAUTH) {
+                $this->RegisterOAuth($this->oauthIdentifer);
             }
         }
     }
@@ -72,9 +72,9 @@ class MieleAtHomeIO extends IPSModule
             } else {
                 $this->SetStatus(IS_INVALIDCONFIG);
             }
-			if (IPS_GetKernelRunlevel() == KR_READY) {
-				$this->RegisterOAuth($this->oauthIdentifer);
-			}
+            if (IPS_GetKernelRunlevel() == KR_READY) {
+                $this->RegisterOAuth($this->oauthIdentifer);
+            }
         }
     }
 
@@ -112,16 +112,16 @@ class MieleAtHomeIO extends IPSModule
         //Exchange our Authentication Code for a permanent Baerer Token
         $options = [
             'http' => [
-					'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
-					'method'  => 'POST',
-					'content' => http_build_query(['code' => $code])
-				]
+                    'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
+                    'method'  => 'POST',
+                    'content' => http_build_query(['code' => $code])
+                ]
         ];
         $context = stream_context_create($options);
         $result = file_get_contents('https://oauth.ipmagic.de/access_token/' . $this->oauthIdentifer, false, $context);
         $data = json_decode($result);
 
-		$this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         if (!isset($data->token_type) || $data->token_type != 'Bearer') {
             die('Bearer Token expected');
@@ -497,8 +497,8 @@ class MieleAtHomeIO extends IPSModule
         if ($oauth_type == CONNECTION_OAUTH) {
             $token = $this->ReadPropertyString('Token');
             $jtoken = [
-					'token'            => $token
-				];
+                    'token'            => $token
+                ];
         }
 
         if ($oauth_type == CONNECTION_DEVELOPER) {
@@ -515,19 +515,19 @@ class MieleAtHomeIO extends IPSModule
 
             if ($expiration < time()) {
                 $params = [
-						'client_id'     => $client_id,
-						'client_secret' => $client_secret,
-						'grant_type'    => 'password',
-						'username'      => $userid,
-						'password'      => $password,
-						'state'         => 'token',
-						'redirect_uri'  => '/v1/devices',
-						'vg'            => $vg_selector,
-					];
+                        'client_id'     => $client_id,
+                        'client_secret' => $client_secret,
+                        'grant_type'    => 'password',
+                        'username'      => $userid,
+                        'password'      => $password,
+                        'state'         => 'token',
+                        'redirect_uri'  => '/v1/devices',
+                        'vg'            => $vg_selector,
+                    ];
                 $header = [
-						'Accept: application/json; charset=utf-8',
-						'Content-Type: application/x-www-form-urlencoded'
-					];
+                        'Accept: application/json; charset=utf-8',
+                        'Content-Type: application/x-www-form-urlencoded'
+                    ];
 
                 $cdata = '';
                 $msg = '';
@@ -548,9 +548,9 @@ class MieleAtHomeIO extends IPSModule
                 $expires_in = $jdata['expires_in'];
 
                 $jtoken = [
-						'token'            => $token,
-						'expiration'       => time() + $expires_in
-					];
+                        'token'            => $token,
+                        'expiration'       => time() + $expires_in
+                    ];
                 $this->SetBuffer('Token', json_encode($jtoken));
             }
         }
