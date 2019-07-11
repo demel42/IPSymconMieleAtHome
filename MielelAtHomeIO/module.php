@@ -120,12 +120,12 @@ class MieleAtHomeIO extends IPSModule
         $time_start = microtime(true);
         $options = [
             'http' => [
-					'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
-					'method'  => 'POST',
-					'content' => http_build_query($content)
-				]
-			];
-		$context = stream_context_create($options);
+                    'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
+                    'method'  => 'POST',
+                    'content' => http_build_query($content)
+                ]
+            ];
+        $context = stream_context_create($options);
         $cdata = @file_get_contents($url, false, $context);
         $duration = round(microtime(true) - $time_start, 2);
         if (preg_match('/HTTP\/[0-9\.]+\s+([0-9]*)/', $http_response_header[0], $r)) {
@@ -186,9 +186,9 @@ class MieleAtHomeIO extends IPSModule
             return false;
         }
         $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
-		$access_token = jdata['access_token'];
-		$expiration = time() + $jdata['expires_in'];
-		$refresh_token = $jdata['refresh_token'];
+        $access_token = jdata['access_token'];
+        $expiration = time() + $jdata['expires_in'];
+        $refresh_token = $jdata['refresh_token'];
         $this->FetchAccessToken($access_token, $expiration);
         return $refresh_token;
     }
@@ -231,10 +231,10 @@ class MieleAtHomeIO extends IPSModule
     protected function ProcessOAuthData()
     {
         if (!isset($_GET['code'])) {
-			$this->SendDebug(__FUNCTION__, 'code missing, _GET=' . print_r($_GET, true), 0);
-			$this->SetStatus(IS_INVALIDCONFIG);
-			$this->WriteAttributeString('RefreshToken', '');
-			return;
+            $this->SendDebug(__FUNCTION__, 'code missing, _GET=' . print_r($_GET, true), 0);
+            $this->SetStatus(IS_INVALIDCONFIG);
+            $this->WriteAttributeString('RefreshToken', '');
+            return;
         }
         $refresh_token = $this->FetchRefreshToken($_GET['code']);
         $this->SendDebug(__FUNCTION__, 'refresh_token=' . $refresh_token, 0);
