@@ -299,19 +299,19 @@ class MieleAtHomeDevice extends IPSModule
         $formActions = [];
 
         $formActions[] = [
-                    'type'    => 'Button',
-                    'label'   => 'Update data',
-                    'onClick' => 'MieleAtHome_UpdateData($id);'
+						'type'    => 'Button',
+						'label'   => 'Update data',
+						'onClick' => 'MieleAtHome_UpdateData($id);'
                     ];
         $formActions[] = [
-        'type'  => 'Label',
-        'label' => '____________________________________________________________________________________________________'
-        ];
+						'type'  => 'Label',
+						'label' => '____________________________________________________________________________________________________'
+					];
         $formActions[] = [
-                            'type'    => 'Button',
-                            'caption' => 'Module description',
-                            'onClick' => 'echo "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md";'
-                        ];
+						'type'    => 'Button',
+						'caption' => 'Module description',
+						'onClick' => 'echo "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md";'
+					];
 
         return $formActions;
     }
