@@ -271,8 +271,8 @@ class MieleAtHomeDevice extends IPSModule
         return $form;
     }
 
-	protected function GetFormElements()
-	{
+    protected function GetFormElements()
+    {
         $formElements = [];
 
         $formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Instance is disabled'];
@@ -291,30 +291,30 @@ class MieleAtHomeDevice extends IPSModule
         $formElements[] = ['type' => 'Label', 'label' => 'Update data every X seconds'];
         $formElements[] = ['type' => 'NumberSpinner', 'name' => 'update_interval', 'caption' => 'Seconds'];
 
-		return $formElements;
-	}
+        return $formElements;
+    }
 
-	protected function GetFormActions()
-	{
+    protected function GetFormActions()
+    {
         $formActions = [];
 
         $formActions[] = [
-					'type' => 'Button',
-					'label' => 'Update data',
-					'onClick' => 'MieleAtHome_UpdateData($id);'
-					];
+                    'type'    => 'Button',
+                    'label'   => 'Update data',
+                    'onClick' => 'MieleAtHome_UpdateData($id);'
+                    ];
         $formActions[] = [
-		'type' => 'Label',
-		'label' => '____________________________________________________________________________________________________'
-		];
+        'type'  => 'Label',
+        'label' => '____________________________________________________________________________________________________'
+        ];
         $formActions[] = [
                             'type'    => 'Button',
                             'caption' => 'Module description',
                             'onClick' => 'echo "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md";'
                         ];
 
-		return $formActions;
-	}
+        return $formActions;
+    }
 
     protected function SetUpdateInterval()
     {
