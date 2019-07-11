@@ -48,7 +48,7 @@ class MieleAtHomeConfig extends IPSModule
                 foreach ($MieleatHomeInstanceIDList as $MieleatHomeInstanceID) {
                     if ($fabNumber == IPS_GetProperty($MieleatHomeInstanceID, 'fabNumber')) {
                         $MieleatHome_device_name = IPS_GetName($MieleatHomeInstanceID);
-                        $this->SendDebug('Miele@Home Config', 'device found: ' . utf8_decode($MieleatHome_device_name) . ' (' . $MieleatHomeInstanceID . ')', 0);
+                        $this->SendDebug(__FUNCTION__, 'device found: ' . utf8_decode($MieleatHome_device_name) . ' (' . $MieleatHomeInstanceID . ')', 0);
                         $instanceID = $MieleatHomeInstanceID;
                     }
                 }
@@ -65,7 +65,8 @@ class MieleAtHomeConfig extends IPSModule
                     $deviceName = $deviceType;
                 }
 
-                $config_list[] = ['instanceID' => $instanceID,
+                $config_list[] = [
+					'instanceID' => $instanceID,
                     'id'                       => $deviceId,
                     'name'                     => $deviceName,
                     'tech_type'                => $techType,
@@ -74,7 +75,6 @@ class MieleAtHomeConfig extends IPSModule
                     'fabNumber'                => $fabNumber,
                     'location'                 => $this->SetLocation(),
                     'create'                   => [
-
                         'moduleID'      => '{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}',
                         'configuration' => [
                             'deviceId'   => $deviceId,
@@ -107,7 +107,7 @@ class MieleAtHomeConfig extends IPSModule
         // reverse array
         $tree_position = array_reverse($tree_position);
         array_push($tree_position, $this->Translate('Miele@Home devices'));
-        $this->SendDebug('Miele@Home Location', json_encode($tree_position), 0);
+        $this->SendDebug(__FUNCTION__, json_encode($tree_position), 0);
         return $tree_position;
     }
 
