@@ -2,10 +2,18 @@
 	"translations": {
 		"de": {
 			"Device": "Gerät",
-			"Import of device": "Gerät anlegen",
-			"Triggering the function creates the instance for the selected device. Are you sure?":
-				"Durch Auslösen der Funktion wird die Instanz für das ausgewählte Gerät angelegt. Sind Sie sich sicher?",
+			"category for Miele@Home devices:": "Kategorie für Miele@Home Geräte:",
+			"category Miele@Home": "Kategorie Miele@Home",
+			"Get device list:": "Geräte Liste abholen",
+			"Refresh list": "Liste aktualisieren",
 			"Module description": "Modulbeschreibung",
+
+			"device name": "Gerätename",
+			"tech type": "Technischer Typ",
+			"fabrication number": "Fabrikationsnummer",
+			"type": "Typ",
+			"device id": "Geräte ID",
+			"Miele@Home devices": "Miele@Home Geräte",
 
 			"no device selected": "kein Gerät ausgewählt",
 			"unknown device": "unbekannteѕ Gerät",

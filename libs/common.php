@@ -1,5 +1,10 @@
 <?php
 
+if (!defined('OAUTH_CONNECTION')) {
+	define('OAUTH_CONNECTION', 1);
+	define('DEVELOPER_CONNECTION', 2);
+}
+
 if (!defined('VARIABLETYPE_BOOLEAN')) {
     define('VARIABLETYPE_BOOLEAN', 0);
     define('VARIABLETYPE_INTEGER', 1);
