@@ -442,11 +442,6 @@ class MieleAtHomeIO extends IPSModule
         return $formActions;
     }
 
-    // Information
-
-    /** Returns all information about appliances linked to an user account.
-     * @return array
-     */
     public function GetDevices()
     {
         $ret = '';
@@ -456,12 +451,7 @@ class MieleAtHomeIO extends IPSModule
         return $devices;
     }
 
-    /** Returns all information about a single appliance linked to an user account
-     * @param $device_id
-     *
-     * @return array
-     */
-    public function GetDevice($device_id)
+    public function GetDevice(string $device_id)
     {
         $ret = '';
         $msg = '';
@@ -470,12 +460,7 @@ class MieleAtHomeIO extends IPSModule
         return $device;
     }
 
-    /** Returns the ident information of a single device
-     * @param $device_id
-     *
-     * @return array
-     */
-    public function GetDeviceIdent($device_id)
+    public function GetDeviceIdent(string $device_id)
     {
         $ret = '';
         $msg = '';
@@ -484,12 +469,7 @@ class MieleAtHomeIO extends IPSModule
         return $device_ident;
     }
 
-    /** Returns the state information of a single device
-     * @param $device_id
-     *
-     * @return array
-     */
-    public function GetDeviceState($device_id)
+    public function GetDeviceState(string $device_id)
     {
         $ret = '';
         $msg = '';
