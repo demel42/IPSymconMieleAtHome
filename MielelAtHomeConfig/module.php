@@ -66,7 +66,7 @@ class MieleAtHomeConfig extends IPSModule
                 }
 
                 $config_list[] = [
-					'instanceID' => $instanceID,
+                    'instanceID'               => $instanceID,
                     'id'                       => $deviceId,
                     'name'                     => $deviceName,
                     'tech_type'                => $techType,
