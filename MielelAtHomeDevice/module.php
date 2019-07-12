@@ -159,7 +159,7 @@ class MieleAtHomeDevice extends IPSModule
                 $with['action_superfreezing'] = true;
                 $with['action_supercooling'] = true;
                 break;
-            case DEVICE_STEAM_OVEN_COMBINATION: // Dampfgarar mit Backofen-Funktion
+            case DEVICE_STEAM_OVEN_COMBINATION: // Dampfgarer mit Backofen-Funktion
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
                 $with['times'] = true;
