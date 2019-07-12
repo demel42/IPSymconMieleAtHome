@@ -70,11 +70,11 @@ class MieleAtHomeConfig extends IPSModule
                         'moduleID'      => '{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}',
                         'location'      => $this->SetLocation(),
                         'configuration' => [
-								'deviceId'   => $deviceId,
-								'deviceType' => $deviceType,
-								'fabNumber'  => $fabNumber,
-								'techType'   => $techType
-							]
+                                'deviceId'   => $deviceId,
+                                'deviceType' => $deviceType,
+                                'fabNumber'  => $fabNumber,
+                                'techType'   => $techType
+                            ]
                     ];
                 if (IPS_GetKernelVersion() >= 5.1) {
                     $create['info'] = $deviceType . ' (' . $techType . ')';
