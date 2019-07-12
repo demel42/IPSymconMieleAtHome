@@ -45,12 +45,7 @@ Anschließend oben rechts auf das Symbol für den Modulstore (IP-Symcon > 5.1) k
 
 Im Suchfeld 
 ![Store](docs/de/img/module_store_search.png?raw=true "module search")
-nun
-
-```
-Miele
-```  
-eingeben, das Modul auswählen und auf
+nun _Miele_ eingeben, das Modul auswählen und auf
 ![Store](docs/de/img/install.png?raw=true "install")
 drücken.
 
@@ -88,17 +83,17 @@ Es öffnet sich ein weiteres Fenster,
 
 ![SelectBranch](docs/de/img/select_branch.png?raw=true "select branch") 
 
-hier kann man auf einen anderen Zweig wechseln, für ältere Versionen sind entsprechende Versionen auszuwählen.
+hier kann man auf einen anderen Zweig wechseln, für ältere Versionen sind entsprechende Zweige auszuwählen.
 
 ### b. Miele-Cloud
 
 Es wird ein Account bei _Miele@Home_ benötigt, das macht man am einfachsten über die App oder legt direkt bei Miele ein Benutzerkonto an.
 
-Um Zugriff auf die Miele@Home Daten zu bekommen gibt es zwei Möglichkeiten.
+Um Zugriff auf die Miele@Home Daten zu bekommen, gibt es zwei Möglichkeiten.
 
 #### Zugriff mit Miele@Home Benutzerdaten über IP-Symcon Connect
 
-Hierzu wird ein aktives IP-Symcon Connect benötigt und den normalen Miele@Home Benutzernamen und das Miele@Home Passwort. Dein Benutzeraccount legt man am besten in der Miele App an, falls man nicht schon einen besitzten solle.
+Hierzu wird ein aktives IP-Symcon Connect benötigt und den normalen Miele@Home Benutzernamen und Passwort.
 
 #### Zugriff als Entwickler mit eigenem Entwicklerschlüssel
 
@@ -131,12 +126,12 @@ Die geforderten Daten eintragen - wichtig, das Feld _VG-Auswahl_ muss anscheinen
 ### d. Einrichtung des Konfigurator-Moduls
 
 In IP-Symcon nun unterhalb von _Konfigurator Instanzen_ die Funktion _Instanz hinzufügen_ (_CTRL+1_) auswählen, als Hersteller _Miele_ und als Gerät _Miele@Home Konfigurator_ auswählen.
-In der Liste nun das zu erstellende Gerät auswählen das man erstellen will. Der Konfigurator legt dann eine Geräte Instaz an.
+In der Liste nun das zu erstellende Gerät auswählen, das man erstellen will. Der Konfigurator legt dann eine Geräte Instanz an.
 
 ### e. Einrichtung des Geräte-Moduls
 
 Eine manuelle Einrichtung eines Geräemoduls ist nicht erforderlich, das erfolgt über den Konfigurator.
-In dem Geräte-Modul ist ggfs nur das Abfrage-Intervall anzupassen, die anderen Felder, insbesondere die _Fabrikationsnummer_ (diese ist die Identifikation des Gerätes) und die _Geräte-Typ-ID_ (dies steuert, welche Variablen angelegt werden) müssen unverändert bleiben.
+In dem Geräte-Modul ist ggfs nur das Abfrage-Intervall anzupassen, die anderen Felder, insbesondere die _Seriennummer_ (diese ist die Identifikation des Gerätes) und die _Geräte-Typ-ID_ (diese steuert, welche Variablen angelegt werden) müssen unverändert bleiben.
 
 Wichtig: da keine vollständige Dokumentation vorliegt, welche Geräte es gibt bzw. welche Geräte sinnvollerweise welche Variablen füllen, ist die Liste der unterstützten Geräte unvollständig und muss dann im Bedarfsfall erweitert werden.
 
@@ -191,11 +186,8 @@ siehe https://www.miele.com/developer/swagger-ui/put_additional_info.html
 
 | Eigenschaft | Beschreibung |
 | :---------- | :----------- |
+| Kategorie   | opt. Angabe einer Kategorie, unterhalb der die Instanzen angelegt werden |
 | Gerät       | Auswahlliste der Geräte des angegebenen Miele-Kontos |
-
-| Bezeichnung   | Beschreibung |
-| :------------ | :----------- |
-| Gerät anlegen | Erzeugt/Aktualisiert die Geräte-Instanz des ausgewählte Gerätes |
 
 ### c. Geräte-Modul
 
@@ -205,7 +197,7 @@ siehe https://www.miele.com/developer/swagger-ui/put_additional_info.html
 |                         |         |              | |
 | Geräete-Typ-ID          | integer |              | wird im Konfigurator gesetzt und darf nicht geändert werden, bestimmte die auszugebenden Felder |
 | Geräte-Typ              | string  |              | wird im Konfigurator gesetzt |
-| Fabrikationsnummer      | string  |              | wird im Konfigurator gesetzt und darf nicht geändert werden |
+| Seriennummer            | string  |              | wird im Konfigurator gesetzt und darf nicht geändert werden |
 | Modell                  | string  |              | wird im Konfigurator gesetzt |
 | Update-Intervall        | integer | 60           | Intervall der Datenabfrage in Sekunden |
 |                         |         |              | |
@@ -261,7 +253,7 @@ Verweise:
 ## 7. Versions-Historie
 
 - 1.12 @ 12.07.2019 14:47<br>
-  - OAuth hinzugefügt
+  - OAuth hinzugefügt (Dank an Fonzo)
   - Konfigurator als Konfigurationsformular
   - Modul-Prefixe auf _MieleAtHome_ vereinheitlicht
   
