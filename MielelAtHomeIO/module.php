@@ -520,7 +520,7 @@ class MieleAtHomeIO extends IPSModule
         if ($oauth_type == CONNECTION_OAUTH) {
             $token = $this->FetchAccessToken();
             $jtoken = [
-                    'token'            => $token
+                    'token' => $token
                 ];
         }
 
