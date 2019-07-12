@@ -188,7 +188,7 @@ class MieleAtHomeIO extends IPSModule
             return false;
         }
         $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
-        $access_token = jdata['access_token'];
+        $access_token = $jdata['access_token'];
         $expiration = time() + $jdata['expires_in'];
         $refresh_token = $jdata['refresh_token'];
         $this->FetchAccessToken($access_token, $expiration);
