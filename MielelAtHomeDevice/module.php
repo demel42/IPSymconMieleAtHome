@@ -234,12 +234,12 @@ class MieleAtHomeDevice extends IPSModule
             return;
         }
 
-		if ($deviceId > 0 && $fabNumber != '') {
-			$this->SetStatus(IS_ACTIVE);
-			$this->SetUpdateInterval();
-		} else {
-			$this->SetStatus(IS_INVALIDCONFIG);
-		}
+        if ($deviceId > 0 && $fabNumber != '') {
+            $this->SetStatus(IS_ACTIVE);
+            $this->SetUpdateInterval();
+        } else {
+            $this->SetStatus(IS_INVALIDCONFIG);
+        }
 
         if ($with['action']) {
             $this->MaintainAction('Action', true);
@@ -328,7 +328,7 @@ class MieleAtHomeDevice extends IPSModule
 
     public function UpdateData()
     {
-		if ($this->GetStatus() == IS_INACTIVE) {
+        if ($this->GetStatus() == IS_INACTIVE) {
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
             return;
         }
@@ -967,7 +967,7 @@ class MieleAtHomeDevice extends IPSModule
 
     private function CallAction($func, $action)
     {
-		if ($this->GetStatus() == IS_INACTIVE) {
+        if ($this->GetStatus() == IS_INACTIVE) {
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
             return;
         }

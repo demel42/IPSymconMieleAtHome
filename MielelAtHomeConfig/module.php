@@ -6,7 +6,7 @@ require_once __DIR__ . '/../libs/images.php';  // eingebettete Images
 class MieleAtHomeConfig extends IPSModule
 {
     use MieleAtHomeCommon;
-	use MieleAtHomeImages;
+    use MieleAtHomeImages;
 
     public function Create()
     {
@@ -49,7 +49,7 @@ class MieleAtHomeConfig extends IPSModule
                         $MieleatHome_device_name = IPS_GetName($instID);
                         $this->SendDebug(__FUNCTION__, 'device found: ' . utf8_decode($MieleatHome_device_name) . ' (' . $instID . ')', 0);
                         $instanceID = $instID;
-						break;
+                        break;
                     }
                 }
 
@@ -66,32 +66,31 @@ class MieleAtHomeConfig extends IPSModule
                     $deviceName = $deviceType;
                 }
 
-				$create = [
-						'moduleID'      => '{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}',
-							'location'                 => $this->SetLocation(),
-						'configuration' => [
-							'deviceId'   => $deviceId,
-							'deviceType' => $deviceType,
-							'fabNumber'  => $fabNumber,
-							'techType'   => $techType
-						]
-					];
-				if (IPS_GetKernelVersion() >= 5.1) {
-					$create['info'] = $deviceType . ' (' . $techType . ')';
-				}
-
+                $create = [
+                        'moduleID'                     => '{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}',
+                            'location'                 => $this->SetLocation(),
+                        'configuration'                => [
+                            'deviceId'   => $deviceId,
+                            'deviceType' => $deviceType,
+                            'fabNumber'  => $fabNumber,
+                            'techType'   => $techType
+                        ]
+                    ];
+                if (IPS_GetKernelVersion() >= 5.1) {
+                    $create['info'] = $deviceType . ' (' . $techType . ')';
+                }
 
                 $entry = [
-						'instanceID'               => $instanceID,
-						'id'                       => $deviceId,
-						'name'                     => $deviceName,
-						'tech_type'                => $techType,
-						'device_type'              => $deviceType,
-						'fabNumber'                => $fabNumber,
-						'create'                   => $create
-					];
+                        'instanceID'               => $instanceID,
+                        'id'                       => $deviceId,
+                        'name'                     => $deviceName,
+                        'tech_type'                => $techType,
+                        'device_type'              => $deviceType,
+                        'fabNumber'                => $fabNumber,
+                        'create'                   => $create
+                    ];
 
-				$config_list[] = $entry;
+                $config_list[] = $entry;
             }
         }
         return $config_list;
@@ -100,17 +99,17 @@ class MieleAtHomeConfig extends IPSModule
     private function SetLocation()
     {
         $category = $this->ReadPropertyInteger('ImportCategoryID');
-		$tree_position = [];
-		$tree_position[] = IPS_GetName($category);
-		$parent = IPS_GetObject($category)['ParentID'];
-		while ($parent > 0) {
-			if ($parent > 0) {
-				$tree_position[] = IPS_GetName($parent);
-			}
-			$parent = IPS_GetObject($parent)['ParentID'];
-		}
-		$tree_position = array_reverse($tree_position);
-		return $tree_position;
+        $tree_position = [];
+        $tree_position[] = IPS_GetName($category);
+        $parent = IPS_GetObject($category)['ParentID'];
+        while ($parent > 0) {
+            if ($parent > 0) {
+                $tree_position[] = IPS_GetName($parent);
+            }
+            $parent = IPS_GetObject($parent)['ParentID'];
+        }
+        $tree_position = array_reverse($tree_position);
+        return $tree_position;
     }
 
     public function GetConfigurationForm()
@@ -135,7 +134,7 @@ class MieleAtHomeConfig extends IPSModule
 
         $formElements[] = [
                 'type'  => 'Image',
-				'image' => 'data:image/png;base64,' . $this->GetBrandImage()
+                'image' => 'data:image/png;base64,' . $this->GetBrandImage()
             ];
 
         $formElements[] = [
@@ -188,7 +187,7 @@ class MieleAtHomeConfig extends IPSModule
                     ]
                 ],
                 'values' => $this->getConfiguratorValues()
-			];
+            ];
 
         return $formElements;
     }
@@ -197,21 +196,21 @@ class MieleAtHomeConfig extends IPSModule
     {
         $formActions = [];
 
-/*
-        $formActions[] = [
-                'type'    => 'Label',
-                'caption' => 'Get device list:'
-            ];
-        $formActions[] = [
-                'type'    => 'Button',
-                'caption' => 'Refresh list',
-                'onClick' => 'MieleAtHome_RefreshListConfiguration($id);'
-            ];
-		$formActions[] = [
-				'type' => 'Label',
-				'label' => '____________________________________________________________________________________________________'
-			];
-*/
+        /*
+                $formActions[] = [
+                        'type'    => 'Label',
+                        'caption' => 'Get device list:'
+                    ];
+                $formActions[] = [
+                        'type'    => 'Button',
+                        'caption' => 'Refresh list',
+                        'onClick' => 'MieleAtHome_RefreshListConfiguration($id);'
+                    ];
+                $formActions[] = [
+                        'type' => 'Label',
+                        'label' => '____________________________________________________________________________________________________'
+                    ];
+        */
         $formActions[] = [
                 'type'    => 'Button',
                 'caption' => 'Module description',

@@ -6,7 +6,7 @@ require_once __DIR__ . '/../libs/images.php';  // eingebettete Images
 class MieleAtHomeIO extends IPSModule
 {
     use MieleAtHomeCommon;
-	use MieleAtHomeImages;
+    use MieleAtHomeImages;
 
     //This one needs to be available on our OAuth client backend.
     //Please contact us to register for an identifier: https://www.symcon.de/kontakt/#OAuth
@@ -427,7 +427,7 @@ class MieleAtHomeIO extends IPSModule
 
     public function TestAccess()
     {
-		if ($this->GetStatus() == IS_INACTIVE) {
+        if ($this->GetStatus() == IS_INACTIVE) {
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
             echo $this->translate('Instance is inactive') . PHP_EOL;
             return;
@@ -463,7 +463,7 @@ class MieleAtHomeIO extends IPSModule
 
     public function ForwardData($data)
     {
-		if ($this->GetStatus() == IS_INACTIVE) {
+        if ($this->GetStatus() == IS_INACTIVE) {
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
             return false;
         }
