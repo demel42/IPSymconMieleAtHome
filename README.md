@@ -223,7 +223,7 @@ Bisher unterstützte Gerätetypen
 | 12 | Backofen |
 | 13 | Backofen mit Mikrowelle |
 | 21 | Kühl/Gefrier-Kombination |
-| 45 | Dampfgarar mit Backofen-Funktion |
+| 45 | Dampfgarer mit Backofen-Funktion |
 
 ### Variablenprofile
 
