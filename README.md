@@ -21,17 +21,17 @@
 ## 1. Funktionsumfang
 
 Unter dem Begriff _Miele@Home_ wird von Miele die Vernetzung von entsprechend ausgestatteten Haushaltsgeräten angeboten. Zur Vernetzung dienen verscheidenen Protokolle (WLAN, Z-Wave, ...) die dann, ggfs. über einen Gateway, mit einer Cloud von Miele kommunizieren,
-Über diese Clound kann der Benutzer mit der entsprechenden App von Miele den Status der Geräte kontrollieren und in gewissem Umfang steuern.
+Über diese Cloud kann der Benutzer mit der entsprechenden App von Miele den Status der Geräte kontrollieren und in gewissem Umfang steuern.
 
 Unter dem Begriff _Miele@Home-third-party-API_ bietet Miele einen Zugriff auf diesen Daten an. Neben dem Abruf von Daten ist auch eine gewisse Steuerung möglich.
 
-Mit diesem Modul können diese Daten, passend zu den Gerätetypen, in IP⁻Symcon visualisiert werden.
+Mit diesem Modul können diese Daten, passend zu den Gerätetypen, in IP⁻Symcon visualisiert werden und die vorhandenen Steuerungsmöglichkeiten genutzt werden.
 
 ## 2. Voraussetzungen
 
  - IP-Symcon ab Version 5
  - Miele@Home-Account
- - Entweder IP-Symcon Connect oder Zugangsdaten zu Miele@Home-third-party-API
+ - entweder IP-Symcon Connect oder Zugangsdaten zu Miele@Home-third-party-API
 
 ## 3. Installation
 
@@ -39,27 +39,20 @@ Mit diesem Modul können diese Daten, passend zu den Gerätetypen, in IP⁻Symco
 
 Die Webconsole von IP-Symcon mit _http://<IP-Symcon IP>:3777/console/_ öffnen. 
 
-
 Anschließend oben rechts auf das Symbol für den Modulstore (IP-Symcon > 5.1) klicken
 
 ![Store](docs/de/img/store_icon.png?raw=true "open store")
 
-Im Suchfeld nun
+Im Suchfeld 
+![Store](docs/de/img/module_store_search.png?raw=true "module search")
+nun
 
 ```
 Miele
 ```  
-
-eingeben
-
-![Store](docs/de/img/module_store_search.png?raw=true "module search")
-
-und schließend das Modul auswählen und auf _Installieren_
-
+eingeben, das Modul auswählen und auf
 ![Store](docs/de/img/install.png?raw=true "install")
-
 drücken.
-
 
 #### Alternatives Installieren über Modules Instanz (IP-Symcon < 5.1)
 
@@ -69,7 +62,7 @@ Anschließend den Objektbaum _Öffnen_.
 
 ![Objektbaum](docs/de/img/objektbaum.png?raw=true "Objektbaum")	
 
-Die Instanz _'Modules'_ unterhalb von Kerninstanzen im Objektbaum von IP-Symcon (>=Ver. 5.x) mit einem Doppelklick öffnen und das  _Plus_ Zeichen drücken.
+Die Instanz _'Modules'_ unterhalb von Kerninstanzen im Objektbaum von IP-Symcon mit einem Doppelklick öffnen und das  _Plus_ Zeichen drücken.
 
 ![Modules](docs/de/img/Modules.png?raw=true "Modules")	
 
