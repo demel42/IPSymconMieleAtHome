@@ -5,7 +5,7 @@
 
 			"Device id": "Geräete-Typ-ID",
 			"Device type": "Geräte-Typ",
-			"Fabrication number": "Fabrikationsnummer",
+			"Fabrication number": "Seriennummer",
 			"Model": "Modell",
 			"mapping code to text of field ...": "Status-Code selbst in Text umsetzen von Feld ...",
 			" ... Program": " ... Programm",

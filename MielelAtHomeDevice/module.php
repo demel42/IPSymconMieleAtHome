@@ -111,7 +111,7 @@ class MieleAtHomeDevice extends IPSModule
         $with['action_supercooling'] = false;
 
         switch ($deviceId) {
-            case DEVICE_WASHING_MACHINE:    // Waschmaschine
+            case DEVICE_WASHING_MACHINE:   		// Waschmaschine
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
                 $with['times'] = true;
@@ -121,7 +121,7 @@ class MieleAtHomeDevice extends IPSModule
                 $with['action'] = true;
                 $with['starttime'] = true;
                 break;
-            case DEVICE_TUMBLE_DRYER:      // Trockner
+            case DEVICE_TUMBLE_DRYER:      		// Trockner
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
                 $with['times'] = true;
@@ -130,7 +130,7 @@ class MieleAtHomeDevice extends IPSModule
                 $with['action'] = true;
                 $with['starttime'] = true;
                 break;
-            case DEVICE_DISHWASHER:         // Geschirrspüler
+            case DEVICE_DISHWASHER:         	// Geschirrspüler
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
                 $with['times'] = true;
@@ -138,19 +138,26 @@ class MieleAtHomeDevice extends IPSModule
                 $with['action'] = true;
                 $with['starttime'] = true;
                 break;
-            case DEVICE_OVEN:               // Backofen
+            case DEVICE_OVEN:               	// Backofen
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
                 $with['times'] = true;
                 $with['oven_temp'] = true;
                 $with['Door'] = true;
                 break;
-            case DEVICE_OVEN_MICROWAVE:     // Backofen mit Mikrowelle
+            case DEVICE_OVEN_MICROWAVE:     	// Backofen mit Mikrowelle
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
                 $with['times'] = true;
                 $with['oven_temp'] = true;
                 $with['Door'] = true;
+                break;
+            case DEVICE_FRIDGE_FREEZER:			// Kühl-/Gefrierkombination
+                $with['fridge_temp'] = true;
+                $with['freezer_temp'] = true;
+                $with['Door'] = true;
+                $with['action_superfreezing'] = true;
+                $with['action_supercooling'] = true;
                 break;
             case DEVICE_STEAM_OVEN_COMBINATION: // Dampfgarar mit Backofen-Funktion
                 $with['ProgramType'] = true;
@@ -158,13 +165,6 @@ class MieleAtHomeDevice extends IPSModule
                 $with['times'] = true;
                 $with['oven_temp'] = true;
                 $with['Door'] = true;
-                break;
-            case DEVICE_FRIDGE_FREEZER:     // Küh-/Gefrierkombination
-                $with['fridge_temp'] = true;
-                $with['freezer_temp'] = true;
-                $with['Door'] = true;
-                $with['action_superfreezing'] = true;
-                $with['action_supercooling'] = true;
                 break;
         }
         return $with;
@@ -176,6 +176,8 @@ class MieleAtHomeDevice extends IPSModule
 
         $deviceId = $this->ReadPropertyInteger('deviceId');
         $deviceType = $this->ReadPropertyString('deviceType');
+        $techType = $this->ReadPropertyString('techType');
+        $fabNumber = $this->ReadPropertyString('fabNumber');
 
         $with = $this->device2with($deviceId);
 
@@ -223,8 +225,6 @@ class MieleAtHomeDevice extends IPSModule
         $vpos = 100;
         $this->MaintainVariable('LastChange', $this->Translate('last change'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
 
-        $techType = $this->ReadPropertyString('techType');
-        $fabNumber = $this->ReadPropertyString('fabNumber');
         $this->SetSummary($techType . ' (#' . $fabNumber . ')');
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
@@ -234,9 +234,12 @@ class MieleAtHomeDevice extends IPSModule
             return;
         }
 
-        $this->SetStatus(IS_ACTIVE);
-
-        $this->SetUpdateInterval();
+		if ($deviceId > 0 && $fabNumber != '') {
+			$this->SetStatus(IS_ACTIVE);
+			$this->SetUpdateInterval();
+		} else {
+			$this->SetStatus(IS_INVALIDCONFIG);
+		}
 
         if ($with['action']) {
             $this->MaintainAction('Action', true);
@@ -325,8 +328,7 @@ class MieleAtHomeDevice extends IPSModule
 
     public function UpdateData()
     {
-        $inst = IPS_GetInstance($this->InstanceID);
-        if ($inst['InstanceStatus'] == IS_INACTIVE) {
+		if ($this->GetStatus() == IS_INACTIVE) {
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
             return;
         }
@@ -965,8 +967,7 @@ class MieleAtHomeDevice extends IPSModule
 
     private function CallAction($func, $action)
     {
-        $inst = IPS_GetInstance($this->InstanceID);
-        if ($inst['InstanceStatus'] == IS_INACTIVE) {
+		if ($this->GetStatus() == IS_INACTIVE) {
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
             return;
         }

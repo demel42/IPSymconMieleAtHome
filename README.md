@@ -1,7 +1,7 @@
 # IPSymconMieleAtHome
 
 [![IPS-Version](https://img.shields.io/badge/Symcon_Version-5.0-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Module-Version](https://img.shields.io/badge/Modul_Version-1.11-blue.svg)
+![Module-Version](https://img.shields.io/badge/Modul_Version-1.12-blue.svg)
 ![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![StyleCI](https://github.styleci.io/repos/156072156/shield?branch=master)](https://github.styleci.io/repos/156072156)
@@ -239,6 +239,7 @@ Bisher unterstützte Gerätetypen
 | 12 | Backofen |
 | 13 | Backofen mit Mikrowelle |
 | 21 | Kühl/Gefrier-Kombination |
+| 45 | Dampfgarar mit Backofen-Funktion |
 
 ### Variablenprofile
 
@@ -267,9 +268,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.12 @ 09.07.2019<br>
+- 1.12 @ 12.07.2019 14:47<br>
   - OAuth hinzugefügt
   - Konfigurator als Konfigurationsformular
+  - Modul-Prefixe auf _MieleAtHome_ vereinheitlicht
   
 - 1.11 @ 23.04.2019 17:59<br>
   - weitere Text für Phase bei Backofen/Dampfgarer

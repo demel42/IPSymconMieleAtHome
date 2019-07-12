@@ -2,15 +2,22 @@
 	"translations": {
 		"de": {
 			"Connection Type": "Verbindungstyp",
-			"Please select a connection type. Either connect via the Miele@Home username and password and IP Symcon Connect or alternatively as a developer with your own developer key.": "Bitte einen Verbindungstyp auswählen. Entweder Verbindung über den Miele@Home Benutzernamen und das Passwort und IP-Symcon Connect oder alternativ als Entwickler mit eigenem Entwickler Schlüssel.",
+			"Please select a connection type. Either connect via the Miele@Home username and password and IP Symcon Connect or alternatively as a developer with your own developer key.":
+				"Bitte einen Verbindungstyp auswählen. Entweder Verbindung über den Miele@Home Benutzernamen und das Passwort und IP-Symcon Connect oder alternativ als Entwickler mit eigenem Entwickler Schlüssel.",
 			"Please select a connection type": "Bitte einen Verbindungstyp auswählen",
 			"Miele@Home via IP-Symcon Connect": "Miele@Home über IP-Symcon Connect",
 			"Miele@Home Developer Key": "Miele@Home Developer Key",
-			"Push \"Register\" in the action part of this configuration form.":"\"Registrieren\" in der Aktionsektion dieses Konfigurationsformulares drücken.",
-			"At the webpage from Miele log in with your Miele@Home username and your Miele@Home password.":"Auf der Webseite von Miele mit dem Miele@Home Benutzernamen und dem Miele@Home Passwort anmelden.",
-			"If the connection to IP-Symcon was successfull you get the message: \"Miele@Home successfully connected!\". Close the browser window.":"Wenn die Verbindung zu IP-Symcon erfolgreich war erscheint die Meldung: \"Miele@Home successfully connected!\". Das Browserfenster kann nun geschlossen werden.",
-			"Return to this configuration form.":"Nach dem Zurückkehren zu diesem Konfigurationsformular mit dem Konfigurator fortfahren.",
-			"Register with your Miele@Home username and Miele@Home password:":"Mit dem Miele@Home Benutzernamen und dem Miele@Home Passwort registrieren:",
+			"Push \"Register\" in the action part of this configuration form.":
+				"\"Registrieren\" in der Aktionsbereich dieses Konfigurationsformulares drücken.",
+			"At the webpage from Miele log in with your Miele@Home username and your Miele@Home password.":
+				"Auf der Webseite von Miele mit dem Miele@Home Benutzernamen und dem Miele@Home Passwort anmelden.",
+			"If the connection to IP-Symcon was successfull you get the message: \"Miele@Home successfully connected!\". Close the browser window.":
+				"Wenn die Verbindung zu IP-Symcon erfolgreich war erscheint die Meldung: \"Miele@Home successfully connected!\". Das Browserfenster kann nun geschlossen werden.",
+			"Return to this configuration form.":
+				"Danach zu diesem Konfigurationsformular zurückkehren und fortfahren.",
+			"Register with your Miele@Home username and Miele@Home password:":
+				"Mit dem Miele@Home Benutzernamen und dem Miele@Home Passwort registrieren:",
+
 			"Register": "Registrieren",
 			"Instance is disabled": "Instanz ist deaktiviert",
 			"instance is inactive": "Instanz ist inaktiv",

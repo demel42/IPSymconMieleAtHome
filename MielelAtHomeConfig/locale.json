@@ -2,17 +2,17 @@
 	"translations": {
 		"de": {
 			"Device": "Gerät",
-			"category for Miele@Home devices:": "Kategorie für Miele@Home Geräte:",
-			"category Miele@Home": "Kategorie Miele@Home",
+			"category for Miele@Home devices to be created:": "Kategorie für anzulegende Miele@Home Geräte:",
+			"category": "Kategorie",
 			"Get device list:": "Geräte Liste abholen",
 			"Refresh list": "Liste aktualisieren",
 			"Module description": "Modulbeschreibung",
 
-			"device name": "Gerätename",
-			"tech type": "Technischer Typ",
-			"fabrication number": "Fabrikationsnummer",
-			"type": "Typ",
-			"device id": "Geräte ID",
+            "device name": "Geräete-Name",
+			"Model": "Modell",
+			"Label": "Bezeichnung",
+			"Fabrication number": "Seriennummer",
+
 			"Miele@Home devices": "Miele@Home Geräte",
 
 			"no device selected": "kein Gerät ausgewählt",
