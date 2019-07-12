@@ -90,13 +90,12 @@ Nur der Zweig _master_ wird aktuell gehalten.
 
 ![Master](docs/de/img/master.png?raw=true "master") 
 
-Sollte eine ältere Version von IP-Symcon die kleiner ist als Version 5.1 eingesetzt werden, ist auf das Zahnrad rechts in der Liste zu klicken.
+Sollte eine ältere Version von IP-Symcon abs 5.0 eingesetzt werden, ist auf das Zahnrad rechts in der Liste zu klicken.
 Es öffnet sich ein weiteres Fenster,
 
 ![SelectBranch](docs/de/img/select_branch.png?raw=true "select branch") 
 
-hier kann man auf einen anderen Zweig wechseln, für ältere Versionen kleiner als 5.1 ist hier
-_Old-Version_ auszuwählen. 
+hier kann man auf einen anderen Zweig wechseln, für ältere Versionen sind entsprechende Versionen auszuwählen.
 
 ### b. Miele-Cloud
 
