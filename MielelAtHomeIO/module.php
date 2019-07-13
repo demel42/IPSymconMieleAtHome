@@ -28,7 +28,11 @@ class MieleAtHomeIO extends IPSModule
 
         $this->RegisterPropertyInteger('OAuth_Type', CONNECTION_UNDEFINED);
 
-        $this->RegisterAttributeString('RefreshToken', '');
+		if (IPS_GetKernelVersion() >= 5.1) {
+			$this->RegisterAttributeString('RefreshToken', '');
+		} else {
+			$this->RegisterPropertyString('RefreshToken', '');
+		}
 
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
@@ -73,7 +77,11 @@ class MieleAtHomeIO extends IPSModule
                 return;
             }
 
-            $refresh_token = $this->ReadAttributeString('RefreshToken');
+			if (IPS_GetKernelVersion() >= 5.1) {
+				$refresh_token = $this->ReadAttributeString('RefreshToken');
+			} else {
+				$refresh_token = $this->ReadPropertyString('RefreshToken');
+			}
             if ($refresh_token != '') {
                 $this->SetStatus(IS_ACTIVE);
             } else {
@@ -216,7 +224,11 @@ class MieleAtHomeIO extends IPSModule
             } else {
                 $this->SendDebug(__FUNCTION__, 'access_token not saved', 0);
             }
-            $refresh_token = $this->ReadAttributeString('RefreshToken');
+			if (IPS_GetKernelVersion() >= 5.1) {
+				$refresh_token = $this->ReadAttributeString('RefreshToken');
+			} else {
+				$refresh_token = $this->ReadPropertyString('RefreshToken');
+			}
             $jdata = $this->Call4AccessToken(['refresh_token' => $refresh_token]);
             if ($jdata == false) {
                 $this->SendDebug(__FUNCTION__, 'got no access_token', 0);
@@ -228,7 +240,12 @@ class MieleAtHomeIO extends IPSModule
             if (isset($jdata['refresh_token'])) {
                 $refresh_token = $jdata['refresh_token'];
                 $this->SendDebug(__FUNCTION__, 'new refresh_token=' . $refresh_token, 0);
-                $this->WriteAttributeString('RefreshToken', $refresh_token);
+				if (IPS_GetKernelVersion() >= 5.1) {
+					$this->WriteAttributeString('RefreshToken', $refresh_token);
+				} else {
+					IPS_SetProperty($this->InstanceID, 'RefreshToken', $refresh_token);
+					IPS_ApplyChanges($this->InstanceID);
+				}
             }
         }
         $this->SendDebug(__FUNCTION__, 'new access_token=' . $access_token . ', valid until ' . date('d.m.y H:i:s', $expiration), 0);
@@ -241,12 +258,22 @@ class MieleAtHomeIO extends IPSModule
         if (!isset($_GET['code'])) {
             $this->SendDebug(__FUNCTION__, 'code missing, _GET=' . print_r($_GET, true), 0);
             $this->SetStatus(IS_INVALIDCONFIG);
-            $this->WriteAttributeString('RefreshToken', '');
+			if (IPS_GetKernelVersion() >= 5.1) {
+				$this->WriteAttributeString('RefreshToken', '');
+			} else {
+				IPS_SetProperty($this->InstanceID, 'RefreshToken', '');
+				IPS_ApplyChanges($this->InstanceID);
+			}
             return;
         }
         $refresh_token = $this->FetchRefreshToken($_GET['code']);
         $this->SendDebug(__FUNCTION__, 'refresh_token=' . $refresh_token, 0);
-        $this->WriteAttributeString('RefreshToken', $refresh_token);
+		if (IPS_GetKernelVersion() >= 5.1) {
+			$this->WriteAttributeString('RefreshToken', $refresh_token);
+		} else {
+			IPS_SetProperty($this->InstanceID, 'RefreshToken', $refresh_token);
+			IPS_ApplyChanges($this->InstanceID);
+		}
     }
 
     public function GetConfigurationForm()
