@@ -253,7 +253,7 @@ Verweise:
 
 - 1.12 @ 12.07.2019 14:47<br>
   - OAuth hinzugefügt (Dank an Fonzo)
-    Wichtiger Hinweis für ein Update: in der IO-∫nstanz den Verbindungstyp auf _Developer Key_ setzen!
+    Wichtiger Hinweis für ein Update: in der IO-Instanz den Verbindungstyp auf _Developer Key_ setzen!
   - Konfigurator als Konfigurationsformular
   - Modul-Prefixe auf _MieleAtHome_ vereinheitlicht
   
