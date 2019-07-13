@@ -43,21 +43,17 @@ Anschließend oben rechts auf das Symbol für den Modulstore (IP-Symcon > 5.1) k
 
 ![Store](docs/de/img/store_icon.png?raw=true "open store")
 
-Im Suchfeld 
-![Store](docs/de/img/module_store_search.png?raw=true "module search")
-nun _Miele_ eingeben, das Modul auswählen und auf
-![Store](docs/de/img/install.png?raw=true "install")
-drücken.
+Im Suchfeld nun _Miele_ eingeben, das Modul auswählen und auf _Istallieren_ drücken.
 
 #### Alternatives Installieren über Modules Instanz (IP-Symcon < 5.1)
 
-Die Webconsole von IP-Symcon mit _http://\<IP-Symcon IP\>:3777/console/_ öffnen. 
+Die Webconsole von IP-Symcon mit _http://\<IP-Symcon IP\>:3777/console/_ aufrufen. 
 
-Anschließend den Objektbaum _Öffnen_.
+Anschließend den Objektbaum _öffnen_.
 
 ![Objektbaum](docs/de/img/objektbaum.png?raw=true "Objektbaum")	
 
-Die Instanz _'Modules'_ unterhalb von Kerninstanzen im Objektbaum von IP-Symcon mit einem Doppelklick öffnen und das  _Plus_ Zeichen drücken.
+Die Instanz _Modules_ unterhalb von Kerninstanzen im Objektbaum von IP-Symcon mit einem Doppelklick öffnen und das  _Plus_ Zeichen drücken.
 
 ![Modules](docs/de/img/Modules.png?raw=true "Modules")	
 
@@ -71,7 +67,7 @@ Im Feld die folgende URL eintragen und mit _OK_ bestätigen:
 https://github.com/demel42/IPSymconMieleAtHome.git
 ```  
 	        
-Anschließend erscheint ein Eintrag für das Modul in der Liste der Instanz _Modules_    
+Anschließend erscheint ein Eintrag für das Modul in der Liste der Instanz _Modules_.
 
 Es wird im Standard der Zweig (Branch) _master_ geladen, dieser enthält aktuelle Änderungen und Anpassungen.
 Nur der Zweig _master_ wird aktuell gehalten.
@@ -130,7 +126,7 @@ In der Liste nun das zu erstellende Gerät auswählen, das man erstellen will. D
 
 ### e. Einrichtung des Geräte-Moduls
 
-Eine manuelle Einrichtung eines Geräemoduls ist nicht erforderlich, das erfolgt über den Konfigurator.
+Eine manuelle Einrichtung eines Gerätemoduls ist nicht erforderlich, das erfolgt über den Konfigurator.
 In dem Geräte-Modul ist ggfs nur das Abfrage-Intervall anzupassen, die anderen Felder, insbesondere die _Seriennummer_ (diese ist die Identifikation des Gerätes) und die _Geräte-Typ-ID_ (diese steuert, welche Variablen angelegt werden) müssen unverändert bleiben.
 
 Wichtig: da keine vollständige Dokumentation vorliegt, welche Geräte es gibt bzw. welche Geräte sinnvollerweise welche Variablen füllen, ist die Liste der unterstützten Geräte unvollständig und muss dann im Bedarfsfall erweitert werden.
