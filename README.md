@@ -37,7 +37,7 @@ Mit diesem Modul können diese Daten, passend zu den Gerätetypen, in IP⁻Symco
 
 ### a. Laden des Moduls
 
-Die Webconsole von IP-Symcon mit _http://<IP-Symcon IP>:3777/console/_ öffnen. 
+Die Webconsole von IP-Symcon mit _http://\<IP-Symcon IP\>:3777/console/_ öffnen. 
 
 Anschließend oben rechts auf das Symbol für den Modulstore (IP-Symcon > 5.1) klicken
 
@@ -51,7 +51,7 @@ drücken.
 
 #### Alternatives Installieren über Modules Instanz (IP-Symcon < 5.1)
 
-Die Webconsole von IP-Symcon mit _http://<IP-Symcon IP>:3777/console/_ öffnen. 
+Die Webconsole von IP-Symcon mit _http://\<IP-Symcon IP\>:3777/console/_ öffnen. 
 
 Anschließend den Objektbaum _Öffnen_.
 
