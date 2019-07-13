@@ -1,6 +1,9 @@
 {
 	"translations": {
 		"de": {
+			"Status: Symcon Connect is OK!": "Status: Symcon Connect ist OK!",
+			"Error: Symcon Connect is not active!": "Fehler: Symcon Connect ist nicht aktiv!",
+
 			"Connection Type": "Verbindungstyp",
 			"Please select a connection type. Either connect via the Miele@Home username and password and IP Symcon Connect or alternatively as a developer with your own developer key.":
 				"Bitte einen Verbindungstyp auswählen. Entweder Verbindung über den Miele@Home Benutzernamen und das Passwort und IP-Symcon Connect oder alternativ als Entwickler mit eigenem Entwickler Schlüssel.",

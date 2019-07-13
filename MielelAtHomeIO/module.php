@@ -271,6 +271,19 @@ class MieleAtHomeIO extends IPSModule
                 'caption' => 'Instance is disabled'
             ];
 
+        if ($oauth_type == CONNECTION_OAUTH) {
+			$ids = IPS_GetInstanceListByModuleID('{9486D575-BE8C-4ED8-B5B5-20930E26DE6F}');
+			if (IPS_GetInstance($ids[0])['InstanceStatus'] != IS_ACTIVE) {
+				$msg = 'Error: Symcon Connect is not active!';
+			} else {
+				$msg = 'Status: Symcon Connect is OK!';
+			}
+			$formElements[] = [
+					'type'    => 'Label',
+					'caption' => $msg
+				];
+		}
+
         $formElements[] = [
                 'type'  => 'Image',
                 'image' => 'data:image/png;base64,' . $this->GetBrandImage()
