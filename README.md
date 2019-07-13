@@ -165,6 +165,9 @@ siehe https://www.miele.com/developer/swagger-ui/put_additional_info.html
 | :---------------------- | :------ | :----------- | :----------- |
 | Instanz ist deaktiviert | boolean | false        | Instanz temporär deaktivieren |
 |                         |         |              | |
+| Verbindugstyp           | integer | 0            | Auswahl der Art der Verbindung (OAuth oder Developer) |
+|                         |         |              | |
+| - nur bei _Developer_ - |         |              | |
 | Benutzer (EMail)        | string  |              | Miele@Home-Konto: Benutzerkennung |
 | Passwort                | string  |              | Miele@Home-Konto: Passwort |
 | Client-ID               | string  |              | Miele@Home API-Zugangsdaten: Client-ID |
@@ -250,6 +253,7 @@ Verweise:
 
 - 1.12 @ 12.07.2019 14:47<br>
   - OAuth hinzugefügt (Dank an Fonzo)
+    Wichtiger Hinweis für ein Update: in der IO-∫nstanz den Verbindungstyp auf _Developer Key_ setzen!
   - Konfigurator als Konfigurationsformular
   - Modul-Prefixe auf _MieleAtHome_ vereinheitlicht
   
