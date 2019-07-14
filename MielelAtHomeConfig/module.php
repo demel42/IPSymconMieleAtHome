@@ -36,8 +36,8 @@ class MieleAtHomeConfig extends IPSModule
 
         $config_list = [];
         if ($data != '') {
-			$guid = '{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}'; // Miele@Home Device
-			$instIDs = IPS_GetInstanceListByModuleID($guid);
+            $guid = '{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}'; // Miele@Home Device
+            $instIDs = IPS_GetInstanceListByModuleID($guid);
 
             $devices = json_decode($data, true);
             $this->SendDebug(__FUNCTION__, 'devices=' . json_encode($devices), 0);
@@ -133,7 +133,7 @@ class MieleAtHomeConfig extends IPSModule
     {
         $formElements = [];
 
-		$values = $this->getConfiguratorValues();
+        $values = $this->getConfiguratorValues();
 
         $formElements[] = [
                 'type'  => 'Image',
