@@ -30,14 +30,15 @@ class MieleAtHomeConfig extends IPSModule
 
     private function getConfiguratorValues()
     {
-        $instIDs = IPS_GetInstanceListByModuleID('{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}'); // Miele@Home Devices
-
         $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDevices'];
         $data = $this->SendDataToParent(json_encode($SendData));
         $this->SendDebug(__FUNCTION__, 'data=' . $data, 0);
 
         $config_list = [];
         if ($data != '') {
+			$guid = '{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}'; // Miele@Home Device
+			$instIDs = IPS_GetInstanceListByModuleID($guid);
+
             $devices = json_decode($data, true);
             $this->SendDebug(__FUNCTION__, 'devices=' . json_encode($devices), 0);
             foreach ($devices as $fabNumber => $device) {
@@ -67,7 +68,7 @@ class MieleAtHomeConfig extends IPSModule
                 }
 
                 $create = [
-                        'moduleID'      => '{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}',
+                        'moduleID'      => $guid,
                         'location'      => $this->SetLocation(),
                         'configuration' => [
                                 'deviceId'   => $deviceId,
@@ -132,6 +133,8 @@ class MieleAtHomeConfig extends IPSModule
     {
         $formElements = [];
 
+		$values = $this->getConfiguratorValues();
+
         $formElements[] = [
                 'type'  => 'Image',
                 'image' => 'data:image/png;base64,' . $this->GetBrandImage()
@@ -150,7 +153,7 @@ class MieleAtHomeConfig extends IPSModule
         $formElements[] = [
                 'name'     => 'MieleatHomeConfiguration',
                 'type'     => 'Configurator',
-                'rowCount' => 10,
+                'rowCount' => count($values),
                 'add'      => false,
                 'delete'   => false,
                 'sort'     => [
@@ -186,7 +189,7 @@ class MieleAtHomeConfig extends IPSModule
                         'width'   => '200px'
                     ]
                 ],
-                'values' => $this->getConfiguratorValues()
+                'values' => $values
             ];
 
         return $formElements;

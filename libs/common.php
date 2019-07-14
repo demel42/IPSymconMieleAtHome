@@ -19,6 +19,7 @@ if (!defined('IS_INVALIDCONFIG')) {
     define('IS_SERVERERROR', IS_EBASE + 3);
     define('IS_HTTPERROR', IS_EBASE + 4);
     define('IS_INVALIDDATA', IS_EBASE + 5);
+    define('IS_NOSYMCONCONNECT', IS_EBASE + 6);
 }
 
 if (!defined('DEVICE_WASHING_MACHINE')) {
@@ -290,6 +291,7 @@ trait MieleAtHomeCommon
         $formStatus[] = ['code' => IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
         $formStatus[] = ['code' => IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
         $formStatus[] = ['code' => IS_INVALIDDATA, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)'];
+        $formStatus[] = ['code' => IS_NOSYMCONCONNECT, 'icon' => 'error', 'caption' => 'Instance is inactive (no Symcon-Connect)'];
 
         return $formStatus;
     }
