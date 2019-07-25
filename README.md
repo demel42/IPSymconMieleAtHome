@@ -253,6 +253,7 @@ Verweise:
 
 - 1.13 @ 25.07.2019 09:22<br>
   - Kompatibilität zu 5.2 (CC_GetUrl())
+  - Absicherung bei fehlerhafter _ImportCategoryID_
 
 - 1.12 @ 12.07.2019 14:47<br>
   - OAuth hinzugefügt (Dank an Fonzo)
