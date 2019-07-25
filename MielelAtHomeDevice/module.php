@@ -722,6 +722,7 @@ class MieleAtHomeDevice extends IPSModule
                     532 => 'Rinse out lint',
                     533 => 'Rinses',
                     534 => 'Smoothing',
+                    537 => 'Programmed',
                     538 => 'Slightly dry',
                     539 => 'Safety cooling',
                 ],

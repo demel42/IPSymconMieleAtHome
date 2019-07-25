@@ -71,8 +71,7 @@ class MieleAtHomeIO extends IPSModule
                 $this->SetStatus(IS_INVALIDCONFIG);
             }
         } else {
-            $instID = IPS_GetInstanceListByModuleID('{9486D575-BE8C-4ED8-B5B5-20930E26DE6F}')[0];
-            if (CC_GetUrl($instID) == false) {
+			if ($this->GetConnectUrl() == false) {
                 $this->SetStatus(IS_NOSYMCONCONNECT);
                 return;
             }
