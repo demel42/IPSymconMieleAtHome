@@ -1,161 +1,212 @@
 <?php
 
 require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
+require_once __DIR__ . '/../libs/images.php';  // eingebettete Images
 
 class MieleAtHomeConfig extends IPSModule
 {
     use MieleAtHomeCommon;
+    use MieleAtHomeImages;
 
     public function Create()
     {
         parent::Create();
 
         $this->ConnectParent('{996743FB-1712-47A3-9174-858A08A13523}');
+        $this->RegisterPropertyInteger('ImportCategoryID', 0);
     }
 
     public function ApplyChanges()
     {
         parent::ApplyChanges();
 
-        $this->SetStatus(102);
+        $this->SetStatus(IS_ACTIVE);
+    }
+
+    public function RefreshListConfiguration()
+    {
+        $this->getConfiguratorValues();
+    }
+
+    private function getConfiguratorValues()
+    {
+        $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDevices'];
+        $data = $this->SendDataToParent(json_encode($SendData));
+        $this->SendDebug(__FUNCTION__, 'data=' . $data, 0);
+
+        $config_list = [];
+        if ($data != '') {
+            $guid = '{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}'; // Miele@Home Device
+            $instIDs = IPS_GetInstanceListByModuleID($guid);
+
+            $devices = json_decode($data, true);
+            $this->SendDebug(__FUNCTION__, 'devices=' . json_encode($devices), 0);
+            foreach ($devices as $fabNumber => $device) {
+                $this->SendDebug(__FUNCTION__, 'fabNumber=' . $fabNumber . ', device=' . json_encode($device), 0);
+
+                $instanceID = 0;
+                foreach ($instIDs as $instID) {
+                    if ($fabNumber == IPS_GetProperty($instID, 'fabNumber')) {
+                        $MieleatHome_device_name = IPS_GetName($instID);
+                        $this->SendDebug(__FUNCTION__, 'device found: ' . utf8_decode($MieleatHome_device_name) . ' (' . $instID . ')', 0);
+                        $instanceID = $instID;
+                        break;
+                    }
+                }
+
+                $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDeviceIdent', 'Ident' => $fabNumber];
+                $device_data = $this->SendDataToParent(json_encode($SendData));
+                $this->SendDebug(__FUNCTION__, 'device_data=' . $device_data, 0);
+
+                $device = json_decode($device_data, true);
+                $deviceId = $device['type']['value_raw'];
+                $deviceType = $device['type']['value_localized'];
+                $techType = $device['deviceIdentLabel']['techType'];
+                $deviceName = $device['deviceName'];
+                if ($deviceName == '') {
+                    $deviceName = $deviceType;
+                }
+
+                $create = [
+                        'moduleID'      => $guid,
+                        'location'      => $this->SetLocation(),
+                        'configuration' => [
+                                'deviceId'   => $deviceId,
+                                'deviceType' => $deviceType,
+                                'fabNumber'  => $fabNumber,
+                                'techType'   => $techType
+                            ]
+                    ];
+                if (IPS_GetKernelVersion() >= 5.1) {
+                    $create['info'] = $deviceType . ' (' . $techType . ')';
+                }
+
+                $entry = [
+                        'instanceID'  => $instanceID,
+                        'id'          => $deviceId,
+                        'name'        => $deviceName,
+                        'tech_type'   => $techType,
+                        'device_type' => $deviceType,
+                        'fabNumber'   => $fabNumber,
+                        'create'      => $create
+                    ];
+
+                $config_list[] = $entry;
+            }
+        }
+        return $config_list;
+    }
+
+    private function SetLocation()
+    {
+        $tree_position = [];
+        $category = $this->ReadPropertyInteger('ImportCategoryID');
+        if (IPS_ObjectExists($category)) {
+            $tree_position[] = IPS_GetName($category);
+            $parent = IPS_GetObject($category)['ParentID'];
+            while ($parent > 0) {
+                if ($parent > 0) {
+                    $tree_position[] = IPS_GetName($parent);
+                }
+                $parent = IPS_GetObject($parent)['ParentID'];
+            }
+            $tree_position = array_reverse($tree_position);
+        }
+        return $tree_position;
     }
 
     public function GetConfigurationForm()
     {
-        $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDevices'];
-        $data = $this->SendDataToParent(json_encode($SendData));
+        $formElements = $this->GetFormElements();
+        $formActions = $this->GetFormActions();
+        $formStatus = $this->GetFormStatus();
 
-        $this->SendDebug(__FUNCTION__, 'data=' . $data, 0);
-
-        $options = [];
-        if ($data != '') {
-            $devices = json_decode($data, true);
-            $this->SendDebug(__FUNCTION__, 'devices=' . print_r($devices, true), 0);
-            foreach ($devices as $fabNumber => $device) {
-                $this->SendDebug(__FUNCTION__, 'device=' . print_r($device, true), 0);
-                $ident = $device['ident'];
-
-                $type = $ident['type']['value_localized'];
-                $name = $ident['deviceName'];
-
-                if ($name == '') {
-                    $name = $type . ' (#' . $fabNumber . ')';
-                }
-
-                $options[] = ['label' => $name, 'value' => $fabNumber];
-            }
+        $form = json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
+        if ($form == '') {
+            $this->SendDebug(__FUNCTION__, 'json_error=' . json_last_error_msg(), 0);
+            $this->SendDebug(__FUNCTION__, '=> formElements=' . print_r($formElements, true), 0);
+            $this->SendDebug(__FUNCTION__, '=> formActions=' . print_r($formActions, true), 0);
+            $this->SendDebug(__FUNCTION__, '=> formStatus=' . print_r($formStatus, true), 0);
         }
+        return $form;
+    }
 
+    protected function GetFormElements()
+    {
         $formElements = [];
 
-        $formActions = [];
-        $formActions[] = ['type' => 'Select', 'name' => 'fabNumber', 'caption' => 'Device', 'options' => $options];
-        $formActions[] = [
-                            'type'    => 'Button',
-                            'caption' => 'Import of device',
-                            'confirm' => 'Triggering the function creates the instance for the selected device. Are you sure?',
-                            'onClick' => 'MieleAtHomeConfig_Doit($id, $fabNumber);'
-                        ];
-        $formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
-        $formActions[] = [
-                            'type'    => 'Button',
-                            'caption' => 'Module description',
-                            'onClick' => 'echo "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md";'
-                        ];
+        $values = $this->getConfiguratorValues();
 
-        $formStatus = [];
-        $formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created'];
-        $formStatus[] = ['code' => IS_ACTIVE, 'icon' => 'active', 'caption' => 'Instance is active'];
-        $formStatus[] = ['code' => IS_DELETING, 'icon' => 'inactive', 'caption' => 'Instance is deleted'];
-        $formStatus[] = ['code' => IS_INACTIVE, 'icon' => 'inactive', 'caption' => 'Instance is inactive'];
-        $formStatus[] = ['code' => IS_NOTCREATED, 'icon' => 'inactive', 'caption' => 'Instance is not created'];
-
-        $formStatus[] = ['code' => IS_INVALIDCONFIG, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid configuration)'];
-        $formStatus[] = ['code' => IS_UNAUTHORIZED, 'icon' => 'error', 'caption' => 'Instance is inactive (unauthorized)'];
-        $formStatus[] = ['code' => IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
-        $formStatus[] = ['code' => IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
-        $formStatus[] = ['code' => IS_INVALIDDATA, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)'];
-
-        return json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
-    }
-
-    private function FindOrCreateInstance($guid, $fabNumber, $deviceName, $info, $properties, $pos)
-    {
-        $instID = '';
-
-        $instIDs = IPS_GetInstanceListByModuleID($guid);
-        foreach ($instIDs as $id) {
-            $cfg = IPS_GetConfiguration($id);
-            $jcfg = json_decode($cfg, true);
-            if (!isset($jcfg['fabNumber'])) {
-                continue;
-            }
-            if ($jcfg['fabNumber'] == $fabNumber) {
-                $instID = $id;
-                break;
-            }
-        }
-
-        if ($instID == '') {
-            $instID = IPS_CreateInstance($guid);
-            if ($instID == '') {
-                echo $this->Translate('unable to create instance') . ' "' . $deviceName . '"';
-                return $instID;
-            }
-            IPS_SetProperty($instID, 'fabNumber', $fabNumber);
-            foreach ($properties as $key => $property) {
-                IPS_SetProperty($instID, $key, $property);
-            }
-            IPS_SetName($instID, $deviceName);
-            IPS_SetInfo($instID, $info);
-            IPS_SetPosition($instID, $pos);
-        }
-
-        IPS_ApplyChanges($instID);
-
-        return $instID;
-    }
-
-    public function Doit(?string $fabNumber)
-    {
-        $this->SendDebug(__FUNCTION__, 'fabNumber=' . $fabNumber, 0);
-        if ($fabNumber == '') {
-            $this->SetStatus(IS_INVALIDCONFIG);
-            echo $this->Translate('no device selected') . PHP_EOL;
-            return -1;
-        }
-
-        $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDeviceIdent', 'Ident' => $fabNumber];
-        $data = $this->SendDataToParent(json_encode($SendData));
-        $this->SendDebug(__FUNCTION__, 'data=' . $data, 0);
-        if ($data == '') {
-            $this->SetStatus(IS_INVALIDCONFIG);
-            echo $this->Translate('unknown device') . ' "' . $fabNumber . '"' . PHP_EOL;
-            return -1;
-        }
-
-        $device = json_decode($data, true);
-        $this->SendDebug(__FUNCTION__, 'device=' . print_r($device, true), 0);
-
-        $deviceId = $device['type']['value_raw'];
-        $deviceType = $device['type']['value_localized'];
-        $techType = $device['deviceIdentLabel']['techType'];
-
-        $deviceName = $device['deviceName'];
-        if ($deviceName == '') {
-            $deviceName = $deviceType;
-        }
-        $info = $deviceType . ' (' . $techType . ')';
-        $properties = [
-                'deviceId'     => $deviceId,
-                'deviceType'   => $deviceType,
-                'fabNumber'    => $fabNumber,
-                'techType'     => $techType,
+        $formElements[] = [
+                'type'  => 'Image',
+                'image' => 'data:image/png;base64,' . $this->GetBrandImage()
             ];
 
-        $pos = 1000;
-        $instID = $this->FindOrCreateInstance('{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}', $fabNumber, $deviceName, $info, $properties, $pos++);
+        $formElements[] = [
+                'type'  => 'Label',
+                'label' => 'category for Miele@Home devices to be created:'
+            ];
+        $formElements[] = [
+                'name'    => 'ImportCategoryID',
+                'type'    => 'SelectCategory',
+                'caption' => 'category'
+            ];
 
-        $this->SetStatus(IS_ACTIVE);
+        $formElements[] = [
+                'name'     => 'MieleatHomeConfiguration',
+                'type'     => 'Configurator',
+                'rowCount' => count($values),
+                'add'      => false,
+                'delete'   => false,
+                'sort'     => [
+                    'column'    => 'name',
+                    'direction' => 'ascending'
+                ],
+
+                'columns' => [
+                    [
+                        'caption' => 'ID',
+                        'name'    => 'id',
+                        'width'   => '200px',
+                        'visible' => false
+                    ],
+                    [
+                        'caption' => 'device name',
+                        'name'    => 'name',
+                        'width'   => 'auto'
+                    ],
+                    [
+                        'caption' => 'Model',
+                        'name'    => 'tech_type',
+                        'width'   => '250px'
+                    ],
+                    [
+                        'caption' => 'Label',
+                        'name'    => 'device_type',
+                        'width'   => '300px'
+                    ],
+                    [
+                        'caption' => 'Fabrication number',
+                        'name'    => 'fabNumber',
+                        'width'   => '200px'
+                    ]
+                ],
+                'values' => $values
+            ];
+
+        return $formElements;
+    }
+
+    protected function GetFormActions()
+    {
+        $formActions = [];
+
+        $formActions[] = [
+                'type'    => 'Button',
+                'caption' => 'Module description',
+                'onClick' => 'echo "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md";'
+            ];
+
+        return $formActions;
     }
 }

@@ -5,7 +5,7 @@
 
 			"Device id": "Geräete-Typ-ID",
 			"Device type": "Geräte-Typ",
-			"Fabrication number": "Fabrikationsnummer",
+			"Fabrication number": "Seriennummer",
 			"Model": "Modell",
 			"mapping code to text of field ...": "Status-Code selbst in Text umsetzen von Feld ...",
 			" ... Program": " ... Programm",
@@ -139,7 +139,8 @@
 			"Instance is inactive (unauthorized)": "Instanz ist inaktiv (Authorisierung fehlerhaft)",
 			"Instance is inactive (server error)": "Instanz ist inaktiv (Serverfehler)",
 			"Instance is inactive (http error)": "Instanz ist inaktiv (HTTP-Fehler)",
-			"Instance is inactive (invalid data)": "Instanz ist inaktiv (ungültige Daten)"
+			"Instance is inactive (invalid data)": "Instanz ist inaktiv (ungültige Daten)",
+			"Instance is inactive (no Symcon-Connect)": "Instanz ist inaktiv (kein Symcon-Connect)"
 		}
 	}
 }

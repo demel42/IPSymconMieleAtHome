@@ -2,10 +2,18 @@
 	"translations": {
 		"de": {
 			"Device": "Gerät",
-			"Import of device": "Gerät anlegen",
-			"Triggering the function creates the instance for the selected device. Are you sure?":
-				"Durch Auslösen der Funktion wird die Instanz für das ausgewählte Gerät angelegt. Sind Sie sich sicher?",
+			"category for Miele@Home devices to be created:": "Kategorie für anzulegende Miele@Home Geräte:",
+			"category": "Kategorie",
+			"Get device list:": "Geräte Liste abholen",
+			"Refresh list": "Liste aktualisieren",
 			"Module description": "Modulbeschreibung",
+
+            "device name": "Gerätename",
+			"Model": "Modell",
+			"Label": "Bezeichnung",
+			"Fabrication number": "Seriennummer",
+
+			"Miele@Home devices": "Miele@Home Geräte",
 
 			"no device selected": "kein Gerät ausgewählt",
 			"unknown device": "unbekannteѕ Gerät",
@@ -22,7 +30,8 @@
 			"Instance is inactive (unauthorized)": "Instanz ist inaktiv (Authorisierung fehlerhaft)",
 			"Instance is inactive (server error)": "Instanz ist inaktiv (Serverfehler)",
 			"Instance is inactive (http error)": "Instanz ist inaktiv (HTTP-Fehler)",
-			"Instance is inactive (invalid data)": "Instanz ist inaktiv (ungültige Daten)"
+			"Instance is inactive (invalid data)": "Instanz ist inaktiv (ungültige Daten)",
+			"Instance is inactive (no Symcon-Connect)": "Instanz ist inaktiv (kein Symcon-Connect)"
 		}
 	}
 }

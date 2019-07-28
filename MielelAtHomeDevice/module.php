@@ -85,7 +85,7 @@ class MieleAtHomeDevice extends IPSModule
         $associations[] = ['Wert' => ACTION_STOP, 'Name' => $this->Translate('Stop'), 'Farbe' => -1];
         $this->CreateVarProfile('MieleAtHome.Supercooling', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations);
 
-        $this->RegisterTimer('UpdateData', 0, 'MieleAtHomeDevice_UpdateData(' . $this->InstanceID . ');');
+        $this->RegisterTimer('UpdateData', 0, 'MieleAtHome_UpdateData(' . $this->InstanceID . ');');
 
         $this->ConnectParent('{996743FB-1712-47A3-9174-858A08A13523}');
     }
@@ -111,7 +111,7 @@ class MieleAtHomeDevice extends IPSModule
         $with['action_supercooling'] = false;
 
         switch ($deviceId) {
-            case DEVICE_WASHING_MACHINE:    // Waschmaschine
+            case DEVICE_WASHING_MACHINE:   		// Waschmaschine
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
                 $with['times'] = true;
@@ -121,7 +121,7 @@ class MieleAtHomeDevice extends IPSModule
                 $with['action'] = true;
                 $with['starttime'] = true;
                 break;
-            case DEVICE_TUMBLE_DRYER:      // Trockner
+            case DEVICE_TUMBLE_DRYER:      		// Trockner
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
                 $with['times'] = true;
@@ -130,7 +130,7 @@ class MieleAtHomeDevice extends IPSModule
                 $with['action'] = true;
                 $with['starttime'] = true;
                 break;
-            case DEVICE_DISHWASHER:         // Geschirrspüler
+            case DEVICE_DISHWASHER:         	// Geschirrspüler
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
                 $with['times'] = true;
@@ -138,33 +138,33 @@ class MieleAtHomeDevice extends IPSModule
                 $with['action'] = true;
                 $with['starttime'] = true;
                 break;
-            case DEVICE_OVEN:               // Backofen
+            case DEVICE_OVEN:               	// Backofen
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
                 $with['times'] = true;
                 $with['oven_temp'] = true;
                 $with['Door'] = true;
                 break;
-            case DEVICE_OVEN_MICROWAVE:     // Backofen mit Mikrowelle
+            case DEVICE_OVEN_MICROWAVE:     	// Backofen mit Mikrowelle
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
                 $with['times'] = true;
                 $with['oven_temp'] = true;
                 $with['Door'] = true;
                 break;
-            case DEVICE_STEAM_OVEN_COMBINATION: // Dampfgarar mit Backofen-Funktion
-                $with['ProgramType'] = true;
-                $with['ProgramPhase'] = true;
-                $with['times'] = true;
-                $with['oven_temp'] = true;
-                $with['Door'] = true;
-                break;
-            case DEVICE_FRIDGE_FREEZER:     // Küh-/Gefrierkombination
+            case DEVICE_FRIDGE_FREEZER:			// Kühl-/Gefrierkombination
                 $with['fridge_temp'] = true;
                 $with['freezer_temp'] = true;
                 $with['Door'] = true;
                 $with['action_superfreezing'] = true;
                 $with['action_supercooling'] = true;
+                break;
+            case DEVICE_STEAM_OVEN_COMBINATION: // Dampfgarer mit Backofen-Funktion
+                $with['ProgramType'] = true;
+                $with['ProgramPhase'] = true;
+                $with['times'] = true;
+                $with['oven_temp'] = true;
+                $with['Door'] = true;
                 break;
         }
         return $with;
@@ -176,6 +176,8 @@ class MieleAtHomeDevice extends IPSModule
 
         $deviceId = $this->ReadPropertyInteger('deviceId');
         $deviceType = $this->ReadPropertyString('deviceType');
+        $techType = $this->ReadPropertyString('techType');
+        $fabNumber = $this->ReadPropertyString('fabNumber');
 
         $with = $this->device2with($deviceId);
 
@@ -223,8 +225,6 @@ class MieleAtHomeDevice extends IPSModule
         $vpos = 100;
         $this->MaintainVariable('LastChange', $this->Translate('last change'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
 
-        $techType = $this->ReadPropertyString('techType');
-        $fabNumber = $this->ReadPropertyString('fabNumber');
         $this->SetSummary($techType . ' (#' . $fabNumber . ')');
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
@@ -234,9 +234,12 @@ class MieleAtHomeDevice extends IPSModule
             return;
         }
 
-        $this->SetStatus(IS_ACTIVE);
-
-        $this->SetUpdateInterval();
+        if ($deviceId > 0 && $fabNumber != '') {
+            $this->SetStatus(IS_ACTIVE);
+            $this->SetUpdateInterval();
+        } else {
+            $this->SetStatus(IS_INVALIDCONFIG);
+        }
 
         if ($with['action']) {
             $this->MaintainAction('Action', true);
@@ -257,7 +260,24 @@ class MieleAtHomeDevice extends IPSModule
 
     public function GetConfigurationForm()
     {
+        $formElements = $this->GetFormElements();
+        $formActions = $this->GetFormActions();
+        $formStatus = $this->GetFormStatus();
+
+        $form = json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
+        if ($form == '') {
+            $this->SendDebug(__FUNCTION__, 'json_error=' . json_last_error_msg(), 0);
+            $this->SendDebug(__FUNCTION__, '=> formElements=' . print_r($formElements, true), 0);
+            $this->SendDebug(__FUNCTION__, '=> formActions=' . print_r($formActions, true), 0);
+            $this->SendDebug(__FUNCTION__, '=> formStatus=' . print_r($formStatus, true), 0);
+        }
+        return $form;
+    }
+
+    protected function GetFormElements()
+    {
         $formElements = [];
+
         $formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Instance is disabled'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'deviceId', 'caption' => 'Device id'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'deviceType', 'caption' => 'Device type'];
@@ -274,29 +294,29 @@ class MieleAtHomeDevice extends IPSModule
         $formElements[] = ['type' => 'Label', 'label' => 'Update data every X seconds'];
         $formElements[] = ['type' => 'NumberSpinner', 'name' => 'update_interval', 'caption' => 'Seconds'];
 
+        return $formElements;
+    }
+
+    protected function GetFormActions()
+    {
         $formActions = [];
-        $formActions[] = ['type' => 'Button', 'label' => 'Update data', 'onClick' => 'MieleAtHomeDevice_UpdateData($id);'];
-        $formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
+
         $formActions[] = [
-                            'type'    => 'Button',
-                            'caption' => 'Module description',
-                            'onClick' => 'echo "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md";'
-                        ];
+                        'type'    => 'Button',
+                        'label'   => 'Update data',
+                        'onClick' => 'MieleAtHome_UpdateData($id);'
+                    ];
+        $formActions[] = [
+                        'type'  => 'Label',
+                        'label' => '____________________________________________________________________________________________________'
+                    ];
+        $formActions[] = [
+                        'type'    => 'Button',
+                        'caption' => 'Module description',
+                        'onClick' => 'echo "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md";'
+                    ];
 
-        $formStatus = [];
-        $formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created'];
-        $formStatus[] = ['code' => IS_ACTIVE, 'icon' => 'active', 'caption' => 'Instance is active'];
-        $formStatus[] = ['code' => IS_DELETING, 'icon' => 'inactive', 'caption' => 'Instance is deleted'];
-        $formStatus[] = ['code' => IS_INACTIVE, 'icon' => 'inactive', 'caption' => 'Instance is inactive'];
-        $formStatus[] = ['code' => IS_NOTCREATED, 'icon' => 'inactive', 'caption' => 'Instance is not created'];
-
-        $formStatus[] = ['code' => IS_INVALIDCONFIG, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid configuration)'];
-        $formStatus[] = ['code' => IS_UNAUTHORIZED, 'icon' => 'error', 'caption' => 'Instance is inactive (unauthorized)'];
-        $formStatus[] = ['code' => IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
-        $formStatus[] = ['code' => IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
-        $formStatus[] = ['code' => IS_INVALIDDATA, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)'];
-
-        return json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
+        return $formActions;
     }
 
     protected function SetUpdateInterval()
@@ -308,8 +328,7 @@ class MieleAtHomeDevice extends IPSModule
 
     public function UpdateData()
     {
-        $inst = IPS_GetInstance($this->InstanceID);
-        if ($inst['InstanceStatus'] == IS_INACTIVE) {
+        if ($this->GetStatus() == IS_INACTIVE) {
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
             return;
         }
@@ -703,6 +722,7 @@ class MieleAtHomeDevice extends IPSModule
                     532 => 'Rinse out lint',
                     533 => 'Rinses',
                     534 => 'Smoothing',
+                    537 => 'Programmed',
                     538 => 'Slightly dry',
                     539 => 'Safety cooling',
                 ],
@@ -948,8 +968,7 @@ class MieleAtHomeDevice extends IPSModule
 
     private function CallAction($func, $action)
     {
-        $inst = IPS_GetInstance($this->InstanceID);
-        if ($inst['InstanceStatus'] == IS_INACTIVE) {
+        if ($this->GetStatus() == IS_INACTIVE) {
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
             return;
         }

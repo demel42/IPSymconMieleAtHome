@@ -1,6 +1,27 @@
 {
 	"translations": {
 		"de": {
+			"Status: Symcon Connect is OK!": "Status: Symcon Connect ist OK!",
+			"Error: Symcon Connect is not active!": "Fehler: Symcon Connect ist nicht aktiv!",
+
+			"Connection Type": "Verbindungstyp",
+			"Please select a connection type. Either connect via the Miele@Home username and password and IP Symcon Connect or alternatively as a developer with your own developer key.":
+				"Bitte einen Verbindungstyp auswählen. Entweder Verbindung über den Miele@Home Benutzernamen und das Passwort und IP-Symcon Connect oder alternativ als Entwickler mit eigenem Entwickler Schlüssel.",
+			"Please select a connection type": "Bitte einen Verbindungstyp auswählen",
+			"Miele@Home via IP-Symcon Connect": "Miele@Home über IP-Symcon Connect",
+			"Miele@Home Developer Key": "Miele@Home Developer Key",
+			"Push \"Register\" in the action part of this configuration form.":
+				"\"Registrieren\" in der Aktionsbereich dieses Konfigurationsformulares drücken.",
+			"At the webpage from Miele log in with your Miele@Home username and your Miele@Home password.":
+				"Auf der Webseite von Miele mit dem Miele@Home Benutzernamen und dem Miele@Home Passwort anmelden.",
+			"If the connection to IP-Symcon was successfull you get the message: \"Miele@Home successfully connected!\". Close the browser window.":
+				"Wenn die Verbindung zu IP-Symcon erfolgreich war erscheint die Meldung: \"Miele@Home successfully connected!\". Das Browserfenster kann nun geschlossen werden.",
+			"Return to this configuration form.":
+				"Danach zu diesem Konfigurationsformular zurückkehren und fortfahren.",
+			"Register with your Miele@Home username and Miele@Home password:":
+				"Mit dem Miele@Home Benutzernamen und dem Miele@Home Passwort registrieren:",
+
+			"Register": "Registrieren",
 			"Instance is disabled": "Instanz ist deaktiviert",
 			"instance is inactive": "Instanz ist inaktiv",
 
@@ -10,6 +31,7 @@
 			"Miele@Home API-Access": "Miele@Home API-Zugangsdaten",
 			"Client-ID": "Client-ID",
 			"Client-Secret": "Client-Secret",
+			"Miele@Home Language Settings": "Miele@Home Spracheinstellungen",
 			"Language": "Sprache",
 			"VG-Selector": "VG-Auswahl",
 
@@ -27,6 +49,7 @@
 			"invalid account-data": "ungültige Zugangsdaten",
 			"message": "Mitteilung",
 			"valid account-data": "gültige Zugangsdaten",
+			"registered devices found": "registrierte Geräte gefunden",
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",
@@ -38,7 +61,8 @@
 			"Instance is inactive (unauthorized)": "Instanz ist inaktiv (Authorisierung fehlerhaft)",
 			"Instance is inactive (server error)": "Instanz ist inaktiv (Serverfehler)",
 			"Instance is inactive (http error)": "Instanz ist inaktiv (HTTP-Fehler)",
-			"Instance is inactive (invalid data)": "Instanz ist inaktiv (ungültige Daten)"
+			"Instance is inactive (invalid data)": "Instanz ist inaktiv (ungültige Daten)",
+			"Instance is inactive (no Symcon-Connect)": "Instanz ist inaktiv (kein Symcon-Connect)"
 		}
 	}
 }

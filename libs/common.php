@@ -1,5 +1,11 @@
 <?php
 
+if (!defined('CONNECTION_UNDEFINED')) {
+    define('CONNECTION_UNDEFINED', 0);
+    define('CONNECTION_OAUTH', 1);
+    define('CONNECTION_DEVELOPER', 2);
+}
+
 if (!defined('VARIABLETYPE_BOOLEAN')) {
     define('VARIABLETYPE_BOOLEAN', 0);
     define('VARIABLETYPE_INTEGER', 1);
@@ -13,6 +19,7 @@ if (!defined('IS_INVALIDCONFIG')) {
     define('IS_SERVERERROR', IS_EBASE + 3);
     define('IS_HTTPERROR', IS_EBASE + 4);
     define('IS_INVALIDDATA', IS_EBASE + 5);
+    define('IS_NOSYMCONCONNECT', IS_EBASE + 6);
 }
 
 if (!defined('DEVICE_WASHING_MACHINE')) {
@@ -257,5 +264,46 @@ trait MieleAtHomeCommon
             return $bval ? 'true' : 'false';
         }
         return $bval;
+    }
+
+    protected function GetStatus()
+    {
+        if (IPS_GetKernelVersion() >= 5.1) {
+            return parent::GetStatus();
+        }
+
+        $inst = IPS_GetInstance($this->InstanceID);
+        return $inst['InstanceStatus'];
+    }
+
+    private function GetFormStatus()
+    {
+        $formStatus = [];
+
+        $formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created'];
+        $formStatus[] = ['code' => IS_ACTIVE, 'icon' => 'active', 'caption' => 'Instance is active'];
+        $formStatus[] = ['code' => IS_DELETING, 'icon' => 'inactive', 'caption' => 'Instance is deleted'];
+        $formStatus[] = ['code' => IS_INACTIVE, 'icon' => 'inactive', 'caption' => 'Instance is inactive'];
+
+        $formStatus[] = ['code' => IS_NOTCREATED, 'icon' => 'inactive', 'caption' => 'Instance is not created'];
+        $formStatus[] = ['code' => IS_INVALIDCONFIG, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid configuration)'];
+        $formStatus[] = ['code' => IS_UNAUTHORIZED, 'icon' => 'error', 'caption' => 'Instance is inactive (unauthorized)'];
+        $formStatus[] = ['code' => IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
+        $formStatus[] = ['code' => IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
+        $formStatus[] = ['code' => IS_INVALIDDATA, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)'];
+        $formStatus[] = ['code' => IS_NOSYMCONCONNECT, 'icon' => 'error', 'caption' => 'Instance is inactive (no Symcon-Connect)'];
+
+        return $formStatus;
+    }
+
+    private function GetConnectUrl()
+    {
+        $instID = IPS_GetInstanceListByModuleID('{9486D575-BE8C-4ED8-B5B5-20930E26DE6F}')[0];
+        if (IPS_GetKernelVersion() >= 5.2) {
+            $url = CC_GetConnectURL($instID);
+        } else {
+            $url = CC_GetUrl($instID);
+        }
+        return $url;
     }
 }

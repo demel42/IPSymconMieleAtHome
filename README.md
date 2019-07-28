@@ -1,7 +1,7 @@
 # IPSymconMieleAtHome
 
 [![IPS-Version](https://img.shields.io/badge/Symcon_Version-5.0-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Module-Version](https://img.shields.io/badge/Modul_Version-1.11-blue.svg)
+![Module-Version](https://img.shields.io/badge/Modul_Version-1.13-blue.svg)
 ![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![StyleCI](https://github.styleci.io/repos/156072156/shield?branch=master)](https://github.styleci.io/repos/156072156)
@@ -21,54 +21,113 @@
 ## 1. Funktionsumfang
 
 Unter dem Begriff _Miele@Home_ wird von Miele die Vernetzung von entsprechend ausgestatteten Haushaltsgeräten angeboten. Zur Vernetzung dienen verscheidenen Protokolle (WLAN, Z-Wave, ...) die dann, ggfs. über einen Gateway, mit einer Cloud von Miele kommunizieren,
-Über diese Clound kann der Benutzer mit der entsprechenden App von Miele den Status der Geräte kontrollieren und in gewissem Umfang steuern.
+Über diese Cloud kann der Benutzer mit der entsprechenden App von Miele den Status der Geräte kontrollieren und in gewissem Umfang steuern.
 
 Unter dem Begriff _Miele@Home-third-party-API_ bietet Miele einen Zugriff auf diesen Daten an. Neben dem Abruf von Daten ist auch eine gewisse Steuerung möglich.
 
-Mit diesem Modul können diese Daten, passend zu den Gerätetypen, in IP⁻Symcon visualisiert werden.
+Mit diesem Modul können diese Daten, passend zu den Gerätetypen, in IP⁻Symcon visualisiert werden und die vorhandenen Steuerungsmöglichkeiten genutzt werden.
 
 ## 2. Voraussetzungen
 
  - IP-Symcon ab Version 5
  - Miele@Home-Account
- - Zugangsdaten zu Miele@Home-third-party-API
+ - entweder IP-Symcon Connect oder Zugangsdaten zu Miele@Home-third-party-API
 
 ## 3. Installation
 
 ### a. Laden des Moduls
 
-Die Konsole von IP-Symcon öffnen. Im Objektbaum unter Kerninstanzen die Instanz __*Modules*__ durch einen doppelten Mausklick öffnen.
+Die Webconsole von IP-Symcon mit _http://\<IP-Symcon IP\>:3777/console/_ öffnen. 
 
-In der _Modules_ Instanz rechts oben auf den Button __*Hinzufügen*__ drücken.
+Anschließend oben rechts auf das Symbol für den Modulstore (IP-Symcon > 5.1) klicken
 
-In dem sich öffnenden Fenster folgende URL hinzufügen:
+![Store](docs/de/img/store_icon.png?raw=true "open store")
 
-`https://github.com/demel42/IPSymconMieleAtHome.git`
+Im Suchfeld nun _Miele_ eingeben, das Modul auswählen und auf _Istallieren_ drücken.
 
-und mit _OK_ bestätigen.
+#### Alternatives Installieren über Modules Instanz (IP-Symcon < 5.1)
 
-Anschließend erscheint ein Eintrag für das Modul in der Liste der Instanz _Modules_
+Die Webconsole von IP-Symcon mit _http://\<IP-Symcon IP\>:3777/console/_ aufrufen. 
+
+Anschließend den Objektbaum _öffnen_.
+
+![Objektbaum](docs/de/img/objektbaum.png?raw=true "Objektbaum")	
+
+Die Instanz _Modules_ unterhalb von Kerninstanzen im Objektbaum von IP-Symcon mit einem Doppelklick öffnen und das  _Plus_ Zeichen drücken.
+
+![Modules](docs/de/img/Modules.png?raw=true "Modules")	
+
+![Plus](docs/de/img/plus.png?raw=true "Plus")	
+
+![ModulURL](docs/de/img/add_module.png?raw=true "Add Module")
+ 
+Im Feld die folgende URL eintragen und mit _OK_ bestätigen:
+
+```
+https://github.com/demel42/IPSymconMieleAtHome.git
+```  
+	        
+Anschließend erscheint ein Eintrag für das Modul in der Liste der Instanz _Modules_.
+
+Es wird im Standard der Zweig (Branch) _master_ geladen, dieser enthält aktuelle Änderungen und Anpassungen.
+Nur der Zweig _master_ wird aktuell gehalten.
+
+![Master](docs/de/img/master.png?raw=true "master") 
+
+Sollte eine ältere Version von IP-Symcon abs 5.0 eingesetzt werden, ist auf das Zahnrad rechts in der Liste zu klicken.
+Es öffnet sich ein weiteres Fenster,
+
+![SelectBranch](docs/de/img/select_branch.png?raw=true "select branch") 
+
+hier kann man auf einen anderen Zweig wechseln, für ältere Versionen sind entsprechende Zweige auszuwählen.
 
 ### b. Miele-Cloud
 
 Es wird ein Account bei _Miele@Home_ benötigt, das macht man am einfachsten über die App oder legt direkt bei Miele ein Benutzerkonto an.
+
+Um Zugriff auf die Miele@Home Daten zu bekommen, gibt es zwei Möglichkeiten.
+
+#### Zugriff mit Miele@Home Benutzerdaten über IP-Symcon Connect
+
+Hierzu wird ein aktives IP-Symcon Connect benötigt und den normalen Miele@Home Benutzernamen und Passwort.
+
+#### Zugriff als Entwickler mit eigenem Entwicklerschlüssel
+
 Für den Zugriff der auf die _Miele@Home-third-party-API_ benötigt man zusätzliche Zugriffschlüssel; diese bekommn man, indem man eine (formlose) Mail an _developer@miele.com_ schickt (siehe auch _https://www.miele.com/developer_).
 
 ### c. Einrichtung I/O-Moduls
 
 In IP-Symcon nun unterhalb von _I/O Instanzen_ die Funktion _Instanz hinzufügen_ (_CTRL+1_) auswählen, als Hersteller _Miele_ und als Gerät _Miele@Home I/O_ auswählen.
-Die geforderten Daten eintragen - wichtig, das Feld _VG-Auswahl_ muss anscheinend dem Land entsprechen, in dem das Gerät betreiebn wird. Dann den Zugriff mit _Zugang prüfen_ testen.
+
+Im Konfiguartionsformular nun den gewünschten Zugang wählen, entweder als Nutzer über IP-Symcon Connect oder als Entwickler mit eigenem Entwicklerschlüssel
+
+#### Zugriff mit Miele@Home Benutzerdaten über IP-Symcon Connect
+
+Hierzu auf _**Registrieren**_ drücken. Es öffnet sich ein Browserfenster mit der Anmeldeseite von Miele.
+
+![OAUTH1](docs/de/img/oauth_1.png?raw=true "oauth 1")  
+ 
+Auf der Anmeldeseite von Miele wird der Miele Benutzername (E-Mail) und das Passwort eingetragen. Das passende Land ist auszuwählen.
+
+nachdem die Authentifizierung von IP-Symcon bei Miele@Home erfolgreich war erscheint folgende Meldung.
+
+![OAUTH2](docs/de/img/oauth_2.png?raw=true "oauth 2") 
+
+Das Browser Fenster kann nun geschlossen werden und wieder zu IP-Symcon zurückgekeht werden.
+
+#### Zugriff als Entwickler mit eigenem Entwicklerschlüssel
+
+Die geforderten Daten eintragen - wichtig, das Feld _VG-Auswahl_ muss anscheinend dem Land entsprechen, in dem das Gerät betrieben wird. Dann den Zugriff mit _Zugang prüfen_ testen.
 
 ### d. Einrichtung des Konfigurator-Moduls
 
 In IP-Symcon nun unterhalb von _Konfigurator Instanzen_ die Funktion _Instanz hinzufügen_ (_CTRL+1_) auswählen, als Hersteller _Miele_ und als Gerät _Miele@Home Konfigurator_ auswählen.
-Dann in den Auswahlbox das gewünschte Gerät auswählen und _Gerät anlegen_ betätigen.
-Der Versuch, ein bereits eingerichtetes Gerätes erneut anzulegen, führ nicht zu einer weitren Geräte-Instanz…
+In der Liste nun das zu erstellende Gerät auswählen, das man erstellen will. Der Konfigurator legt dann eine Geräte Instanz an.
 
 ### e. Einrichtung des Geräte-Moduls
 
-Eine manuelle Einrichtung eines Geräemoduls ist nicht erforderlich, das erfolgt über den Konfigurator.
-In dem Geräte-Modul ist ggfs nur das Abfrage-Intervall anzupassen, die anderen Felder, insbesondere die _Fabrikationsnummer_ (diese ist die Identifikation des Gerätes) und die _Geräte-Typ-ID_ (dies steuert, welche Variablen angelegt werden) müssen unverändert bleiben.
+Eine manuelle Einrichtung eines Gerätemoduls ist nicht erforderlich, das erfolgt über den Konfigurator.
+In dem Geräte-Modul ist ggfs nur das Abfrage-Intervall anzupassen, die anderen Felder, insbesondere die _Seriennummer_ (diese ist die Identifikation des Gerätes) und die _Geräte-Typ-ID_ (diese steuert, welche Variablen angelegt werden) müssen unverändert bleiben.
 
 Wichtig: da keine vollständige Dokumentation vorliegt, welche Geräte es gibt bzw. welche Geräte sinnvollerweise welche Variablen füllen, ist die Liste der unterstützten Geräte unvollständig und muss dann im Bedarfsfall erweitert werden.
 
@@ -76,25 +135,25 @@ Wichtig: da keine vollständige Dokumentation vorliegt, welche Geräte es gibt b
 
 siehe https://www.miele.com/developer/swagger-ui/put_additional_info.html
 
-`boolean MieleAtHomeDevice_Start(integer $InstanzID)`<br>
+`boolean MieleAtHome_Start(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_Stop(integer $InstanzID)`<br>
+`boolean MieleAtHome_Stop(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_Pause(integer $InstanzID)`<br>
+`boolean MieleAtHome_Pause(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_StartSuperfreezing(integer $InstanzID)`<br>
+`boolean MieleAtHome_StartSuperfreezing(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_StopSuperfreezing(integer $InstanzID)`<br>
+`boolean MieleAtHome_StopSuperfreezing(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_StartSupercooling(integer $InstanzID)`<br>
+`boolean MieleAtHome_StartSupercooling(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_StopSupercooling(integer $InstanzID)`<br>
+`boolean MieleAtHome_StopSupercooling(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_LightEnable(integer $InstanzID)`<br>
+`boolean MieleAtHome_LightEnable(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_LightDisable(integer $InstanzID)`<br>
+`boolean MieleAtHome_LightDisable(integer $InstanzID)`<br>
 
-`boolean MieleAtHomeDevice_SetStarttime(integer $InstanzID, int $hour, int $min)`<br>
+`boolean MieleAtHome_SetStarttime(integer $InstanzID, int $hour, int $min)`<br>
 
 ## 5. Konfiguration
 
@@ -106,6 +165,9 @@ siehe https://www.miele.com/developer/swagger-ui/put_additional_info.html
 | :---------------------- | :------ | :----------- | :----------- |
 | Instanz ist deaktiviert | boolean | false        | Instanz temporär deaktivieren |
 |                         |         |              | |
+| Verbindugstyp           | integer | 0            | Auswahl der Art der Verbindung (OAuth oder Developer) |
+|                         |         |              | |
+| - nur bei _Developer_ - |         |              | |
 | Benutzer (EMail)        | string  |              | Miele@Home-Konto: Benutzerkennung |
 | Passwort                | string  |              | Miele@Home-Konto: Passwort |
 | Client-ID               | string  |              | Miele@Home API-Zugangsdaten: Client-ID |
@@ -123,11 +185,8 @@ siehe https://www.miele.com/developer/swagger-ui/put_additional_info.html
 
 | Eigenschaft | Beschreibung |
 | :---------- | :----------- |
+| Kategorie   | opt. Angabe einer Kategorie, unterhalb der die Instanzen angelegt werden |
 | Gerät       | Auswahlliste der Geräte des angegebenen Miele-Kontos |
-
-| Bezeichnung   | Beschreibung |
-| :------------ | :----------- |
-| Gerät anlegen | Erzeugt/Aktualisiert die Geräte-Instanz des ausgewählte Gerätes |
 
 ### c. Geräte-Modul
 
@@ -137,7 +196,7 @@ siehe https://www.miele.com/developer/swagger-ui/put_additional_info.html
 |                         |         |              | |
 | Geräete-Typ-ID          | integer |              | wird im Konfigurator gesetzt und darf nicht geändert werden, bestimmte die auszugebenden Felder |
 | Geräte-Typ              | string  |              | wird im Konfigurator gesetzt |
-| Fabrikationsnummer      | string  |              | wird im Konfigurator gesetzt und darf nicht geändert werden |
+| Seriennummer            | string  |              | wird im Konfigurator gesetzt und darf nicht geändert werden |
 | Modell                  | string  |              | wird im Konfigurator gesetzt |
 | Update-Intervall        | integer | 60           | Intervall der Datenabfrage in Sekunden |
 |                         |         |              | |
@@ -163,6 +222,7 @@ Bisher unterstützte Gerätetypen
 | 12 | Backofen |
 | 13 | Backofen mit Mikrowelle |
 | 21 | Kühl/Gefrier-Kombination |
+| 45 | Dampfgarer mit Backofen-Funktion |
 
 ### Variablenprofile
 
@@ -191,6 +251,16 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.13 @ 25.07.2019 09:22<br>
+  - Kompatibilität zu 5.2 (CC_GetUrl())
+  - Absicherung bei fehlerhafter _ImportCategoryID_
+
+- 1.12 @ 12.07.2019 14:47<br>
+  - OAuth hinzugefügt (Dank an Fonzo)
+    Wichtiger Hinweis für ein Update: in der IO-Instanz den Verbindungstyp auf _Developer Key_ setzen!
+  - Konfigurator als Konfigurationsformular
+  - Modul-Prefixe auf _MieleAtHome_ vereinheitlicht
+  
 - 1.11 @ 23.04.2019 17:59<br>
   - weitere Text für Phase bei Backofen/Dampfgarer
   - Tabellenausrichtung in README.md
