@@ -556,70 +556,70 @@ class MieleAtHomeIO extends IPSModule
     private function getToken(&$msg)
     {
         $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
-		switch ($oauth_type) {
-			case CONNECTION_OAUTH:
-				$token = $this->FetchAccessToken();
-				$jtoken = [
-						'token' => $token
-					];
-				break;
-			case CONNECTION_DEVELOPER:
-				$userid = $this->ReadPropertyString('userid');
-				$password = $this->ReadPropertyString('password');
-				$client_id = $this->ReadPropertyString('client_id');
-				$client_secret = $this->ReadPropertyString('client_secret');
-				$vg_selector = $this->ReadPropertyString('vg_selector');
+        switch ($oauth_type) {
+            case CONNECTION_OAUTH:
+                $token = $this->FetchAccessToken();
+                $jtoken = [
+                        'token' => $token
+                    ];
+                break;
+            case CONNECTION_DEVELOPER:
+                $userid = $this->ReadPropertyString('userid');
+                $password = $this->ReadPropertyString('password');
+                $client_id = $this->ReadPropertyString('client_id');
+                $client_secret = $this->ReadPropertyString('client_secret');
+                $vg_selector = $this->ReadPropertyString('vg_selector');
 
-				$dtoken = $this->GetBuffer('Token');
-				$jtoken = json_decode($dtoken, true);
-				$token = isset($jtoken['token']) ? $jtoken['token'] : '';
-				$expiration = isset($jtoken['expiration']) ? $jtoken['expiration'] : 0;
+                $dtoken = $this->GetBuffer('Token');
+                $jtoken = json_decode($dtoken, true);
+                $token = isset($jtoken['token']) ? $jtoken['token'] : '';
+                $expiration = isset($jtoken['expiration']) ? $jtoken['expiration'] : 0;
 
-				if ($expiration < time()) {
-					$params = [
-							'client_id'     => $client_id,
-							'client_secret' => $client_secret,
-							'grant_type'    => 'password',
-							'username'      => $userid,
-							'password'      => $password,
-							'state'         => 'token',
-							'redirect_uri'  => '/v1/devices',
-							'vg'            => $vg_selector,
-						];
-					$header = [
-							'Accept: application/json; charset=utf-8',
-							'Content-Type: application/x-www-form-urlencoded'
-						];
+                if ($expiration < time()) {
+                    $params = [
+                            'client_id'     => $client_id,
+                            'client_secret' => $client_secret,
+                            'grant_type'    => 'password',
+                            'username'      => $userid,
+                            'password'      => $password,
+                            'state'         => 'token',
+                            'redirect_uri'  => '/v1/devices',
+                            'vg'            => $vg_selector,
+                        ];
+                    $header = [
+                            'Accept: application/json; charset=utf-8',
+                            'Content-Type: application/x-www-form-urlencoded'
+                        ];
 
-					$cdata = '';
-					$msg = '';
-					$statuscode = $this->do_HttpRequest('/thirdparty/token', $params, $header, '', 'POST', $cdata, $msg);
-					if ($statuscode == 0 && $cdata == '') {
-						$statuscode = IS_INVALIDDATA;
-					}
-					$this->SendDebug(__FUNCTION__, 'token: statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true) . ', msg=' . $msg, 0);
-					if ($statuscode != 0) {
-						$this->SetStatus($statuscode);
-						return '';
-					}
+                    $cdata = '';
+                    $msg = '';
+                    $statuscode = $this->do_HttpRequest('/thirdparty/token', $params, $header, '', 'POST', $cdata, $msg);
+                    if ($statuscode == 0 && $cdata == '') {
+                        $statuscode = IS_INVALIDDATA;
+                    }
+                    $this->SendDebug(__FUNCTION__, 'token: statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true) . ', msg=' . $msg, 0);
+                    if ($statuscode != 0) {
+                        $this->SetStatus($statuscode);
+                        return '';
+                    }
 
-					$jdata = json_decode($cdata, true);
-					$this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
+                    $jdata = json_decode($cdata, true);
+                    $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
 
-					$token = $jdata['access_token'];
-					$expires_in = $jdata['expires_in'];
+                    $token = $jdata['access_token'];
+                    $expires_in = $jdata['expires_in'];
 
-					$jtoken = [
-							'token'            => $token,
-							'expiration'       => time() + $expires_in
-						];
-					$this->SetBuffer('Token', json_encode($jtoken));
-				}
-				break;
-			default:
-				$jtoken = false;
-				break;
-		}
+                    $jtoken = [
+                            'token'            => $token,
+                            'expiration'       => time() + $expires_in
+                        ];
+                    $this->SetBuffer('Token', json_encode($jtoken));
+                }
+                break;
+            default:
+                $jtoken = false;
+                break;
+        }
         return $jtoken;
     }
 
