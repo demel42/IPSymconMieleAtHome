@@ -1,7 +1,7 @@
 # IPSymconMieleAtHome
 
 [![IPS-Version](https://img.shields.io/badge/Symcon_Version-5.0-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Module-Version](https://img.shields.io/badge/Modul_Version-1.14-blue.svg)
+![Module-Version](https://img.shields.io/badge/Modul_Version-1.15-blue.svg)
 ![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![StyleCI](https://github.styleci.io/repos/156072156/shield?branch=master)](https://github.styleci.io/repos/156072156)
@@ -250,6 +250,9 @@ Verweise:
 - https://www.miele.com/developer/index.html
 
 ## 7. Versions-Historie
+
+- 1.15 @ 30.07.2019 18:46<br>
+  - Anlage ohne gesetzte Import-Kategorie erfolgt in der Kategorie IP-Symcon/IP-Symcon
 
 - 1.14 @ 29.07.2019 12:17<br>
   - Absturz beim Aufruf des Konfigurators bei nicht eingerichteter IO-Instanz

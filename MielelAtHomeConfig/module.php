@@ -23,11 +23,6 @@ class MieleAtHomeConfig extends IPSModule
         $this->SetStatus(IS_ACTIVE);
     }
 
-    public function RefreshListConfiguration()
-    {
-        $this->getConfiguratorValues();
-    }
-
     private function getConfiguratorValues()
     {
         $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDevices'];
@@ -101,7 +96,7 @@ class MieleAtHomeConfig extends IPSModule
     {
         $tree_position = [];
         $category = $this->ReadPropertyInteger('ImportCategoryID');
-        if (IPS_ObjectExists($category)) {
+        if ($category > 0 && IPS_ObjectExists($category)) {
             $tree_position[] = IPS_GetName($category);
             $parent = IPS_GetObject($category)['ParentID'];
             while ($parent > 0) {
