@@ -3,15 +3,21 @@
 		"de": {
 			"Instance is disabled": "Instanz ist deaktiviert",
 
+			"Basis configuration (don't change)": "Basis-Konfiguration (nicht ändern)",
 			"Device id": "Geräete-Typ-ID",
 			"Device type": "Geräte-Typ",
 			"Fabrication number": "Seriennummer",
 			"Model": "Modell",
+
+			"Settings": "Einstellungen",
 			"mapping code to text of field ...": "Status-Code selbst in Text umsetzen von Feld ...",
+			" ... Program name": " ... Programmbezeichnung",
 			" ... Program": " ... Programm",
 			" ... Phase": " ... Phase",
 			" ... Drying step": " ... Trockenstufe",
 			" ... Ventilation step": " ... Entlüftungsstufe",
+
+			"Communication": "Kommunikation",
 			"Update data every X seconds": "Daten alle X Sekunden aktualisieren",
 			"Seconds": "Sekunden",
 
@@ -29,6 +35,7 @@
 			"Fridge: temperature": "Kühlschrank: Temperatur",
 			"Light": "Licht",
 			"Phase": "Phase",
+			"Program name": "Programmbezeichnung",
 			"Program": "Programm",
 			"Remaining time": "verbleibende Zeit",
 			"Spinning speed": "Drehzahl",
@@ -37,6 +44,7 @@
 			"Target temperature": "Soll-Temperatur",
 			"Temperature": "Temperatur",
 			"Ventilation step": "Entlüftungsstufe",
+			"Work progress": "Arbeitsfortschritt",
 
 			"Action": "Aktion",
 

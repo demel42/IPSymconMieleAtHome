@@ -251,6 +251,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.16 @ 02.08.2019 08:41<br>
+  - Übernahme von Programmbezeichnung
+  - Korrektur von Drehzahl
+
 - 1.15 @ 30.07.2019 18:46<br>
   - Anlage ohne gesetzte Import-Kategorie erfolgt in der Kategorie IP-Symcon/IP-Symcon
 
