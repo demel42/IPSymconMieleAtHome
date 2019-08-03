@@ -115,7 +115,7 @@ nachdem die Authentifizierung von IP-Symcon bei Miele@Home erfolgreich war ersch
 
 Eeiterhin muss man die Erlaubnis zum Zugriff auf die Miele-Geräte erteilen.
 
-![ZUGRIFF_ERTEILEN](docs/de/img/zugriff_erlauben.png?raw=true "zugriff erteilen") 
+![ZUGRIFF_ERTEILEN](docs/de/img/zugriff_erteilen.png?raw=true "zugriff erteilen") 
 
 Das Browser Fenster kann nun geschlossen werden und wieder zu IP-Symcon zurückgekeht werden.
 
