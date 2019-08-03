@@ -20,7 +20,7 @@
 
 ## 1. Funktionsumfang
 
-Unter dem Begriff _Miele@Home_ wird von Miele die Vernetzung von entsprechend ausgestatteten Haushaltsgeräten angeboten. Zur Vernetzung dienen verscheidenen Protokolle (WLAN, Z-Wave, ...) die dann, ggfs. über einen Gateway, mit einer Cloud von Miele kommunizieren,
+Unter dem Begriff _Miele@Home_ wird von Miele die Vernetzung von entsprechend ausgestatteten Haushaltsgeräten angeboten. Zur Vernetzung dienen verschiedene Protokolle (WLAN, Z-Wave, ...) die dann, ggfs. über einen Gateway, mit der Cloud von Miele kommunizieren,
 Über diese Cloud kann der Benutzer mit der entsprechenden App von Miele den Status der Geräte kontrollieren und in gewissem Umfang steuern.
 
 Unter dem Begriff _Miele@Home-third-party-API_ bietet Miele einen Zugriff auf diesen Daten an. Neben dem Abruf von Daten ist auch eine gewisse Steuerung möglich.
@@ -43,7 +43,7 @@ Anschließend oben rechts auf das Symbol für den Modulstore (IP-Symcon > 5.1) k
 
 ![Store](docs/de/img/store_icon.png?raw=true "open store")
 
-Im Suchfeld nun _Miele_ eingeben, das Modul auswählen und auf _Istallieren_ drücken.
+Im Suchfeld nun _Miele_ eingeben, das Modul auswählen und auf _Installieren_ drücken.
 
 #### Alternatives Installieren über Modules Instanz (IP-Symcon < 5.1)
 
@@ -113,7 +113,7 @@ nachdem die Authentifizierung von IP-Symcon bei Miele@Home erfolgreich war ersch
 
 ![OAUTH2](docs/de/img/oauth_2.png?raw=true "oauth 2") 
 
-Eeiterhin muss man die Erlaubnis zum Zugriff auf die Miele-Geräte erteilen.
+Weiterhin muss man die Erlaubnis zum Zugriff auf die Miele-Geräte erteilen.
 
 ![ZUGRIFF_ERTEILEN](docs/de/img/zugriff_erteilen.png?raw=true "zugriff erteilen") 
 
