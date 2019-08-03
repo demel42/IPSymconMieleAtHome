@@ -113,6 +113,10 @@ nachdem die Authentifizierung von IP-Symcon bei Miele@Home erfolgreich war ersch
 
 ![OAUTH2](docs/de/img/oauth_2.png?raw=true "oauth 2") 
 
+Eeiterhin muss man die Erlaubnis zum Zugriff auf die Miele-Geräte erteilen.
+
+![ZUGRIFF_ERTEILEN](docs/de/img/zugriff_erlauben.png?raw=true "zugriff erteilen") 
+
 Das Browser Fenster kann nun geschlossen werden und wieder zu IP-Symcon zurückgekeht werden.
 
 #### Zugriff als Entwickler mit eigenem Entwicklerschlüssel
