@@ -99,7 +99,7 @@ Für den Zugriff der auf die _Miele@Home-third-party-API_ benötigt man zusätzl
 
 In IP-Symcon nun unterhalb von _I/O Instanzen_ die Funktion _Instanz hinzufügen_ (_CTRL+1_) auswählen, als Hersteller _Miele_ und als Gerät _Miele@Home I/O_ auswählen.
 
-Im Konfiguartionsformular nun den gewünschten Zugang wählen, entweder als Nutzer über IP-Symcon Connect oder als Entwickler mit eigenem Entwicklerschlüssel
+Im Konfigurationsformular nun den gewünschten Zugang wählen, entweder als Nutzer über IP-Symcon Connect oder als Entwickler mit eigenem Entwicklerschlüssel
 
 #### Zugriff mit Miele@Home Benutzerdaten über IP-Symcon Connect
 
