@@ -25,7 +25,7 @@ Unter dem Begriff _Miele@Home_ wird von Miele die Vernetzung von entsprechend au
 
 Unter dem Begriff _Miele@Home-third-party-API_ bietet Miele einen Zugriff auf diesen Daten an. Neben dem Abruf von Daten ist auch eine gewisse Steuerung möglich.
 
-Mit diesem Modul können diese Daten, passend zu den Gerätetypen, in IP⁻Symcon visualisiert werden und die vorhandenen Steuerungsmöglichkeiten genutzt werden.
+Mit diesem Modul können diese Daten, passend zu den Gerätetypen, in IP-Symcon visualisiert werden und die vorhandenen Steuerungsmöglichkeiten genutzt werden.
 
 ## 2. Voraussetzungen
 
