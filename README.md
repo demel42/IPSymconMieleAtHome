@@ -37,7 +37,7 @@ Mit diesem Modul können diese Daten, passend zu den Gerätetypen, in IP-Symcon 
 
 ### a. Laden des Moduls
 
-Die Webconsole von IP-Symcon mit _http://\<IP-Symcon IP\>:3777/console/_ öffnen. 
+Die Webconsole von IP-Symcon mit _http://\<IP-Symcon IP\>:3777/console/_ öffnen.
 
 Anschließend oben rechts auf das Symbol für den Modulstore (IP-Symcon > 5.1) klicken
 
@@ -47,37 +47,37 @@ Im Suchfeld nun _Miele_ eingeben, das Modul auswählen und auf _Installieren_ dr
 
 #### Alternatives Installieren über Modules Instanz (IP-Symcon < 5.1)
 
-Die Webconsole von IP-Symcon mit _http://\<IP-Symcon IP\>:3777/console/_ aufrufen. 
+Die Webconsole von IP-Symcon mit _http://\<IP-Symcon IP\>:3777/console/_ aufrufen.
 
 Anschließend den Objektbaum _öffnen_.
 
-![Objektbaum](docs/de/img/objektbaum.png?raw=true "Objektbaum")	
+![Objektbaum](docs/de/img/objektbaum.png?raw=true "Objektbaum")
 
 Die Instanz _Modules_ unterhalb von Kerninstanzen im Objektbaum von IP-Symcon mit einem Doppelklick öffnen und das  _Plus_ Zeichen drücken.
 
-![Modules](docs/de/img/Modules.png?raw=true "Modules")	
+![Modules](docs/de/img/Modules.png?raw=true "Modules")
 
-![Plus](docs/de/img/plus.png?raw=true "Plus")	
+![Plus](docs/de/img/plus.png?raw=true "Plus")
 
 ![ModulURL](docs/de/img/add_module.png?raw=true "Add Module")
- 
+
 Im Feld die folgende URL eintragen und mit _OK_ bestätigen:
 
 ```
 https://github.com/demel42/IPSymconMieleAtHome.git
-```  
-	        
+```
+
 Anschließend erscheint ein Eintrag für das Modul in der Liste der Instanz _Modules_.
 
 Es wird im Standard der Zweig (Branch) _master_ geladen, dieser enthält aktuelle Änderungen und Anpassungen.
 Nur der Zweig _master_ wird aktuell gehalten.
 
-![Master](docs/de/img/master.png?raw=true "master") 
+![Master](docs/de/img/master.png?raw=true "master")
 
 Sollte eine ältere Version von IP-Symcon abs 5.0 eingesetzt werden, ist auf das Zahnrad rechts in der Liste zu klicken.
 Es öffnet sich ein weiteres Fenster,
 
-![SelectBranch](docs/de/img/select_branch.png?raw=true "select branch") 
+![SelectBranch](docs/de/img/select_branch.png?raw=true "select branch")
 
 hier kann man auf einen anderen Zweig wechseln, für ältere Versionen sind entsprechende Zweige auszuwählen.
 
@@ -105,17 +105,17 @@ Im Konfiguartionsformular nun den gewünschten Zugang wählen, entweder als Nutz
 
 Hierzu auf _**Registrieren**_ drücken. Es öffnet sich ein Browserfenster mit der Anmeldeseite von Miele.
 
-![OAUTH1](docs/de/img/oauth_1.png?raw=true "oauth 1")  
- 
+![OAUTH1](docs/de/img/oauth_1.png?raw=true "oauth 1")
+
 Auf der Anmeldeseite von Miele wird der Miele Benutzername (E-Mail) und das Passwort eingetragen. Das passende Land ist auszuwählen.
 
 nachdem die Authentifizierung von IP-Symcon bei Miele@Home erfolgreich war erscheint folgende Meldung.
 
-![OAUTH2](docs/de/img/oauth_2.png?raw=true "oauth 2") 
+![OAUTH2](docs/de/img/oauth_2.png?raw=true "oauth 2")
 
 Weiterhin muss man die Erlaubnis zum Zugriff auf die Miele-Geräte erteilen.
 
-![ZUGRIFF_ERTEILEN](docs/de/img/zugriff_erteilen.png?raw=true "zugriff erteilen") 
+![ZUGRIFF_ERTEILEN](docs/de/img/zugriff_erteilen.png?raw=true "zugriff erteilen")
 
 Das Browser Fenster kann nun geschlossen werden und wieder zu IP-Symcon zurückgekeht werden.
 
@@ -277,7 +277,7 @@ Verweise:
     Wichtiger Hinweis für ein Update: in der IO-Instanz den Verbindungstyp auf _Developer Key_ setzen!
   - Konfigurator als Konfigurationsformular
   - Modul-Prefixe auf _MieleAtHome_ vereinheitlicht
-  
+
 - 1.11 @ 23.04.2019 17:59<br>
   - weitere Text für Phase bei Backofen/Dampfgarer
   - Tabellenausrichtung in README.md
