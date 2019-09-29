@@ -196,13 +196,13 @@ class MieleAtHomeConfig extends IPSModule
     {
         $formActions = [];
 
-		if (IPS_GetKernelVersion() < 5.2) {
-			$formActions[] = [
-					'type'    => 'Button',
-					'caption' => 'Module description',
-					'onClick' => 'echo "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md";'
-				];
-		}
+        if (IPS_GetKernelVersion() < 5.2) {
+            $formActions[] = [
+                    'type'    => 'Button',
+                    'caption' => 'Module description',
+                    'onClick' => 'echo "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md";'
+                ];
+        }
 
         return $formActions;
     }
