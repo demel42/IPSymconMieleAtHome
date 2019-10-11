@@ -407,7 +407,7 @@ class MieleAtHomeDevice extends IPSModule
         $this->SaveValue('Failure', $signalFailure, $is_changed);
 
         $dt = new DateTime(date('d.m.Y H:i:00'));
-        $now = $dt->format('U');
+        $now = (int) $dt->format('U');
 
         $startTime = 0;
         $endTime = 0;
