@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
 require_once __DIR__ . '/../libs/images.php';  // eingebettete Images
 
@@ -63,28 +65,28 @@ class MieleAtHomeConfig extends IPSModule
                 }
 
                 $create = [
-                        'moduleID'      => $guid,
-                        'location'      => $this->SetLocation(),
-                        'configuration' => [
-                                'deviceId'   => $deviceId,
-                                'deviceType' => $deviceType,
-                                'fabNumber'  => $fabNumber,
-                                'techType'   => $techType
-                            ]
-                    ];
+                    'moduleID'      => $guid,
+                    'location'      => $this->SetLocation(),
+                    'configuration' => [
+                        'deviceId'   => $deviceId,
+                        'deviceType' => $deviceType,
+                        'fabNumber'  => $fabNumber,
+                        'techType'   => $techType
+                    ]
+                ];
                 if (IPS_GetKernelVersion() >= 5.1) {
                     $create['info'] = $deviceType . ' (' . $techType . ')';
                 }
 
                 $entry = [
-                        'instanceID'  => $instanceID,
-                        'id'          => $deviceId,
-                        'name'        => $deviceName,
-                        'tech_type'   => $techType,
-                        'device_type' => $deviceType,
-                        'fabNumber'   => $fabNumber,
-                        'create'      => $create
-                    ];
+                    'instanceID'  => $instanceID,
+                    'id'          => $deviceId,
+                    'name'        => $deviceName,
+                    'tech_type'   => $techType,
+                    'device_type' => $deviceType,
+                    'fabNumber'   => $fabNumber,
+                    'create'      => $create
+                ];
 
                 $config_list[] = $entry;
             }
@@ -133,61 +135,61 @@ class MieleAtHomeConfig extends IPSModule
         $values = $this->getConfiguratorValues();
 
         $formElements[] = [
-                'type'  => 'Image',
-                'image' => 'data:image/png;base64,' . $this->GetBrandImage()
-            ];
+            'type'  => 'Image',
+            'image' => 'data:image/png;base64,' . $this->GetBrandImage()
+        ];
 
         $formElements[] = [
-                'type'  => 'Label',
-                'label' => 'category for Miele@Home devices to be created:'
-            ];
+            'type'  => 'Label',
+            'label' => 'category for Miele@Home devices to be created:'
+        ];
         $formElements[] = [
-                'name'    => 'ImportCategoryID',
-                'type'    => 'SelectCategory',
-                'caption' => 'category'
-            ];
+            'name'    => 'ImportCategoryID',
+            'type'    => 'SelectCategory',
+            'caption' => 'category'
+        ];
 
         $formElements[] = [
-                'name'     => 'MieleatHomeConfiguration',
-                'type'     => 'Configurator',
-                'rowCount' => count($values),
-                'add'      => false,
-                'delete'   => false,
-                'sort'     => [
-                    'column'    => 'name',
-                    'direction' => 'ascending'
+            'name'     => 'MieleatHomeConfiguration',
+            'type'     => 'Configurator',
+            'rowCount' => count($values),
+            'add'      => false,
+            'delete'   => false,
+            'sort'     => [
+                'column'    => 'name',
+                'direction' => 'ascending'
+            ],
+
+            'columns' => [
+                [
+                    'caption' => 'ID',
+                    'name'    => 'id',
+                    'width'   => '200px',
+                    'visible' => false
                 ],
-
-                'columns' => [
-                    [
-                        'caption' => 'ID',
-                        'name'    => 'id',
-                        'width'   => '200px',
-                        'visible' => false
-                    ],
-                    [
-                        'caption' => 'device name',
-                        'name'    => 'name',
-                        'width'   => 'auto'
-                    ],
-                    [
-                        'caption' => 'Model',
-                        'name'    => 'tech_type',
-                        'width'   => '250px'
-                    ],
-                    [
-                        'caption' => 'Label',
-                        'name'    => 'device_type',
-                        'width'   => '300px'
-                    ],
-                    [
-                        'caption' => 'Fabrication number',
-                        'name'    => 'fabNumber',
-                        'width'   => '200px'
-                    ]
+                [
+                    'caption' => 'device name',
+                    'name'    => 'name',
+                    'width'   => 'auto'
                 ],
-                'values' => $values
-            ];
+                [
+                    'caption' => 'Model',
+                    'name'    => 'tech_type',
+                    'width'   => '250px'
+                ],
+                [
+                    'caption' => 'Label',
+                    'name'    => 'device_type',
+                    'width'   => '300px'
+                ],
+                [
+                    'caption' => 'Fabrication number',
+                    'name'    => 'fabNumber',
+                    'width'   => '200px'
+                ]
+            ],
+            'values' => $values
+        ];
 
         return $formElements;
     }
@@ -198,10 +200,10 @@ class MieleAtHomeConfig extends IPSModule
 
         if (IPS_GetKernelVersion() < 5.2) {
             $formActions[] = [
-                    'type'    => 'Button',
-                    'caption' => 'Module description',
-                    'onClick' => 'echo "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md";'
-                ];
+                'type'    => 'Button',
+                'caption' => 'Module description',
+                'onClick' => 'echo "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md";'
+            ];
         }
 
         return $formActions;

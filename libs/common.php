@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 if (!defined('CONNECTION_UNDEFINED')) {
     define('CONNECTION_UNDEFINED', 0);
     define('CONNECTION_OAUTH', 1);

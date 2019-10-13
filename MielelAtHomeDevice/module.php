@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
 
 if (!defined('ACTION_START')) {
@@ -320,20 +322,20 @@ class MieleAtHomeDevice extends IPSModule
         $formActions = [];
 
         $formActions[] = [
-                        'type'    => 'Button',
-                        'caption' => 'Update data',
-                        'onClick' => 'MieleAtHome_UpdateData($id);'
-                    ];
+            'type'    => 'Button',
+            'caption' => 'Update data',
+            'onClick' => 'MieleAtHome_UpdateData($id);'
+        ];
         if (IPS_GetKernelVersion() < 5.2) {
             $formActions[] = [
-                            'type'    => 'Label',
-                            'caption' => '____________________________________________________________________________________________________'
-                        ];
+                'type'    => 'Label',
+                'caption' => '____________________________________________________________________________________________________'
+            ];
             $formActions[] = [
-                            'type'    => 'Button',
-                            'caption' => 'Module description',
-                            'onClick' => 'echo "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md";'
-                        ];
+                'type'    => 'Button',
+                'caption' => 'Module description',
+                'onClick' => 'echo "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md";'
+            ];
         }
 
         return $formActions;
@@ -403,7 +405,7 @@ class MieleAtHomeDevice extends IPSModule
             $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_NOTIFY);
         }
 
-        $signalFailure = $this->GetArrayElem($jdata, 'signalFailure', false);
+        $signalFailure = (bool) $this->GetArrayElem($jdata, 'signalFailure', false);
         $this->SaveValue('Failure', $signalFailure, $is_changed);
 
         $dt = new DateTime(date('d.m.Y H:i:00'));
@@ -572,12 +574,12 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         if ($with['Door']) {
-            $signalDoor = $this->GetArrayElem($jdata, 'signalDoor', false);
+            $signalDoor = (bool) $this->GetArrayElem($jdata, 'signalDoor', false);
             $this->SaveValue('Door', $signalDoor, $is_changed);
         }
 
         if ($with['Light']) {
-            $light = $this->GetArrayElem($jdata, 'light', false);
+            $light = (bool) $this->GetArrayElem($jdata, 'light', false);
             $this->SaveValue('Light', $light, $is_changed);
         }
 
@@ -675,10 +677,10 @@ class MieleAtHomeDevice extends IPSModule
     private function programId2text($model, $id)
     {
         $id2txt = [
-                0 => [
-                        0 => ''
-                    ],
-            ];
+            0 => [
+                0 => ''
+            ],
+        ];
 
         if (isset($id2txt[$model][$id])) {
             $txt = $this->Translate($id2txt[$model][$id]);
@@ -696,22 +698,22 @@ class MieleAtHomeDevice extends IPSModule
     private function programType2text($model, $type)
     {
         $type2txt = [
-                0 => [
-                        0 => 'Normal operation mode',
-                        1 => 'Own program',
-                        2 => 'Automatic program',
-                        3 => 'Cleaning-/Care program',
-                    ],
+            0 => [
+                0 => 'Normal operation mode',
+                1 => 'Own program',
+                2 => 'Automatic program',
+                3 => 'Cleaning-/Care program',
+            ],
 
-                DEVICE_TUMBLE_DRYER => [
-                        2 => 'Automatic plus',
-                        3 => 'Cotton',
-                    ],
+            DEVICE_TUMBLE_DRYER => [
+                2 => 'Automatic plus',
+                3 => 'Cotton',
+            ],
 
-                DEVICE_DISHWASHER => [
-                        2 => 'Intensiv',
-                    ],
-            ];
+            DEVICE_DISHWASHER => [
+                2 => 'Intensiv',
+            ],
+        ];
 
         if (isset($type2txt[$model][$type])) {
             $txt = $this->Translate($type2txt[$model][$type]);
@@ -730,88 +732,88 @@ class MieleAtHomeDevice extends IPSModule
     {
         $phase2txt = [
             0 => [
-                    0 => 'Ready',
-                ],
+                0 => 'Ready',
+            ],
             DEVICE_WASHING_MACHINE => [
-                    256 => 'Not running',
-                    257 => 'Pre-wash',
-                    258 => 'Soak',
-                    259 => 'Pre-wash',
-                    260 => 'Main wash',
-                    261 => 'Rinse',
-                    262 => 'Rinse hold',
-                    263 => 'Main wash',
-                    264 => 'Cooling down',
-                    265 => 'Drain',
-                    266 => 'Spin',
-                    267 => 'Anti-crease',
-                    268 => 'Finished',
-                    269 => 'Venting',
-                    270 => 'Starch stop',
-                    271 => 'Freshen-up + moisten',
-                    272 => 'Steam smoothing',
-                    279 => 'Hygiene',
-                    280 => 'Drying',
-                    285 => 'Disinfection',
-                    295 => 'Steam smoothing',
-                ],
+                256 => 'Not running',
+                257 => 'Pre-wash',
+                258 => 'Soak',
+                259 => 'Pre-wash',
+                260 => 'Main wash',
+                261 => 'Rinse',
+                262 => 'Rinse hold',
+                263 => 'Main wash',
+                264 => 'Cooling down',
+                265 => 'Drain',
+                266 => 'Spin',
+                267 => 'Anti-crease',
+                268 => 'Finished',
+                269 => 'Venting',
+                270 => 'Starch stop',
+                271 => 'Freshen-up + moisten',
+                272 => 'Steam smoothing',
+                279 => 'Hygiene',
+                280 => 'Drying',
+                285 => 'Disinfection',
+                295 => 'Steam smoothing',
+            ],
 
             DEVICE_TUMBLE_DRYER => [
-                    512 => 'Not running',
-                    513 => 'Program running',
-                    514 => 'Drying',
-                    515 => 'Machine iron',
-                    516 => 'Hand iron',
-                    517 => 'Normal',
-                    518 => 'Normal plus',
-                    519 => 'Cooling down',
-                    520 => 'Hand iron',
-                    521 => 'Anti-crease',
-                    522 => 'Finished',
-                    523 => 'Extra dry',
-                    524 => 'Hand iron',
-                    526 => 'Moisten',
-                    528 => 'Timed drying',
-                    529 => 'Warm air',
-                    530 => 'Steam smoothing',
-                    531 => 'Comfort cooling',
-                    532 => 'Rinse out lint',
-                    533 => 'Rinses',
-                    534 => 'Smoothing',
-                    537 => 'Programmed',
-                    538 => 'Slightly dry',
-                    539 => 'Safety cooling',
-                ],
+                512 => 'Not running',
+                513 => 'Program running',
+                514 => 'Drying',
+                515 => 'Machine iron',
+                516 => 'Hand iron',
+                517 => 'Normal',
+                518 => 'Normal plus',
+                519 => 'Cooling down',
+                520 => 'Hand iron',
+                521 => 'Anti-crease',
+                522 => 'Finished',
+                523 => 'Extra dry',
+                524 => 'Hand iron',
+                526 => 'Moisten',
+                528 => 'Timed drying',
+                529 => 'Warm air',
+                530 => 'Steam smoothing',
+                531 => 'Comfort cooling',
+                532 => 'Rinse out lint',
+                533 => 'Rinses',
+                534 => 'Smoothing',
+                537 => 'Programmed',
+                538 => 'Slightly dry',
+                539 => 'Safety cooling',
+            ],
 
-                DEVICE_DISHWASHER => [
-                    1792 => 'Not running',
-                    1793 => 'Reactivating',
-                    1794 => 'Pre-wash',
-                    1795 => 'Main wash',
-                    1796 => 'Rinse',
-                    1797 => 'Interim rinse',
-                    1798 => 'Final rinse',
-                    1799 => 'Drying',
-                    1800 => 'Finished',
-                    1801 => 'Pre-wash',
-                ],
+            DEVICE_DISHWASHER => [
+                1792 => 'Not running',
+                1793 => 'Reactivating',
+                1794 => 'Pre-wash',
+                1795 => 'Main wash',
+                1796 => 'Rinse',
+                1797 => 'Interim rinse',
+                1798 => 'Final rinse',
+                1799 => 'Drying',
+                1800 => 'Finished',
+                1801 => 'Pre-wash',
+            ],
 
-                DEVICE_OVEN => [
-                    3072 => 'Not running',
-                    3073 => 'Heating up',
-                    3074 => 'In progress',
-                    3078 => 'Finished',
-                    3840 => 'Save energy',
-               ],
+            DEVICE_OVEN => [
+                3072 => 'Not running',
+                3073 => 'Heating up',
+                3074 => 'In progress',
+                3078 => 'Finished',
+                3840 => 'Save energy',
+            ],
 
-                DEVICE_STEAM_OVEN_COMBINATION => [
-                    3840 => 'Rinse',
-                    7938 => 'In progress',
-                    7940 => 'Heating up',
-                    7941 => 'Cooling down',
-                    7942 => 'Finished',
-                ],
-            ];
+            DEVICE_STEAM_OVEN_COMBINATION => [
+                3840 => 'Rinse',
+                7938 => 'In progress',
+                7940 => 'Heating up',
+                7941 => 'Cooling down',
+                7942 => 'Finished',
+            ],
+        ];
 
         if (isset($phase2txt[$model][$phase])) {
             $txt = $this->Translate($phase2txt[$model][$phase]);
@@ -830,17 +832,17 @@ class MieleAtHomeDevice extends IPSModule
     {
         $this->SendDebug(__FUNCTION__, 'model=' . $model . ', step=' . $step, 0);
         $step2txt = [
-                0 => [
-                        0 => 'Extra Dry',
-                        1 => 'Normal Plus',
-                        2 => 'Normal',
-                        3 => 'Slightly Dry',
-                        4 => 'Hand iron level 1',
-                        5 => 'Hand iron level 2',
-                        6 => 'Machine iron',
-                        7 => 'Smooth',
-                    ],
-            ];
+            0 => [
+                0 => 'Extra Dry',
+                1 => 'Normal Plus',
+                2 => 'Normal',
+                3 => 'Slightly Dry',
+                4 => 'Hand iron level 1',
+                5 => 'Hand iron level 2',
+                6 => 'Machine iron',
+                7 => 'Smooth',
+            ],
+        ];
 
         if (isset($step2txt[$model][$step])) {
             $txt = $this->Translate($step2txt[$model][$step]);
@@ -858,14 +860,14 @@ class MieleAtHomeDevice extends IPSModule
     private function ventilationStep2text($model, $step)
     {
         $step2txt = [
-                0 => [
-                        0 => 'None',
-                        1 => 'Step 1',
-                        2 => 'Step 2',
-                        3 => 'Step 3',
-                        4 => 'Step 4',
-                    ],
-            ];
+            0 => [
+                0 => 'None',
+                1 => 'Step 1',
+                2 => 'Step 2',
+                3 => 'Step 3',
+                4 => 'Step 4',
+            ],
+        ];
 
         if (isset($step2txt[$model][$step])) {
             $txt = $this->Translate($step2txt[$model][$step]);
@@ -883,118 +885,118 @@ class MieleAtHomeDevice extends IPSModule
     private function CheckAction($func, $verbose)
     {
         $deviceIdsMap = [
-                'Start' => [
-                        DEVICE_WASHING_MACHINE,
-                        DEVICE_TUMBLE_DRYER,
-                        DEVICE_DISHWASHER,
-                        DEVICE_WASHER_DRYER,
-                    ],
-                'Stop' => [
-                        DEVICE_WASHING_MACHINE,
-                        DEVICE_TUMBLE_DRYER,
-                        DEVICE_DISHWASHER,
-                        DEVICE_OVEN_MICROWAVE,
-                        DEVICE_COFFEE_SYSTEM,
-                        DEVICE_HOOD,
-                        DEVICE_WASHER_DRYER,
-                        DEVICE_STEAM_OVEN_COMBINATION,
-                        DEVICE_STEAM_OVEN_MICROWAVE_COMBINATION,
-                        DEVICE_DIALOGOVEN,
-                    ],
-                'Pause' => [
-                        DEVICE_WASHING_MACHINE,
-                        DEVICE_TUMBLE_DRYER,
-                        DEVICE_DISHWASHER,
-                        DEVICE_OVEN_MICROWAVE,
-                        DEVICE_COFFEE_SYSTEM,
-                        DEVICE_HOOD,
-                        DEVICE_WASHER_DRYER,
-                        DEVICE_STEAM_OVEN_COMBINATION,
-                        DEVICE_STEAM_OVEN_MICROWAVE_COMBINATION,
-                        DEVICE_DIALOGOVEN,
-                    ],
-                'StartSuperfreezing' => [
-                        DEVICE_FREEZER,
-                        DEVICE_FRIDGE_FREEZER,
-                        DEVICE_WINE_CABINET_FREEZER_COMBINATION
-                    ],
-                'StopSuperfreezing' => [
-                        DEVICE_FREEZER,
-                        DEVICE_FRIDGE_FREEZER,
-                        DEVICE_WINE_CABINET_FREEZER_COMBINATION
-                    ],
-                'StartSupercooling' => [
-                        STATUS_RUNNING
-                    ],
-                'StopSupercooling' => [
-                        STATUS_SUPERCOOLING,
-                        STATUS_SUPERCOOLING_SUPERFREEZING
-                    ],
-                'LightEnable' => [
-                        DEVICE_COFFEE_SYSTEM,
-                        DEVICE_HOOD,
-                        DEVICE_WINE_CABINET,
-                        DEVICE_WINE_CONDITIONING_UNIT,
-                        DEVICE_WINE_STORAGE_CONDITIONING_UNIT,
-                        DEVICE_WINE_CABINET_FREEZER_COMBINATION,
-                    ],
-                'LightDisable' => [
-                        DEVICE_COFFEE_SYSTEM,
-                        DEVICE_HOOD,
-                        DEVICE_WINE_CABINET,
-                        DEVICE_WINE_CONDITIONING_UNIT,
-                        DEVICE_WINE_STORAGE_CONDITIONING_UNIT,
-                        DEVICE_WINE_CABINET_FREEZER_COMBINATION,
-                    ],
-                'SetStarttime' => [
-                        DEVICE_WASHING_MACHINE,
-                        DEVICE_TUMBLE_DRYER,
-                        DEVICE_DISHWASHER,
-                    ],
-            ];
+            'Start' => [
+                DEVICE_WASHING_MACHINE,
+                DEVICE_TUMBLE_DRYER,
+                DEVICE_DISHWASHER,
+                DEVICE_WASHER_DRYER,
+            ],
+            'Stop' => [
+                DEVICE_WASHING_MACHINE,
+                DEVICE_TUMBLE_DRYER,
+                DEVICE_DISHWASHER,
+                DEVICE_OVEN_MICROWAVE,
+                DEVICE_COFFEE_SYSTEM,
+                DEVICE_HOOD,
+                DEVICE_WASHER_DRYER,
+                DEVICE_STEAM_OVEN_COMBINATION,
+                DEVICE_STEAM_OVEN_MICROWAVE_COMBINATION,
+                DEVICE_DIALOGOVEN,
+            ],
+            'Pause' => [
+                DEVICE_WASHING_MACHINE,
+                DEVICE_TUMBLE_DRYER,
+                DEVICE_DISHWASHER,
+                DEVICE_OVEN_MICROWAVE,
+                DEVICE_COFFEE_SYSTEM,
+                DEVICE_HOOD,
+                DEVICE_WASHER_DRYER,
+                DEVICE_STEAM_OVEN_COMBINATION,
+                DEVICE_STEAM_OVEN_MICROWAVE_COMBINATION,
+                DEVICE_DIALOGOVEN,
+            ],
+            'StartSuperfreezing' => [
+                DEVICE_FREEZER,
+                DEVICE_FRIDGE_FREEZER,
+                DEVICE_WINE_CABINET_FREEZER_COMBINATION
+            ],
+            'StopSuperfreezing' => [
+                DEVICE_FREEZER,
+                DEVICE_FRIDGE_FREEZER,
+                DEVICE_WINE_CABINET_FREEZER_COMBINATION
+            ],
+            'StartSupercooling' => [
+                STATUS_RUNNING
+            ],
+            'StopSupercooling' => [
+                STATUS_SUPERCOOLING,
+                STATUS_SUPERCOOLING_SUPERFREEZING
+            ],
+            'LightEnable' => [
+                DEVICE_COFFEE_SYSTEM,
+                DEVICE_HOOD,
+                DEVICE_WINE_CABINET,
+                DEVICE_WINE_CONDITIONING_UNIT,
+                DEVICE_WINE_STORAGE_CONDITIONING_UNIT,
+                DEVICE_WINE_CABINET_FREEZER_COMBINATION,
+            ],
+            'LightDisable' => [
+                DEVICE_COFFEE_SYSTEM,
+                DEVICE_HOOD,
+                DEVICE_WINE_CABINET,
+                DEVICE_WINE_CONDITIONING_UNIT,
+                DEVICE_WINE_STORAGE_CONDITIONING_UNIT,
+                DEVICE_WINE_CABINET_FREEZER_COMBINATION,
+            ],
+            'SetStarttime' => [
+                DEVICE_WASHING_MACHINE,
+                DEVICE_TUMBLE_DRYER,
+                DEVICE_DISHWASHER,
+            ],
+        ];
 
         $statesMap = [
-                'Start' => [
-                        STATUS_WAITING_TO_START,
-                        STATUS_PROGRAMMED,
-                        STATUS_PAUSE,
-                    ],
-                'Stop' => [
-                        STATUS_WAITING_TO_START,
-                        STATUS_RUNNING,
-                        STATUS_PAUSE,
-                    ],
-                'Pause' => [
-                        STATUS_WAITING_TO_START,
-                        STATUS_PROGRAMMED,
-                        STATUS_RUNNING,
-                    ],
-                'StartSuperfreezing' => [
-                        STATUS_RUNNING
-                    ],
-                'StopSuperfreezing' => [
-                        STATUS_SUPERFREEZING,
-                        STATUS_SUPERCOOLING_SUPERFREEZING
-                    ],
-                'StartSupercooling' => [
-                        DEVICE_FRIDGE,
-                        DEVICE_FRIDGE_FREEZER
-                    ],
-                'StopSupercooling' => [
-                        DEVICE_FRIDGE,
-                        DEVICE_FRIDGE_FREEZER
-                    ],
-                'LightEnable' => [
-                        STATUS_RUNNING
-                    ],
-                'LightDisable' => [
-                        STATUS_RUNNING
-                    ],
-                'SetStarttime' => [
-                        STATUS_WAITING_TO_START,
-                        STATUS_PROGRAMMED,
-                    ],
-            ];
+            'Start' => [
+                STATUS_WAITING_TO_START,
+                STATUS_PROGRAMMED,
+                STATUS_PAUSE,
+            ],
+            'Stop' => [
+                STATUS_WAITING_TO_START,
+                STATUS_RUNNING,
+                STATUS_PAUSE,
+            ],
+            'Pause' => [
+                STATUS_WAITING_TO_START,
+                STATUS_PROGRAMMED,
+                STATUS_RUNNING,
+            ],
+            'StartSuperfreezing' => [
+                STATUS_RUNNING
+            ],
+            'StopSuperfreezing' => [
+                STATUS_SUPERFREEZING,
+                STATUS_SUPERCOOLING_SUPERFREEZING
+            ],
+            'StartSupercooling' => [
+                DEVICE_FRIDGE,
+                DEVICE_FRIDGE_FREEZER
+            ],
+            'StopSupercooling' => [
+                DEVICE_FRIDGE,
+                DEVICE_FRIDGE_FREEZER
+            ],
+            'LightEnable' => [
+                STATUS_RUNNING
+            ],
+            'LightDisable' => [
+                STATUS_RUNNING
+            ],
+            'SetStarttime' => [
+                STATUS_WAITING_TO_START,
+                STATUS_PROGRAMMED,
+            ],
+        ];
 
         $deviceIds = isset($deviceIdsMap[$func]) ? $deviceIdsMap[$func] : [];
         $states = isset($statesMap[$func]) ? $statesMap[$func] : [];
@@ -1050,8 +1052,8 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-                'processAction' => 1
-            ];
+            'processAction' => 1
+        ];
 
         return $this->CallAction(__FUNCTION__, $action);
     }
@@ -1063,8 +1065,8 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-                'processAction' => 2
-            ];
+            'processAction' => 2
+        ];
 
         return $this->CallAction(__FUNCTION__, $action);
     }
@@ -1076,8 +1078,8 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-                'processAction' => 3
-            ];
+            'processAction' => 3
+        ];
 
         return $this->CallAction(__FUNCTION__, $action);
     }
@@ -1089,8 +1091,8 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-                'processAction' => 4
-            ];
+            'processAction' => 4
+        ];
 
         return $this->CallAction(__FUNCTION__, $action);
     }
@@ -1102,8 +1104,8 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-                'processAction' => 5
-            ];
+            'processAction' => 5
+        ];
 
         return $this->CallAction(__FUNCTION__, $action);
     }
@@ -1115,8 +1117,8 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-                'processAction' => 6
-            ];
+            'processAction' => 6
+        ];
 
         return $this->CallAction(__FUNCTION__, $action);
     }
@@ -1128,8 +1130,8 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-                'processAction' => 7
-            ];
+            'processAction' => 7
+        ];
 
         return $this->CallAction(__FUNCTION__, $action);
     }
@@ -1141,8 +1143,8 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-                'light' => 1
-            ];
+            'light' => 1
+        ];
 
         return $this->CallAction(__FUNCTION__, $action);
     }
@@ -1154,8 +1156,8 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-                'light' => 2
-            ];
+            'light' => 2
+        ];
 
         return $this->CallAction(__FUNCTION__, $action);
     }
@@ -1167,8 +1169,8 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-                'startTime' => [$hour, $min]
-            ];
+            'startTime' => [$hour, $min]
+        ];
 
         return $this->CallAction(__FUNCTION__, $action);
     }
