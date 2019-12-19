@@ -141,7 +141,7 @@ class MieleAtHomeConfig extends IPSModule
 
         $formElements[] = [
             'type'  => 'Label',
-            'label' => 'category for Miele@Home devices to be created:'
+            'caption' => 'category for Miele@Home devices to be created:'
         ];
         $formElements[] = [
             'name'    => 'ImportCategoryID',

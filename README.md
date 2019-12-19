@@ -1,7 +1,7 @@
 # IPSymconMieleAtHome
 
 [![IPS-Version](https://img.shields.io/badge/Symcon_Version-5.0-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Module-Version](https://img.shields.io/badge/Modul_Version-1.18-blue.svg)
+![Module-Version](https://img.shields.io/badge/Modul_Version-1.19-blue.svg)
 ![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -254,77 +254,81 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.18 @ 13.10.2019 13:18<br>
+- 1.19 @ 19.12.2019 14:09
+  - Anpassungen an IPS 5.3
+    - Formular-Elemente: 'label' in 'caption' geändert
+
+- 1.18 @ 13.10.2019 13:18
   - Anpassungen an IPS 5.2
     - IPS_SetVariableProfileValues(), IPS_SetVariableProfileDigits() nur bei INTEGER, FLOAT
     - Dokumentation-URL in module.json
   - Umstellung auf strict_types=1
   - Umstellung von StyleCI auf php-cs-fixer
 
-- 1.17 @ 09.08.2019 14:32<br>
+- 1.17 @ 09.08.2019 14:32
   - Schreibfehler korrigiert
 
-- 1.16 @ 02.08.2019 08:41<br>
+- 1.16 @ 02.08.2019 08:41
   - Übernahme von Programmbezeichnung
   - Korrektur von Drehzahl
 
-- 1.15 @ 30.07.2019 18:46<br>
+- 1.15 @ 30.07.2019 18:46
   - Anlage ohne gesetzte Import-Kategorie erfolgt in der Kategorie IP-Symcon/IP-Symcon
 
-- 1.14 @ 29.07.2019 12:17<br>
+- 1.14 @ 29.07.2019 12:17
   - Absturz beim Aufruf des Konfigurators bei nicht eingerichteter IO-Instanz
 
-- 1.13 @ 25.07.2019 09:22<br>
+- 1.13 @ 25.07.2019 09:22
   - Kompatibilität zu 5.2 (CC_GetUrl())
   - Absicherung bei fehlerhafter _ImportCategoryID_
 
-- 1.12 @ 12.07.2019 14:47<br>
+- 1.12 @ 12.07.2019 14:47
   - OAuth hinzugefügt (Dank an Fonzo)
     Wichtiger Hinweis für ein Update: in der IO-Instanz den Verbindungstyp auf _Developer Key_ setzen!
   - Konfigurator als Konfigurationsformular
   - Modul-Prefixe auf _MieleAtHome_ vereinheitlicht
 
-- 1.11 @ 23.04.2019 17:59<br>
+- 1.11 @ 23.04.2019 17:59
   - weitere Text für Phase bei Backofen/Dampfgarer
   - Tabellenausrichtung in README.md
   - Konfigurator um Sicherheitsabfrage erweitert
 
-- 1.10 @ 29.03.2019 16:19<br>
+- 1.10 @ 29.03.2019 16:19
   - SetValue() abgesichert
 
-- 1.9 @ 21.03.2019 17:04<br>
+- 1.9 @ 21.03.2019 17:04
   - Schalter, um eine Instanz (temporär) zu deaktivieren
   - Konfigurations-Element IntervalBox -> NumberSpinner
   - Dampfgarer/Backofen-Kombination hinzugefügt, diverse WARNING auf NOTIFY verringert
 
-- 1.8 @ 23.01.2019 18:18<br>
+- 1.8 @ 23.01.2019 18:18
   - curl_errno() abfragen
   - Trockner: Trockenstufe 7 ('Glätten') hinzugefügt (fehlt in der API-Doku), Übersetzung angepasst
 
-- 1.7 @ 12.01.2019 12:56<br>
-  - geänderte Login-Methode implementiert<br>
+- 1.7 @ 12.01.2019 12:56
+  - geänderte Login-Methode implementiert
     Achtung: die _VG-Auswahl_ muss im IO-Modul neu gesetzt werden
 
-- 1.6 @ 10.01.2019 22:40<br>
+- 1.6 @ 10.01.2019 22:40
   - Länderauswahl ergänzt um Östereich
 
-- 1.5 @ 30.12.2018 16:57<br>
+- 1.5 @ 30.12.2018 16:57
   - die Aktionen (HTTP-PUT-Aufrufe) stehen nun als Variablen mit Standard-Aktionen zur Verfügung
   - der _Status_ ist nun kein String mehr sondern ein Integer mit entsprechendem Variablenprofil
 
-- 1.4 @ 28.12.2018 15:33<br>
+- 1.4 @ 28.12.2018 15:33
   - Anpassung an aktuelle API-Dokumentation
   - Ergänzung um die neuen HTTP-PUT-Aufrufe
 
-- 1.3 @ 22.12.2018 12:25<br>
+- 1.3 @ 22.12.2018 12:25
   - Fehler in der http-Kommunikation nun nicht mehr mit _echo_ (also als **ERROR**) sondern mit _LogMessage_ als **NOTIFY** ausgegeben
   - Fix in einer DebugMessage
 
-- 1.2 @ 21.12.2018 13:10<br>
+- 1.2 @ 21.12.2018 13:10
   - Standard-Konstanten verwenden
 
-- 1.1 @ 27.11.2018 17:03<br>
+- 1.1 @ 27.11.2018 17:03
   - optional die Statuscodes selbst übersetzen
 
-- 1.0 @ 04.11.2018 10:49<br>
-  Initiale Version
+- 1.0 @ 04.11.2018 10:49
+  - Initiale Version

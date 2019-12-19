@@ -405,13 +405,13 @@ class MieleAtHomeIO extends IPSModule
             $opts_language[] = ['caption' => $this->Translate('Germany'), 'value'   => 'de'];
 
             $opts_vg_selector = [];
-            $opts_vg_selector[] = ['label' => $this->Translate('England'), 'value' => 'en-GB'];
-            $opts_vg_selector[] = ['label' => $this->Translate('Germany'), 'value' => 'de-DE'];
-            $opts_vg_selector[] = ['label' => $this->Translate('Switzerland'), 'value' => 'de-CH'];
-            $opts_vg_selector[] = ['label' => $this->Translate('Austria'), 'value' => 'de-AT'];
-            $opts_vg_selector[] = ['label' => $this->Translate('Netherlands'), 'value' => 'nl-NL'];
-            $opts_vg_selector[] = ['label' => $this->Translate('Belgium'), 'value' => 'nl-BE'];
-            $opts_vg_selector[] = ['label' => $this->Translate('Luxembourg'), 'value' => 'de-LU'];
+            $opts_vg_selector[] = ['caption' => $this->Translate('England'), 'value' => 'en-GB'];
+            $opts_vg_selector[] = ['caption' => $this->Translate('Germany'), 'value' => 'de-DE'];
+            $opts_vg_selector[] = ['caption' => $this->Translate('Switzerland'), 'value' => 'de-CH'];
+            $opts_vg_selector[] = ['caption' => $this->Translate('Austria'), 'value' => 'de-AT'];
+            $opts_vg_selector[] = ['caption' => $this->Translate('Netherlands'), 'value' => 'nl-NL'];
+            $opts_vg_selector[] = ['caption' => $this->Translate('Belgium'), 'value' => 'nl-BE'];
+            $opts_vg_selector[] = ['caption' => $this->Translate('Luxembourg'), 'value' => 'de-LU'];
 
             $formElements[] = [
                 'type'    => 'ExpansionPanel',
@@ -462,7 +462,7 @@ class MieleAtHomeIO extends IPSModule
         if (IPS_GetKernelVersion() < 5.2) {
             $formActions[] = [
                 'type'  => 'Label',
-                'label' => '____________________________________________________________________________________________________'
+                'caption' => '____________________________________________________________________________________________________'
             ];
             $formActions[] = [
                 'type'    => 'Button',
