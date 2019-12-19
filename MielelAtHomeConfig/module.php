@@ -140,7 +140,7 @@ class MieleAtHomeConfig extends IPSModule
         ];
 
         $formElements[] = [
-            'type'  => 'Label',
+            'type'    => 'Label',
             'caption' => 'category for Miele@Home devices to be created:'
         ];
         $formElements[] = [

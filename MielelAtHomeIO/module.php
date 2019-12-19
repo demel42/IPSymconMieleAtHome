@@ -461,7 +461,7 @@ class MieleAtHomeIO extends IPSModule
         ];
         if (IPS_GetKernelVersion() < 5.2) {
             $formActions[] = [
-                'type'  => 'Label',
+                'type'    => 'Label',
                 'caption' => '____________________________________________________________________________________________________'
             ];
             $formActions[] = [
