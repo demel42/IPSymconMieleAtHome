@@ -74,9 +74,7 @@ class MieleAtHomeConfig extends IPSModule
                         'techType'   => $techType
                     ]
                 ];
-                if (IPS_GetKernelVersion() >= 5.1) {
-                    $create['info'] = $deviceType . ' (' . $techType . ')';
-                }
+                $create['info'] = $deviceType . ' (' . $techType . ')';
 
                 $entry = [
                     'instanceID'  => $instanceID,
@@ -197,14 +195,6 @@ class MieleAtHomeConfig extends IPSModule
     protected function GetFormActions()
     {
         $formActions = [];
-
-        if (IPS_GetKernelVersion() < 5.2) {
-            $formActions[] = [
-                'type'    => 'Button',
-                'caption' => 'Module description',
-                'onClick' => 'echo "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md";'
-            ];
-        }
 
         return $formActions;
     }

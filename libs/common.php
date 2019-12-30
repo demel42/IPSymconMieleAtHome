@@ -270,16 +270,6 @@ trait MieleAtHomeCommon
         return $bval;
     }
 
-    protected function GetStatus()
-    {
-        if (IPS_GetKernelVersion() >= 5.1) {
-            return parent::GetStatus();
-        }
-
-        $inst = IPS_GetInstance($this->InstanceID);
-        return $inst['InstanceStatus'];
-    }
-
     private function GetFormStatus()
     {
         $formStatus = [];
@@ -303,11 +293,7 @@ trait MieleAtHomeCommon
     private function GetConnectUrl()
     {
         $instID = IPS_GetInstanceListByModuleID('{9486D575-BE8C-4ED8-B5B5-20930E26DE6F}')[0];
-        if (IPS_GetKernelVersion() >= 5.2) {
-            $url = CC_GetConnectURL($instID);
-        } else {
-            $url = CC_GetUrl($instID);
-        }
+        $url = CC_GetConnectURL($instID);
         return $url;
     }
 }
