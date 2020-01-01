@@ -254,9 +254,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.19 @ 30.12.2019 10:56
+- 1.19 @ 01.01.2020 15:47
   - Anpassungen an IPS 5.3
     - Formular-Elemente: 'label' in 'caption' geändert
+  - Schreibfehler korrigiert
 
 - 1.18 @ 13.10.2019 13:18
   - Anpassungen an IPS 5.2

@@ -298,7 +298,7 @@ class MieleAtHomeDevice extends IPSModule
         $items[] = ['type' => 'ValidationTextBox', 'name' => 'deviceType', 'caption' => 'Device type'];
         $items[] = ['type' => 'ValidationTextBox', 'name' => 'fabNumber', 'caption' => 'Fabrication number'];
         $items[] = ['type' => 'ValidationTextBox', 'name' => 'techType', 'caption' => 'Model'];
-        $formElements[] = ['type' => 'ExpansionPanel', 'items' => $items, 'caption' => 'Basis configuration (don\'t change)'];
+        $formElements[] = ['type' => 'ExpansionPanel', 'items' => $items, 'caption' => 'Basic configuration (don\'t change)'];
 
         $items = [];
         $items[] = ['type' => 'Label', 'caption' => 'mapping code to text of field ...'];

@@ -3,7 +3,7 @@
 		"de": {
 			"Instance is disabled": "Instanz ist deaktiviert",
 
-			"Basis configuration (don't change)": "Basis-Konfiguration (nicht ändern)",
+			"Basic configuration (don't change)": "Basis-Konfiguration (nicht ändern)",
 			"Device id": "Geräete-Typ-ID",
 			"Device type": "Geräte-Typ",
 			"Fabrication number": "Seriennummer",
