@@ -1,7 +1,7 @@
 # IPSymconMieleAtHome
 
 [![IPS-Version](https://img.shields.io/badge/Symcon_Version-5.3+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Module-Version](https://img.shields.io/badge/Modul_Version-1.19-blue.svg)
+![Module-Version](https://img.shields.io/badge/Modul_Version-1.20-blue.svg)
 ![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -253,6 +253,9 @@ Verweise:
 - https://www.miele.com/developer/index.html
 
 ## 7. Versions-Historie
+
+- 1.20 @ 06.01.2020 11:17
+  - Nutzung von RegisterReference() für im Modul genutze Objekte (Scripte, Kategorien etc)
 
 - 1.19 @ 01.01.2020 18:52
   - Anpassungen an IPS 5.3
