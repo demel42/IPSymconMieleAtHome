@@ -111,6 +111,18 @@ trait MieleAtHomeCommon
         return $ret;
     }
 
+    protected function GetValueFormatted($Ident)
+    {
+        @$varID = $this->GetIDForIdent($Ident);
+        if ($varID == false) {
+            $this->SendDebug(__FUNCTION__, 'missing variable ' . $Ident, 0);
+            return false;
+        }
+
+        $ret = GetValueFormatted($varID);
+        return $ret;
+    }
+
     private function SaveValue($Ident, $Value, &$IsChanged)
     {
         @$varID = $this->GetIDForIdent($Ident);

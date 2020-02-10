@@ -35,6 +35,7 @@
 			"Fridge: temperature": "Kühlschrank: Temperatur",
 			"Light": "Licht",
 			"Phase": "Phase",
+			"Power supply": "Spannungsversorgung",
 			"Program name": "Programmbezeichnung",
 			"Program": "Programm",
 			"Remaining time": "verbleibende Zeit",
@@ -45,6 +46,12 @@
 			"Temperature": "Temperatur",
 			"Ventilation step": "Entlüftungsstufe",
 			"Work progress": "Arbeitsfortschritt",
+
+			"switch off": "ausschalten",
+			"switch on": "einschalten",
+			"start": "starten",
+			"pause": "pausieren",
+			"stop": "stoppen",
 
 			"Action": "Aktion",
 

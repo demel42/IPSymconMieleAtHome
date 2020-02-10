@@ -155,6 +155,11 @@ siehe https://www.miele.com/developer/swagger-ui/put_additional_info.html
 
 `boolean MieleAtHome_LightDisable(integer $InstanzID)`<br>
 
+`boolean MieleAtHome_PowerOn(integer $InstanzID)`<br>
+Anmerkung: es ist unklar, bei welchen Gerätetypen es funktioniert, das Geräte aus dem ausgeschalteten Zustand einzuschalten.
+
+`boolean MieleAtHome_PowerOff(integer $InstanzID)`<br>
+
 `boolean MieleAtHome_SetStarttime(integer $InstanzID, int $hour, int $min)`<br>
 
 ## 5. Konfiguration
@@ -167,7 +172,7 @@ siehe https://www.miele.com/developer/swagger-ui/put_additional_info.html
 | :---------------------- | :------ | :----------- | :----------- |
 | Instanz ist deaktiviert | boolean | false        | Instanz temporär deaktivieren |
 |                         |         |              | |
-| Verbindugstyp           | integer | 0            | Auswahl der Art der Verbindung (OAuth oder Developer) |
+| Verbindugstyp           | integer | 0            | Auswahl der Art der Verbindung (**OAuth** oder **Developer**) |
 |                         |         |              | |
 | - nur bei _Developer_ - |         |              | |
 | Benutzer (EMail)        | string  |              | Miele@Home-Konto: Benutzerkennung |
@@ -232,8 +237,8 @@ Bisher unterstützte Gerätetypen
 MieleAtHome.Door
 
 * Integer<br>
-MieleAtHome.Duration, MieleAtHome.Light, MieleAtHome.SpinningSpeed, MieleAtHome.Status, MieleAtHome.Temperature,
-MieleAtHome.Action, MieleAtHome.Superfreezing, MieleAtHome.Supercooling
+MieleAtHome.Action, MieleAtHome.Duration, MieleAtHome.Light, MieleAtHome.PowerSupply, MieleAtHome.SpinningSpeed,
+MieleAtHome.Status, MieleAtHome.Supercooling, MieleAtHome.Superfreezing, MieleAtHome.Temperature
 
 ## 6. Anhang
 
@@ -252,6 +257,11 @@ Verweise:
 - https://www.miele.com/developer/index.html
 
 ## 7. Versions-Historie
+
+- 1.21 @ 10.02.2020 10:03
+  - Umsetzung der letzten Änderungen der Miele-API:
+    - PowerOn/PowerOff
+	- Auswertung des neuen API-GET-Aufrufs "actions" um setzen zu können, welchen Aktionen zu diesem Zeitpunkt möglich sind
 
 - 1.20 @ 06.01.2020 11:17
   - Nutzung von RegisterReference() für im Modul genutze Objekte (Scripte, Kategorien etc)
