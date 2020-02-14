@@ -612,16 +612,6 @@ class MieleAtHomeDevice extends IPSModule
             $this->SaveValue('Door', $signalDoor, $is_changed);
         }
 
-        if ($with['enabled_light']) {
-            $light = (bool) $this->GetArrayElem($jdata, 'light', false);
-            $this->SaveValue('Light', $light, $is_changed);
-        }
-
-        if ($with['enabled_powersupply']) {
-            $power = $status == STATUS_OFF ? POWER_OFF : POWER_ON;
-            $this->SaveValue('PowerSupply', $power, $is_changed);
-        }
-
         if ($with['oven_temp']) {
             $targetTemperature = $this->GetArrayElem($jdata, 'targetTemperature.0.value_localized', 0);
             if ($targetTemperature <= -326) {
@@ -694,6 +684,11 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         if ($with['enabled_light']) {
+            /*
+            $light = (bool) $this->GetArrayElem($jdata, 'light', false);
+            $this->SaveValue('Light', $light, $is_changed);
+             */
+
             if ($this->checkAction('LightEnable', false)) {
                 $b = true;
                 $v = LIGHT_ENABLE;
@@ -720,6 +715,11 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         if ($with['enabled_powersupply']) {
+            /*
+            $power = $status == STATUS_OFF ? POWER_OFF : POWER_ON;
+            $this->SaveValue('PowerSupply', $power, $is_changed);
+             */
+
             if ($this->checkAction('PowerOn', false)) {
                 $b = true;
                 $v = POWER_ON;
