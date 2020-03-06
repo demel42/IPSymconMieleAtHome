@@ -5,11 +5,9 @@
 			"Error: Symcon Connect is not active!": "Fehler: Symcon Connect ist nicht aktiv!",
 
 			"Connection Type": "Verbindungstyp",
-			"Please select a connection type. Either connect via the Miele@Home username and password and IP Symcon Connect or alternatively as a developer with your own developer key.":
-				"Bitte einen Verbindungstyp auswählen. Entweder Verbindung über den Miele@Home Benutzernamen und das Passwort und IP-Symcon Connect oder alternativ als Entwickler mit eigenem Entwickler Schlüssel.",
 			"Please select a connection type": "Bitte einen Verbindungstyp auswählen",
 			"Miele@Home via IP-Symcon Connect": "Miele@Home über IP-Symcon Connect",
-			"Miele@Home Developer Key": "Miele@Home Developer Key",
+			"Miele@Home Developer Key": "Miele@Home Entwickler-Schlüssel",
 			"Push \"Login\" in the action part of this configuration form.":
 				"\"Anmelden\" in der Aktionsbereich dieses Konfigurationsformulares drücken.",
 			"At the webpage from Miele log in with your Miele@Home username and your Miele@Home password.":
@@ -25,15 +23,18 @@
 			"Instance is disabled": "Instanz ist deaktiviert",
 			"Instance is inactive": "Instanz ist inaktiv",
 
-			"Miele@Home Account": "Miele@Home Konto",
+			"Miele@Home Login": "Miele@Home Anmeldung",
+			"Miele@Home Access-Details": "Miele@Home Zugangsdaten",
+
+			"Miele@Home Account via Miele@mobile-App or from https://www.miele.de": "Miele@Home Konto via Miele@mobile-App oder von https://www.miele.de",
 			"User-ID (email)": "Benutzer (EMail)",
 			"Password": "Passwort",
-			"Miele@Home API-Access": "Miele@Home API-Zugangsdaten",
-			"Client-ID": "Client-ID",
-			"Client-Secret": "Client-Secret",
 			"Miele@Home Language Settings": "Miele@Home Spracheinstellungen",
 			"Language": "Sprache",
 			"VG-Selector": "VG-Auswahl",
+			"Miele@Home API-Access from https://www.miele.com/developer": "Miele@Home API-Zugangsdaten von https://www.miele.com/developer",
+			"Client-ID": "Client-ID",
+			"Client-Secret": "Client-Secret",
 
 			"Austria": "Österreich",
 			"Belgium": "Belgien",

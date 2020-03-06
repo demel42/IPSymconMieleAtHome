@@ -330,10 +330,6 @@ class MieleAtHomeIO extends IPSModule
         ];
 
         $formElements[] = [
-            'type'    => 'Label',
-            'caption' => 'Please select a connection type. Either connect via the Miele@Home username and password and IP Symcon Connect or alternatively as a developer with your own developer key.'
-        ];
-        $formElements[] = [
             'type'    => 'Select',
             'name'    => 'OAuth_Type',
             'caption' => 'Connection Type',
@@ -353,90 +349,101 @@ class MieleAtHomeIO extends IPSModule
             ]
         ];
 
-        if ($oauth_type == CONNECTION_OAUTH) {
-            $formElements[] = [
-                'type'    => 'Label',
-                'caption' => 'Push "Login" in the action part of this configuration form.'
-            ];
-            $formElements[] = [
-                'type'    => 'Label',
-                'caption' => 'At the webpage from Miele log in with your Miele@Home username and your Miele@Home password.'
-            ];
-            $formElements[] = [
-                'type'    => 'Label',
-                'caption' => 'If the connection to IP-Symcon was successfull you get the message: "Miele@Home successfully connected!". Close the browser window.'
-            ];
-            $formElements[] = [
-                'type'    => 'Label',
-                'caption' => 'Return to this configuration form.'
-            ];
-        }
+        switch ($oauth_type) {
+            case CONNECTION_OAUTH:
+                $items = [];
+                $items[] = [
+                    'type'    => 'Label',
+                    'caption' => 'Push "Login" in the action part of this configuration form.'
+                ];
+                $items[] = [
+                    'type'    => 'Label',
+                    'caption' => 'At the webpage from Miele log in with your Miele@Home username and your Miele@Home password.'
+                ];
+                $items[] = [
+                    'type'    => 'Label',
+                    'caption' => 'If the connection to IP-Symcon was successfull you get the message: "Miele@Home successfully connected!". Close the browser window.'
+                ];
+                $items[] = [
+                    'type'    => 'Label',
+                    'caption' => 'Return to this configuration form.'
+                ];
+                $formElements[] = [
+                    'type'    => 'ExpansionPanel',
+                    'items'   => $items,
+                    'caption' => 'Miele@Home Login'
+                ];
+                break;
+            case CONNECTION_DEVELOPER:
+                $items = [];
+                $items[] = [
+                    'type'    => 'Label',
+                    'caption' => 'Miele@Home Account via Miele@mobile-App or from https://www.miele.de'
+                ];
+                $items[] = [
+                    'name'    => 'userid',
+                    'type'    => 'ValidationTextBox',
+                    'caption' => 'User-ID (email)'
+                ];
+                $items[] = [
+                    'name'    => 'password',
+                    'type'    => 'PasswordTextBox',
+                    'caption' => 'Password'
+                ];
 
-        if ($oauth_type == CONNECTION_DEVELOPER) {
-            $formElements[] = [
-                'type'    => 'ExpansionPanel',
-                'caption' => 'Miele@Home Account',
-                'items'   => [
-                    [
-                        'name'    => 'userid',
-                        'type'    => 'ValidationTextBox',
-                        'caption' => 'User-ID (email)'
-                    ],
-                    [
-                        'name'    => 'password',
-                        'type'    => 'PasswordTextBox',
-                        'caption' => 'Password'
-                    ]
-                ]
-            ];
-            $formElements[] = [
-                'type'    => 'ExpansionPanel',
-                'caption' => 'Miele@Home API-Access',
-                'items'   => [
-                    [
-                        'name'    => 'client_id',
-                        'type'    => 'ValidationTextBox',
-                        'caption' => 'Client-ID'
-                    ],
-                    [
-                        'name'    => 'client_secret',
-                        'type'    => 'ValidationTextBox',
-                        'caption' => 'Client-Secret'
-                    ]
-                ]
-            ];
+                $items[] = [
+                    'type'    => 'Label',
+                    'caption' => 'Miele@Home Language Settings'
+                ];
 
-            $opts_language = [];
-            $opts_language[] = ['caption' => $this->Translate('England'), 'value'   => 'en'];
-            $opts_language[] = ['caption' => $this->Translate('Germany'), 'value'   => 'de'];
+                $opts_language = [];
+                $opts_language[] = ['caption' => $this->Translate('England'), 'value'   => 'en'];
+                $opts_language[] = ['caption' => $this->Translate('Germany'), 'value'   => 'de'];
+                $items[] = [
+                    'type'    => 'Select',
+                    'name'    => 'language',
+                    'caption' => 'Language',
+                    'options' => $opts_language
+                ];
 
-            $opts_vg_selector = [];
-            $opts_vg_selector[] = ['caption' => $this->Translate('England'), 'value' => 'en-GB'];
-            $opts_vg_selector[] = ['caption' => $this->Translate('Germany'), 'value' => 'de-DE'];
-            $opts_vg_selector[] = ['caption' => $this->Translate('Switzerland'), 'value' => 'de-CH'];
-            $opts_vg_selector[] = ['caption' => $this->Translate('Austria'), 'value' => 'de-AT'];
-            $opts_vg_selector[] = ['caption' => $this->Translate('Netherlands'), 'value' => 'nl-NL'];
-            $opts_vg_selector[] = ['caption' => $this->Translate('Belgium'), 'value' => 'nl-BE'];
-            $opts_vg_selector[] = ['caption' => $this->Translate('Luxembourg'), 'value' => 'de-LU'];
+                $opts_vg_selector = [];
+                $opts_vg_selector[] = ['caption' => $this->Translate('England'), 'value' => 'en-GB'];
+                $opts_vg_selector[] = ['caption' => $this->Translate('Germany'), 'value' => 'de-DE'];
+                $opts_vg_selector[] = ['caption' => $this->Translate('Switzerland'), 'value' => 'de-CH'];
+                $opts_vg_selector[] = ['caption' => $this->Translate('Austria'), 'value' => 'de-AT'];
+                $opts_vg_selector[] = ['caption' => $this->Translate('Netherlands'), 'value' => 'nl-NL'];
+                $opts_vg_selector[] = ['caption' => $this->Translate('Belgium'), 'value' => 'nl-BE'];
+                $opts_vg_selector[] = ['caption' => $this->Translate('Luxembourg'), 'value' => 'de-LU'];
+                $items[] = [
+                    'type'    => 'Select',
+                    'name'    => 'vg_selector',
+                    'caption' => 'VG-Selector',
+                    'options' => $opts_vg_selector
+                ];
 
-            $formElements[] = [
-                'type'    => 'ExpansionPanel',
-                'caption' => 'Miele@Home Language Settings',
-                'items'   => [
-                    [
-                        'type'    => 'Select',
-                        'name'    => 'language',
-                        'caption' => 'Language',
-                        'options' => $opts_language
-                    ],
-                    [
-                        'type'    => 'Select',
-                        'name'    => 'vg_selector',
-                        'caption' => 'VG-Selector',
-                        'options' => $opts_vg_selector
-                    ]
-                ]
-            ];
+                $items[] = [
+                    'type'    => 'Label',
+                    'caption' => 'Miele@Home API-Access from https://www.miele.com/developer'
+                ];
+                $items[] = [
+                    'name'    => 'client_id',
+                    'type'    => 'ValidationTextBox',
+                    'caption' => 'Client-ID'
+                ];
+                $items[] = [
+                    'name'    => 'client_secret',
+                    'type'    => 'ValidationTextBox',
+                    'caption' => 'Client-Secret'
+                ];
+
+                $formElements[] = [
+                    'type'    => 'ExpansionPanel',
+                    'items'   => $items,
+                    'caption' => 'Miele@Home Access-Details'
+                ];
+                break;
+        default:
+                break;
         }
 
         return $formElements;
