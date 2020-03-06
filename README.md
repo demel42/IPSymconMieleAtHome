@@ -258,7 +258,7 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.22 @ 06.03.2020 10:36
+- 1.22 @ 06.03.2020 20:14
   - Wechsel des Verbindungstyp wird nun automatisch erkannt
   - Verwendung des OAuth-AccessToken korrigiert
   - OAuth allgemein weiter abgesichert

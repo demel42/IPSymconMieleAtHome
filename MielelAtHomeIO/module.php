@@ -223,25 +223,28 @@ class MieleAtHomeIO extends IPSModule
                 $access_token = isset($jtoken['access_token']) ? $jtoken['access_token'] : '';
                 $expiration = isset($jtoken['expiration']) ? $jtoken['expiration'] : 0;
                 $type = isset($jtoken['type']) ? $jtoken['type'] : CONNECTION_UNDEFINED;
-                if ($type == CONNECTION_OAUTH && time() < $expiration) {
+                if ($type != CONNECTION_OAUTH) {
+                    $this->WriteAttributeString('RefreshToken', '');
+                    $this->SendDebug(__FUNCTION__, 'connection-type changed', 0);
+                    $access_token = '';
+                } elseif ($expiration < time()) {
+                    $this->SendDebug(__FUNCTION__, 'access_token expired', 0);
+                    $access_token = '';
+                }
+                if ($access_token != '') {
                     $this->SendDebug(__FUNCTION__, 'access_token=' . $access_token . ', valid until ' . date('d.m.y H:i:s', $expiration), 0);
                     return $access_token;
-                } else {
-                    $this->SendDebug(__FUNCTION__, 'access_token expired', 0);
                 }
             } else {
-                $this->SendDebug(__FUNCTION__, 'access_token not saved', 0);
+                $this->SendDebug(__FUNCTION__, 'no saved access_token', 0);
             }
             $refresh_token = $this->ReadAttributeString('RefreshToken');
             $this->SendDebug(__FUNCTION__, 'refresh_token=' . print_r($refresh_token, true), 0);
-            if ($refresh_token == 'False') {
-                $this->SendDebug(__FUNCTION__, 'has no refresh_token', 0);
-                $this->WriteAttributeString('RefreshToken', '');
-                return false;
-            }
             if ($refresh_token == '') {
                 $this->SendDebug(__FUNCTION__, 'has no refresh_token', 0);
+                $this->WriteAttributeString('RefreshToken', '');
                 $this->SetBuffer('AccessToken', '');
+                $this->SetStatus(IS_NOLOGIN);
                 return false;
             }
             $jdata = $this->Call4AccessToken(['refresh_token' => $refresh_token]);
@@ -272,8 +275,9 @@ class MieleAtHomeIO extends IPSModule
     {
         if (!isset($_GET['code'])) {
             $this->SendDebug(__FUNCTION__, 'code missing, _GET=' . print_r($_GET, true), 0);
-            $this->SetStatus(IS_NOLOGIN);
             $this->WriteAttributeString('RefreshToken', '');
+            $this->SetBuffer('AccessToken', '');
+            $this->SetStatus(IS_NOLOGIN);
             return;
         }
         $refresh_token = $this->FetchRefreshToken($_GET['code']);
