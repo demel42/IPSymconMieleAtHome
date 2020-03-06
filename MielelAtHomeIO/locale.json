@@ -10,18 +10,18 @@
 			"Please select a connection type": "Bitte einen Verbindungstyp auswählen",
 			"Miele@Home via IP-Symcon Connect": "Miele@Home über IP-Symcon Connect",
 			"Miele@Home Developer Key": "Miele@Home Developer Key",
-			"Push \"Register\" in the action part of this configuration form.":
-				"\"Registrieren\" in der Aktionsbereich dieses Konfigurationsformulares drücken.",
+			"Push \"Login\" in the action part of this configuration form.":
+				"\"Anmelden\" in der Aktionsbereich dieses Konfigurationsformulares drücken.",
 			"At the webpage from Miele log in with your Miele@Home username and your Miele@Home password.":
 				"Auf der Webseite von Miele mit dem Miele@Home Benutzernamen und dem Miele@Home Passwort anmelden.",
 			"If the connection to IP-Symcon was successfull you get the message: \"Miele@Home successfully connected!\". Close the browser window.":
 				"Wenn die Verbindung zu IP-Symcon erfolgreich war erscheint die Meldung: \"Miele@Home successfully connected!\". Das Browserfenster kann nun geschlossen werden.",
 			"Return to this configuration form.":
 				"Danach zu diesem Konfigurationsformular zurückkehren und fortfahren.",
-			"Register with your Miele@Home username and Miele@Home password:":
-				"Mit dem Miele@Home Benutzernamen und dem Miele@Home Passwort registrieren:",
+			"Login with your Miele@Home username and Miele@Home password:":
+				"Mit dem Miele@Home Benutzernamen und dem Miele@Home Passwort anmelden:",
 
-			"Register": "Registrieren",
+			"Login at Miele@Home": "Miele@Home Anmeldung",
 			"Instance is disabled": "Instanz ist deaktiviert",
 			"Instance is inactive": "Instanz ist inaktiv",
 
@@ -62,7 +62,9 @@
 			"Instance is inactive (server error)": "Instanz ist inaktiv (Serverfehler)",
 			"Instance is inactive (http error)": "Instanz ist inaktiv (HTTP-Fehler)",
 			"Instance is inactive (invalid data)": "Instanz ist inaktiv (ungültige Daten)",
-			"Instance is inactive (no Symcon-Connect)": "Instanz ist inaktiv (kein Symcon-Connect)"
+			"Instance is inactive (no Symcon-Connect)": "Instanz ist inaktiv (kein Symcon-Connect)",
+			"Instance is inactive (not logged in)": "Instanz ist inaktiv (nicht angemeldet)",
+			"Instance is inactive (no data)": "Instanz ist inaktiv (keine Daten)"
 		}
 	}
 }

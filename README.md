@@ -258,6 +258,11 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.22 @ 06.03.2020 10:36
+  - Wechsel des Verbindungstyp wird nun automatisch erkannt
+  - Verwendung des OAuth-AccessToken korrigiert
+  - OAuth allgemein weiter abgesichert
+
 - 1.21 @ 10.02.2020 10:03
   - Umsetzung der letzten Änderungen der Miele-API:
     - PowerOn/PowerOff
