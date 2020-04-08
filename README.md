@@ -258,6 +258,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.23 @ 08.04.2020 12:18
+  - define's durch statische Klassen-Variablen ersetzt
+
 - 1.22 @ 06.03.2020 20:14
   - Wechsel des Verbindungstyp wird nun automatisch erkannt
   - Verwendung des OAuth-AccessToken korrigiert

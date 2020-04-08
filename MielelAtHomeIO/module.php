@@ -65,20 +65,20 @@ class MieleAtHomeIO extends IPSModule
                 $client_id = $this->ReadPropertyString('client_id');
                 $client_secret = $this->ReadPropertyString('client_secret');
                 if ($userid == '' && $password == '' && $client_id == '' && $client_secret == '') {
-                    $this->SetStatus(IS_INVALIDCONFIG);
+                    $this->SetStatus(self::$IS_INVALIDCONFIG);
                     return;
                 }
                 $this->SetStatus(IS_ACTIVE);
                 break;
             case CONNECTION_OAUTH:
                 if ($this->GetConnectUrl() == false) {
-                    $this->SetStatus(IS_NOSYMCONCONNECT);
+                    $this->SetStatus(self::$IS_NOSYMCONCONNECT);
                     return;
                 }
                 $refresh_token = $this->ReadAttributeString('RefreshToken');
                 $this->SendDebug(__FUNCTION__, 'refresh_token=' . $refresh_token, 0);
                 if ($refresh_token == '') {
-                    $this->SetStatus(IS_NOLOGIN);
+                    $this->SetStatus(self::$IS_NOLOGIN);
                 } else {
                     $this->SetStatus(IS_ACTIVE);
                 }
@@ -160,31 +160,31 @@ class MieleAtHomeIO extends IPSModule
 
         if ($httpcode && $httpcode != 200) {
             if ($httpcode == 401) {
-                $statuscode = IS_UNAUTHORIZED;
+                $statuscode = self::$IS_UNAUTHORIZED;
                 $err = 'got http-code ' . $httpcode . ' (unauthorized)';
             } elseif ($httpcode == 403) {
-                $statuscode = IS_FORBIDDEN;
+                $statuscode = self::$IS_FORBIDDEN;
                 $err = 'got http-code ' . $httpcode . ' (forbidden)';
             } elseif ($httpcode == 409) {
                 $data = $cdata;
             } elseif ($httpcode >= 500 && $httpcode <= 599) {
-                $statuscode = IS_SERVERERROR;
+                $statuscode = self::$IS_SERVERERROR;
                 $err = 'got http-code ' . $httpcode . ' (server error)';
             } else {
-                $statuscode = IS_HTTPERROR;
+                $statuscode = self::$IS_HTTPERROR;
                 $err = 'got http-code ' . $httpcode;
             }
         } elseif ($cdata == '') {
-            $statuscode = IS_NODATA;
+            $statuscode = self::$IS_NODATA;
             $err = 'no data';
         } else {
             $jdata = json_decode($cdata, true);
             if ($jdata == '') {
-                $statuscode = IS_INVALIDDATA;
+                $statuscode = self::$IS_INVALIDDATA;
                 $err = 'malformed response';
             } else {
                 if (!isset($jdata['token_type']) || $jdata['token_type'] != 'Bearer') {
-                    $statuscode = IS_INVALIDDATA;
+                    $statuscode = self::$IS_INVALIDDATA;
                     $err = 'malformed response';
                 }
             }
@@ -244,7 +244,7 @@ class MieleAtHomeIO extends IPSModule
                 $this->SendDebug(__FUNCTION__, 'has no refresh_token', 0);
                 $this->WriteAttributeString('RefreshToken', '');
                 $this->SetBuffer('AccessToken', '');
-                $this->SetStatus(IS_NOLOGIN);
+                $this->SetStatus(self::$IS_NOLOGIN);
                 return false;
             }
             $jdata = $this->Call4AccessToken(['refresh_token' => $refresh_token]);
@@ -277,13 +277,13 @@ class MieleAtHomeIO extends IPSModule
             $this->SendDebug(__FUNCTION__, 'code missing, _GET=' . print_r($_GET, true), 0);
             $this->WriteAttributeString('RefreshToken', '');
             $this->SetBuffer('AccessToken', '');
-            $this->SetStatus(IS_NOLOGIN);
+            $this->SetStatus(self::$IS_NOLOGIN);
             return;
         }
         $refresh_token = $this->FetchRefreshToken($_GET['code']);
         $this->SendDebug(__FUNCTION__, 'refresh_token=' . $refresh_token, 0);
         $this->WriteAttributeString('RefreshToken', $refresh_token);
-        if ($this->GetStatus() == IS_NOLOGIN) {
+        if ($this->GetStatus() == self::$IS_NOLOGIN) {
             $this->SetStatus(IS_ACTIVE);
         }
     }
@@ -608,7 +608,7 @@ class MieleAtHomeIO extends IPSModule
                     $msg = '';
                     $statuscode = $this->do_HttpRequest('/thirdparty/token', $params, $header, '', 'POST', $cdata, $msg);
                     if ($statuscode == 0 && $cdata == '') {
-                        $statuscode = IS_INVALIDDATA;
+                        $statuscode = self::$IS_INVALIDDATA;
                     }
                     $this->SendDebug(__FUNCTION__, 'token: statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true) . ', msg=' . $msg, 0);
                     if ($statuscode != 0) {
@@ -767,20 +767,20 @@ class MieleAtHomeIO extends IPSModule
         }
 
         if ($cerrno) {
-            $statuscode = IS_SERVERERROR;
+            $statuscode = self::$IS_SERVERERROR;
             $err = 'got curl-errno ' . $cerrno . ' (' . $cerror . ')';
         } elseif ($httpcode == 200 || $httpcode == 204) {
             $data = $cdata;
         } elseif ($httpcode == 302) {
             $data = $redirect_url;
         } elseif ($httpcode == 401) {
-            $statuscode = IS_UNAUTHORIZED;
+            $statuscode = self::$IS_UNAUTHORIZED;
             $err = 'got http-code ' . $httpcode . ' (unauthorized)';
         } elseif ($httpcode >= 500 && $httpcode <= 599) {
-            $statuscode = IS_SERVERERROR;
+            $statuscode = self::$IS_SERVERERROR;
             $err = 'got http-code ' . $httpcode . ' (server error)';
         } else {
-            $statuscode = IS_HTTPERROR;
+            $statuscode = self::$IS_HTTPERROR;
             $err = 'got http-code ' . $httpcode;
         }
 

@@ -287,7 +287,7 @@ class MieleAtHomeDevice extends IPSModule
             $this->SetStatus(IS_ACTIVE);
             $this->SetUpdateInterval();
         } else {
-            $this->SetStatus(IS_INVALIDCONFIG);
+            $this->SetStatus(self::$IS_INVALIDCONFIG);
         }
 
         if ($with['enabled_action']) {
