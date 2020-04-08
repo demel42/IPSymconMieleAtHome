@@ -258,8 +258,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.23 @ 08.04.2020 12:18
+- 1.23 @ 08.04.2020 16:45
   - define's durch statische Klassen-Variablen ersetzt
+  - Fix in MielelAtHomeDevice: 'Geräte-Typ-ID' wird nun als NumberSpinner angeboten
 
 - 1.22 @ 06.03.2020 20:14
   - Wechsel des Verbindungstyp wird nun automatisch erkannt

@@ -333,7 +333,7 @@ class MieleAtHomeDevice extends IPSModule
         $formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Instance is disabled'];
 
         $items = [];
-        $items[] = ['type' => 'ValidationTextBox', 'name' => 'deviceId', 'caption' => 'Device id'];
+        $items[] = ['type' => 'NumberSpinner', 'name' => 'deviceId', 'caption' => 'Device id'];
         $items[] = ['type' => 'ValidationTextBox', 'name' => 'deviceType', 'caption' => 'Device type'];
         $items[] = ['type' => 'ValidationTextBox', 'name' => 'fabNumber', 'caption' => 'Fabrication number'];
         $items[] = ['type' => 'ValidationTextBox', 'name' => 'techType', 'caption' => 'Model'];
