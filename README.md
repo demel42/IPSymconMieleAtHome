@@ -258,6 +258,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.24 @ 13.07.2020 14:56
+  - LICENSE.md hinzugefügt
+
 - 1.23 @ 08.04.2020 16:45
   - define's durch statische Klassen-Variablen ersetzt
   - Fix in MielelAtHomeDevice: 'Geräte-Typ-ID' wird nun als NumberSpinner angeboten
