@@ -3,11 +3,13 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
+require_once __DIR__ . '/../libs/local.php';   // lokale Funktionen
 require_once __DIR__ . '/../libs/images.php';  // eingebettete Images
 
 class MieleAtHomeIO extends IPSModule
 {
     use MieleAtHomeCommon;
+    use MieleAtHomeLocal;
     use MieleAtHomeImages;
 
     //This one needs to be available on our OAuth client backend.

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
+require_once __DIR__ . '/../libs/local.php';   // lokale Funktionen
 
 if (!defined('ACTION_START')) {
     define('ACTION_UNDEF', 0);
@@ -30,6 +31,7 @@ if (!defined('ACTION_START')) {
 class MieleAtHomeDevice extends IPSModule
 {
     use MieleAtHomeCommon;
+    use MieleAtHomeLocal;
 
     public function Create()
     {
