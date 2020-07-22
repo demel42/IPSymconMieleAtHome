@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-trait MieleAtHomeImages
+trait MieleAtHomeImagesLib
 {
     protected function GetBrandImage()
     {

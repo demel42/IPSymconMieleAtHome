@@ -30,8 +30,8 @@ if (!defined('ACTION_START')) {
 
 class MieleAtHomeDevice extends IPSModule
 {
-    use MieleAtHomeCommon;
-    use MieleAtHomeLocal;
+    use MieleAtHomeCommonLib;
+    use MieleAtHomeLocalLib;
 
     public function Create()
     {

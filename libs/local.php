@@ -67,7 +67,7 @@ if (!defined('STATUS_RESERVED')) {
     define('STATUS_NOT_CONNECTED', 255);
 }
 
-trait MieleAtHomeLocal
+trait MieleAtHomeLocalLib
 {
     public static $IS_INVALIDCONFIG = IS_EBASE + 1;
     public static $IS_UNAUTHORIZED = IS_EBASE + 2;

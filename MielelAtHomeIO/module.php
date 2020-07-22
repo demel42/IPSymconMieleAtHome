@@ -8,9 +8,9 @@ require_once __DIR__ . '/../libs/images.php';  // eingebettete Images
 
 class MieleAtHomeIO extends IPSModule
 {
-    use MieleAtHomeCommon;
-    use MieleAtHomeLocal;
-    use MieleAtHomeImages;
+    use MieleAtHomeCommonLib;
+    use MieleAtHomeLocalLib;
+    use MieleAtHomeImagesLib;
 
     //This one needs to be available on our OAuth client backend.
     //Please contact us to register for an identifier: https://www.symcon.de/kontakt/#OAuth

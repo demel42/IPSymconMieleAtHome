@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-trait MieleAtHomeCommon
+trait MieleAtHomeCommonLib
 {
     protected function SetValue($Ident, $Value)
     {

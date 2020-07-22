@@ -8,9 +8,9 @@ require_once __DIR__ . '/../libs/images.php';  // eingebettete Images
 
 class MieleAtHomeConfig extends IPSModule
 {
-    use MieleAtHomeCommon;
-    use MieleAtHomeLocal;
-    use MieleAtHomeImages;
+    use MieleAtHomeCommonLib;
+    use MieleAtHomeLocalLib;
+    use MieleAtHomeImagesLib;
 
     public function Create()
     {
