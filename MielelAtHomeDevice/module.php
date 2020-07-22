@@ -326,7 +326,7 @@ class MieleAtHomeDevice extends IPSModule
         return $form;
     }
 
-    protected function GetFormElements()
+    private function GetFormElements()
     {
         $formElements = [];
 
@@ -356,7 +356,7 @@ class MieleAtHomeDevice extends IPSModule
         return $formElements;
     }
 
-    protected function GetFormActions()
+    private function GetFormActions()
     {
         $formActions = [];
 
