@@ -1,6 +1,8 @@
 {
 	"translations": {
 		"de": {
+			"Instance has no active parent instance": "Instanz hat keine aktive übergeordnete Instanz",
+
 			"Instance is disabled": "Instanz ist deaktiviert",
 
 			"Basic configuration (don't change)": "Basis-Konfiguration (nicht ändern)",

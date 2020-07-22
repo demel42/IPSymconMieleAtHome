@@ -330,28 +330,96 @@ class MieleAtHomeDevice extends IPSModule
     {
         $formElements = [];
 
-        $formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Instance is disabled'];
+        if ($this->HasActiveParent() == false) {
+            $formElements[] = [
+                'type'    => 'Label',
+                'caption' => 'Instance has no active parent instance',
+            ];
+        }
+
+        $formElements[] = ['type' => 'CheckBox',
+            'name'                => 'module_disable',
+            'caption'             => 'Instance is disabled'
+        ];
 
         $items = [];
-        $items[] = ['type' => 'NumberSpinner', 'name' => 'deviceId', 'caption' => 'Device id'];
-        $items[] = ['type' => 'ValidationTextBox', 'name' => 'deviceType', 'caption' => 'Device type'];
-        $items[] = ['type' => 'ValidationTextBox', 'name' => 'fabNumber', 'caption' => 'Fabrication number'];
-        $items[] = ['type' => 'ValidationTextBox', 'name' => 'techType', 'caption' => 'Model'];
-        $formElements[] = ['type' => 'ExpansionPanel', 'items' => $items, 'caption' => 'Basic configuration (don\'t change)'];
+        $items[] = [
+            'type'    => 'NumberSpinner',
+            'name'    => 'deviceId',
+            'caption' => 'Device id'
+        ];
+        $items[] = [
+            'type'    => 'ValidationTextBox',
+            'name'    => 'deviceType',
+            'caption' => 'Device type'
+        ];
+        $items[] = [
+            'type'    => 'ValidationTextBox',
+            'name'    => 'fabNumber',
+            'caption' => 'Fabrication number'
+        ];
+        $items[] = [
+            'type'    => 'ValidationTextBox',
+            'name'    => 'techType',
+            'caption' => 'Model'
+        ];
+        $formElements[] = [
+            'type'    => 'ExpansionPanel',
+            'items'   => $items,
+            'caption' => 'Basic configuration (don\'t change)'
+        ];
 
         $items = [];
-        $items[] = ['type' => 'Label', 'caption' => 'mapping code to text of field ...'];
-        $items[] = ['type' => 'CheckBox', 'name' => 'map_programName', 'caption' => ' ... Program name'];
-        $items[] = ['type' => 'CheckBox', 'name' => 'map_programType', 'caption' => ' ... Program'];
-        $items[] = ['type' => 'CheckBox', 'name' => 'map_programPhase', 'caption' => ' ... Phase'];
-        $items[] = ['type' => 'CheckBox', 'name' => 'map_dryingStep', 'caption' => ' ... Drying step'];
-        $items[] = ['type' => 'CheckBox', 'name' => 'map_ventilationStep', 'caption' => ' ... Ventilation step'];
-        $formElements[] = ['type' => 'ExpansionPanel', 'items' => $items, 'caption' => 'Settings'];
+        $items[] = [
+            'type'    => 'Label',
+            'caption' => 'mapping code to text of field ...'
+        ];
+        $items[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'map_programName',
+            'caption' => ' ... Program name'
+        ];
+        $items[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'map_programType',
+            'caption' => ' ... Program'
+        ];
+        $items[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'map_programPhase',
+            'caption' => ' ... Phase'
+        ];
+        $items[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'map_dryingStep',
+            'caption' => ' ... Drying step'
+        ];
+        $items[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'map_ventilationStep',
+            'caption' => ' ... Ventilation step'
+        ];
+        $formElements[] = [
+            'type'    => 'ExpansionPanel',
+            'items'   => $items,
+            'caption' => 'Settings'
+        ];
 
         $items = [];
-        $items[] = ['type' => 'Label', 'caption' => 'Update data every X seconds'];
-        $items[] = ['type' => 'NumberSpinner', 'name' => 'update_interval', 'caption' => 'Seconds'];
-        $formElements[] = ['type' => 'ExpansionPanel', 'items' => $items, 'caption' => 'Communication'];
+        $items[] = [
+            'type'    => 'Label',
+            'caption' => 'Update data every X seconds'
+        ];
+        $items[] = [
+            'type'    => 'NumberSpinner',
+            'name'    => 'update_interval',
+            'caption' => 'Seconds'
+        ];
+        $formElements[] = [
+            'type'    => 'ExpansionPanel',
+            'items'   => $items,
+            'caption' => 'Communication'
+        ];
 
         return $formElements;
     }
@@ -380,6 +448,12 @@ class MieleAtHomeDevice extends IPSModule
     {
         if ($this->GetStatus() == IS_INACTIVE) {
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+            return;
+        }
+
+        if ($this->HasActiveParent() == false) {
+            $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
+            $this->LogMessage('has no active parent instance', KL_WARNING);
             return;
         }
 
@@ -1035,6 +1109,11 @@ class MieleAtHomeDevice extends IPSModule
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
             return;
         }
+        if ($this->HasActiveParent() == false) {
+            $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
+            $this->LogMessage('has no active parent instance', KL_WARNING);
+            return $entries;
+        }
 
         $this->SendDebug(__FUNCTION__, 'func=' . $func . ', action=' . print_r($action, true), 0);
 
@@ -1308,6 +1387,12 @@ class MieleAtHomeDevice extends IPSModule
 
     private function getEnabledActions(bool $force)
     {
+        if ($this->HasActiveParent() == false) {
+            $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
+            $this->LogMessage('has no active parent instance', KL_WARNING);
+            return $entries;
+        }
+
         $data = $force ? '' : $this->GetBuffer('EnabledActions');
         if ($data == '') {
             $fabNumber = $this->ReadPropertyString('fabNumber');

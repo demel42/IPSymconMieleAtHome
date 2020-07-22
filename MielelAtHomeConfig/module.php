@@ -39,11 +39,18 @@ class MieleAtHomeConfig extends IPSModule
 
     private function getConfiguratorValues()
     {
+        $entries = [];
+
+        if ($this->HasActiveParent() == false) {
+            $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
+            $this->LogMessage('has no active parent instance', KL_WARNING);
+            return $entries;
+        }
+
         $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDevices'];
         $data = $this->SendDataToParent(json_encode($SendData));
         $this->SendDebug(__FUNCTION__, 'data=' . $data, 0);
 
-        $config_list = [];
         if ($data != '') {
             $guid = '{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}'; // Miele@Home Device
             $instIDs = IPS_GetInstanceListByModuleID($guid);
@@ -76,18 +83,6 @@ class MieleAtHomeConfig extends IPSModule
                     $deviceName = $deviceType;
                 }
 
-                $create = [
-                    'moduleID'      => $guid,
-                    'location'      => $this->SetLocation(),
-                    'configuration' => [
-                        'deviceId'   => $deviceId,
-                        'deviceType' => $deviceType,
-                        'fabNumber'  => $fabNumber,
-                        'techType'   => $techType
-                    ]
-                ];
-                $create['info'] = $deviceType . ' (' . $techType . ')';
-
                 $entry = [
                     'instanceID'  => $instanceID,
                     'id'          => $deviceId,
@@ -95,13 +90,23 @@ class MieleAtHomeConfig extends IPSModule
                     'tech_type'   => $techType,
                     'device_type' => $deviceType,
                     'fabNumber'   => $fabNumber,
-                    'create'      => $create
+                    'create'      => [
+                        'moduleID'      => $guid,
+                        'location'      => $this->SetLocation(),
+                        'info'          => $deviceType . ' (' . $techType . ')',
+                        'configuration' => [
+                            'deviceId'   => $deviceId,
+                            'deviceType' => $deviceType,
+                            'fabNumber'  => $fabNumber,
+                            'techType'   => $techType
+                        ]
+                    ]
                 ];
 
-                $config_list[] = $entry;
+                $entries[] = $entry;
             }
         }
-        return $config_list;
+        return $entries;
     }
 
     private function SetLocation()
@@ -142,7 +147,12 @@ class MieleAtHomeConfig extends IPSModule
     {
         $formElements = [];
 
-        $values = $this->getConfiguratorValues();
+        if ($this->HasActiveParent() == false) {
+            $formElements[] = [
+                'type'    => 'Label',
+                'caption' => 'Instance has no active parent instance',
+            ];
+        }
 
         $formElements[] = [
             'type'  => 'Image',
@@ -154,15 +164,16 @@ class MieleAtHomeConfig extends IPSModule
             'caption' => 'category for Miele@Home devices to be created:'
         ];
         $formElements[] = [
-            'name'    => 'ImportCategoryID',
             'type'    => 'SelectCategory',
+            'name'    => 'ImportCategoryID',
             'caption' => 'category'
         ];
 
+        $entries = $this->getConfiguratorValues();
         $formElements[] = [
             'name'     => 'MieleatHomeConfiguration',
             'type'     => 'Configurator',
-            'rowCount' => count($values),
+            'rowCount' => count($entries),
             'add'      => false,
             'delete'   => false,
             'sort'     => [
@@ -198,7 +209,7 @@ class MieleAtHomeConfig extends IPSModule
                     'width'   => '200px'
                 ]
             ],
-            'values' => $values
+            'values' => $entries
         ];
 
         return $formElements;

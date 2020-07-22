@@ -1,6 +1,8 @@
 {
 	"translations": {
 		"de": {
+			"Instance has no active parent instance": "Instanz hat keine aktive übergeordnete Instanz",
+
 			"Device": "Gerät",
 			"category for Miele@Home devices to be created:": "Kategorie für anzulegende Miele@Home Geräte:",
 			"category": "Kategorie",
