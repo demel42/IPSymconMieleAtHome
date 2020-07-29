@@ -258,7 +258,7 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.24 @ 22.07.2020 14:15 (beta)
+- 1.24 @ 29.07.2020 09:40 (beta)
   - LICENSE.md hinzugefügt
   - Nutzung von HasActiveParent(): Anzeige im Konfigurationsformular sowie entsprechende Absicherung von SendDataToParent()
   - interne Funktionen sind nun "private"

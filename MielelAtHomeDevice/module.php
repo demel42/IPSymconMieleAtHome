@@ -339,9 +339,10 @@ class MieleAtHomeDevice extends IPSModule
             ];
         }
 
-        $formElements[] = ['type' => 'CheckBox',
-            'name'                => 'module_disable',
-            'caption'             => 'Instance is disabled'
+        $formElements[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'module_disable',
+            'caption' => 'Instance is disabled'
         ];
 
         $items = [];
@@ -1109,12 +1110,12 @@ class MieleAtHomeDevice extends IPSModule
     {
         if ($this->GetStatus() == IS_INACTIVE) {
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
-            return;
+            return false;
         }
         if ($this->HasActiveParent() == false) {
             $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
             $this->LogMessage('has no active parent instance', KL_WARNING);
-            return $entries;
+            return false;
         }
 
         $this->SendDebug(__FUNCTION__, 'func=' . $func . ', action=' . print_r($action, true), 0);
@@ -1392,7 +1393,7 @@ class MieleAtHomeDevice extends IPSModule
         if ($this->HasActiveParent() == false) {
             $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
             $this->LogMessage('has no active parent instance', KL_WARNING);
-            return $entries;
+            return false;
         }
 
         $data = $force ? '' : $this->GetBuffer('EnabledActions');
