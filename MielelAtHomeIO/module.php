@@ -30,7 +30,7 @@ class MieleAtHomeIO extends IPSModule
         $this->RegisterPropertyString('vg_selector', '');
         $this->RegisterPropertyString('language', '');
 
-        $this->RegisterPropertyInteger('OAuth_Type', CONNECTION_UNDEFINED);
+        $this->RegisterPropertyInteger('OAuth_Type', self::$CONNECTION_UNDEFINED);
 
         $this->RegisterAttributeString('RefreshToken', '');
 
@@ -43,7 +43,7 @@ class MieleAtHomeIO extends IPSModule
 
         if ($Message == IPS_KERNELMESSAGE && $Data[0] == KR_READY) {
             $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
-            if ($oauth_type == CONNECTION_OAUTH) {
+            if ($oauth_type == self::$CONNECTION_OAUTH) {
                 $this->RegisterOAuth($this->oauthIdentifer);
             }
         }
@@ -61,7 +61,7 @@ class MieleAtHomeIO extends IPSModule
 
         $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
         switch ($oauth_type) {
-            case CONNECTION_DEVELOPER:
+            case self::$CONNECTION_DEVELOPER:
                 $userid = $this->ReadPropertyString('userid');
                 $password = $this->ReadPropertyString('password');
                 $client_id = $this->ReadPropertyString('client_id');
@@ -72,7 +72,7 @@ class MieleAtHomeIO extends IPSModule
                 }
                 $this->SetStatus(IS_ACTIVE);
                 break;
-            case CONNECTION_OAUTH:
+            case self::$CONNECTION_OAUTH:
                 if ($this->GetConnectUrl() == false) {
                     $this->SetStatus(self::$IS_NOSYMCONCONNECT);
                     return;
@@ -90,7 +90,7 @@ class MieleAtHomeIO extends IPSModule
         }
 
         if (IPS_GetKernelRunlevel() == KR_READY) {
-            if ($oauth_type == CONNECTION_OAUTH) {
+            if ($oauth_type == self::$CONNECTION_OAUTH) {
                 $this->RegisterOAuth($this->oauthIdentifer);
             }
         }
@@ -224,8 +224,8 @@ class MieleAtHomeIO extends IPSModule
                 $jtoken = json_decode($data, true);
                 $access_token = isset($jtoken['access_token']) ? $jtoken['access_token'] : '';
                 $expiration = isset($jtoken['expiration']) ? $jtoken['expiration'] : 0;
-                $type = isset($jtoken['type']) ? $jtoken['type'] : CONNECTION_UNDEFINED;
-                if ($type != CONNECTION_OAUTH) {
+                $type = isset($jtoken['type']) ? $jtoken['type'] : self::$CONNECTION_UNDEFINED;
+                if ($type != self::$CONNECTION_OAUTH) {
                     $this->WriteAttributeString('RefreshToken', '');
                     $this->SendDebug(__FUNCTION__, 'connection-type changed', 0);
                     $access_token = '';
@@ -267,7 +267,7 @@ class MieleAtHomeIO extends IPSModule
         $jtoken = [
             'access_token' => $access_token,
             'expiration'   => $expiration,
-            'type'         => CONNECTION_OAUTH
+            'type'         => self::$CONNECTION_OAUTH
         ];
         $this->SetBuffer('AccessToken', json_encode($jtoken));
         return $access_token;
@@ -317,7 +317,7 @@ class MieleAtHomeIO extends IPSModule
             'caption' => 'Instance is disabled'
         ];
 
-        if ($oauth_type == CONNECTION_OAUTH) {
+        if ($oauth_type == self::$CONNECTION_OAUTH) {
             $instID = IPS_GetInstanceListByModuleID('{9486D575-BE8C-4ED8-B5B5-20930E26DE6F}')[0];
             if (IPS_GetInstance($instID)['InstanceStatus'] != IS_ACTIVE) {
                 $msg = 'Error: Symcon Connect is not active!';
@@ -342,21 +342,21 @@ class MieleAtHomeIO extends IPSModule
             'options' => [
                 [
                     'caption' => 'Please select a connection type',
-                    'value'   => CONNECTION_UNDEFINED
+                    'value'   => self::$CONNECTION_UNDEFINED
                 ],
                 [
                     'caption' => 'Miele@Home via IP-Symcon Connect',
-                    'value'   => CONNECTION_OAUTH
+                    'value'   => self::$CONNECTION_OAUTH
                 ],
                 [
                     'caption' => 'Miele@Home Developer Key',
-                    'value'   => CONNECTION_DEVELOPER
+                    'value'   => self::$CONNECTION_DEVELOPER
                 ]
             ]
         ];
 
         switch ($oauth_type) {
-            case CONNECTION_OAUTH:
+            case self::$CONNECTION_OAUTH:
                 $items = [];
                 $items[] = [
                     'type'    => 'Label',
@@ -380,7 +380,7 @@ class MieleAtHomeIO extends IPSModule
                     'caption' => 'Miele@Home Login'
                 ];
                 break;
-            case CONNECTION_DEVELOPER:
+            case self::$CONNECTION_DEVELOPER:
                 $items = [];
                 $items[] = [
                     'type'    => 'Label',
@@ -461,7 +461,7 @@ class MieleAtHomeIO extends IPSModule
 
         $formActions = [];
 
-        if ($oauth_type == CONNECTION_OAUTH) {
+        if ($oauth_type == self::$CONNECTION_OAUTH) {
             $formActions[] = [
                 'type'    => 'Label',
                 'caption' => 'Login with your Miele@Home username and Miele@Home password:'
@@ -574,10 +574,10 @@ class MieleAtHomeIO extends IPSModule
     {
         $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
         switch ($oauth_type) {
-            case CONNECTION_OAUTH:
+            case self::$CONNECTION_OAUTH:
                 $access_token = $this->FetchAccessToken();
                 break;
-            case CONNECTION_DEVELOPER:
+            case self::$CONNECTION_DEVELOPER:
                 $userid = $this->ReadPropertyString('userid');
                 $password = $this->ReadPropertyString('password');
                 $client_id = $this->ReadPropertyString('client_id');
@@ -588,9 +588,9 @@ class MieleAtHomeIO extends IPSModule
                 $jtoken = json_decode($dtoken, true);
                 $access_token = isset($jtoken['access_token']) ? $jtoken['access_token'] : '';
                 $expiration = isset($jtoken['expiration']) ? $jtoken['expiration'] : 0;
-                $type = isset($jtoken['type']) ? $jtoken['type'] : CONNECTION_UNDEFINED;
+                $type = isset($jtoken['type']) ? $jtoken['type'] : self::$CONNECTION_UNDEFINED;
 
-                if ($type != CONNECTION_DEVELOPER || $expiration < time()) {
+                if ($type != self::$CONNECTION_DEVELOPER || $expiration < time()) {
                     $params = [
                         'client_id'     => $client_id,
                         'client_secret' => $client_secret,
@@ -627,7 +627,7 @@ class MieleAtHomeIO extends IPSModule
                     $jtoken = [
                         'access_token' => $access_token,
                         'expiration'   => time() + $expires_in,
-                        'type'         => CONNECTION_DEVELOPER
+                        'type'         => self::$CONNECTION_DEVELOPER
                     ];
                     $this->SetBuffer('Token', json_encode($jtoken));
                 }

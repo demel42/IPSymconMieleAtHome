@@ -2,71 +2,6 @@
 
 declare(strict_types=1);
 
-if (!defined('CONNECTION_UNDEFINED')) {
-    define('CONNECTION_UNDEFINED', 0);
-    define('CONNECTION_OAUTH', 1);
-    define('CONNECTION_DEVELOPER', 2);
-}
-
-if (!defined('DEVICE_WASHING_MACHINE')) {
-    define('DEVICE_WASHING_MACHINE', 1);
-    define('DEVICE_TUMBLE_DRYER', 2);
-    define('DEVICE_DISHWASHER', 7);
-    define('DEVICE_DISHWASHER_SEMIPROF', 8);
-    define('DEVICE_OVEN', 12);
-    define('DEVICE_OVEN_MICROWAVE', 13);
-    define('DEVICE_HOB_HIGHLIGHT', 14);
-    define('DEVICE_STEAM_OVEN', 15);
-    define('DEVICE_MICROWAVE', 16);
-    define('DEVICE_COFFEE_SYSTEM', 17);
-    define('DEVICE_HOOD', 18);
-    define('DEVICE_FRIDGE', 19);
-    define('DEVICE_FREEZER', 20);
-    define('DEVICE_FRIDGE_FREEZER', 21);
-    define('DEVICE_VACUUM_CLEANER', 23);
-    define('DEVICE_WASHER_DRYER', 24);
-    define('DEVICE_DISH_WARMER', 25);
-    define('DEVICE_HOB_INDUCTION', 27);
-    define('DEVICE_HOB_GAS', 28);
-    define('DEVICE_STEAM_OVEN_COMBINATION', 31);
-    define('DEVICE_WINE_CABINET', 32);
-    define('DEVICE_WINE_CONDITIONING_UNIT', 33);
-    define('DEVICE_WINE_STORAGE_CONDITIONING_UNIT', 34);
-    define('DEVICE_DOUBLE_OVEN', 39);
-    define('DEVICE_DOUBLE_STEAM_OVEN', 40);
-    define('DEVICE_DOUBLE_STEAM_OVEN_COMBINATION', 41);
-    define('DEVICE_DOUBLE_MICROWAVE', 42);
-    define('DEVICE_DOUBLE_MICROWAVE_OVEN', 43);
-    define('DEVICE_STEAM_OVEN_MICROWAVE_COMBINATION', 45);
-    define('DEVICE_VACUUM_DRAWER', 48);
-    define('DEVICE_DIALOGOVEN', 67);
-    define('DEVICE_WINE_CABINET_FREEZER_COMBINATION', 68);
-}
-
-if (!defined('STATUS_RESERVED')) {
-    define('STATUS_UNKNOWN', -1);
-    define('STATUS_RESERVED', 0);
-    define('STATUS_OFF', 1);
-    define('STATUS_ON', 2);
-    define('STATUS_PROGRAMMED', 3);
-    define('STATUS_WAITING_TO_START', 4);
-    define('STATUS_RUNNING', 5);
-    define('STATUS_PAUSE', 6);
-    define('STATUS_END_PROGRAMMED', 7);
-    define('STATUS_FAILURE', 8);
-    define('STATUS_PROGRAM_INTERRUPTED', 9);
-    define('STATUS_IDLE', 10);
-    define('STATUS_RINSE_HOLD', 11);
-    define('STATUS_SERVICE', 12);
-    define('STATUS_SUPERFREEZING', 13);
-    define('STATUS_SUPERCOOLING', 14);
-    define('STATUS_SUPERHEATING', 15);
-
-    define('STATUS_SUPERCOOLING_SUPERFREEZING', 146);
-
-    define('STATUS_NOT_CONNECTED', 255);
-}
-
 trait MieleAtHomeLocalLib
 {
     public static $IS_INVALIDCONFIG = IS_EBASE + 1;
@@ -77,6 +12,86 @@ trait MieleAtHomeLocalLib
     public static $IS_NOSYMCONCONNECT = IS_EBASE + 6;
     public static $IS_NOLOGIN = IS_EBASE + 7;
     public static $IS_NODATA = IS_EBASE + 8;
+
+    public static $CONNECTION_UNDEFINED = 0;
+    public static $CONNECTION_OAUTH = 1;
+    public static $CONNECTION_DEVELOPER = 2;
+
+    public static $DEVICE_WASHING_MACHINE = 1;
+    public static $DEVICE_TUMBLE_DRYER = 2;
+    public static $DEVICE_DISHWASHER = 7;
+    public static $DEVICE_DISHWASHER_SEMIPROF = 8;
+    public static $DEVICE_OVEN = 12;
+    public static $DEVICE_OVEN_MICROWAVE = 13;
+    public static $DEVICE_HOB_HIGHLIGHT = 14;
+    public static $DEVICE_STEAM_OVEN = 15;
+    public static $DEVICE_MICROWAVE = 16;
+    public static $DEVICE_COFFEE_SYSTEM = 17;
+    public static $DEVICE_HOOD = 18;
+    public static $DEVICE_FRIDGE = 19;
+    public static $DEVICE_FREEZER = 20;
+    public static $DEVICE_FRIDGE_FREEZER = 21;
+    public static $DEVICE_VACUUM_CLEANER = 23;
+    public static $DEVICE_WASHER_DRYER = 24;
+    public static $DEVICE_DISH_WARMER = 25;
+    public static $DEVICE_HOB_INDUCTION = 27;
+    public static $DEVICE_HOB_GAS = 28;
+    public static $DEVICE_STEAM_OVEN_COMBINATION = 31;
+    public static $DEVICE_WINE_CABINET = 32;
+    public static $DEVICE_WINE_CONDITIONING_UNIT = 33;
+    public static $DEVICE_WINE_STORAGE_CONDITIONING_UNIT = 34;
+    public static $DEVICE_DOUBLE_OVEN = 39;
+    public static $DEVICE_DOUBLE_STEAM_OVEN = 40;
+    public static $DEVICE_DOUBLE_STEAM_OVEN_COMBINATION = 41;
+    public static $DEVICE_DOUBLE_MICROWAVE = 42;
+    public static $DEVICE_DOUBLE_MICROWAVE_OVEN = 43;
+    public static $DEVICE_STEAM_OVEN_MICROWAVE_COMBINATION = 45;
+    public static $DEVICE_VACUUM_DRAWER = 48;
+    public static $DEVICE_DIALOGOVEN = 67;
+    public static $DEVICE_WINE_CABINET_FREEZER_COMBINATION = 68;
+
+    public static $STATUS_UNKNOWN = -1;
+    public static $STATUS_RESERVED = 0;
+    public static $STATUS_OFF = 1;
+    public static $STATUS_ON = 2;
+    public static $STATUS_PROGRAMMED = 3;
+    public static $STATUS_WAITING_TO_START = 4;
+    public static $STATUS_RUNNING = 5;
+    public static $STATUS_PAUSE = 6;
+    public static $STATUS_END_PROGRAMMED = 7;
+    public static $STATUS_FAILURE = 8;
+    public static $STATUS_PROGRAM_INTERRUPTED = 9;
+    public static $STATUS_IDLE = 10;
+    public static $STATUS_RINSE_HOLD = 11;
+    public static $STATUS_SERVICE = 12;
+    public static $STATUS_SUPERFREEZING = 13;
+    public static $STATUS_SUPERCOOLING = 14;
+    public static $STATUS_SUPERHEATING = 15;
+
+    public static $STATUS_SUPERCOOLING_SUPERFREEZING = 146;
+
+    public static $STATUS_NOT_CONNECTED = 255;
+
+    public static $ACTION_UNDEF = 0;
+    public static $ACTION_START = 1;
+    public static $ACTION_PAUSE = 2;
+    public static $ACTION_STOP = 3;
+
+    public static $LIGHT_UNDEF = 0;
+    public static $LIGHT_ENABLE = 1;
+    public static $LIGHT_DISABLE = 2;
+
+    public static $POWER_UNDEF = 0;
+    public static $POWER_ON = 1;
+    public static $POWER_OFF = 2;
+
+    public static $PROCESS_START = 1;
+    public static $PROCESS_STOP = 2;
+    public static $PROCESS_PAUSE = 3;
+    public static $PROCESS_START_SUPERFREEZING = 4;
+    public static $PROCESS_STOP_SUPERFREEZING = 5;
+    public static $PROCESS_START_SUPERCOOLING = 6;
+    public static $PROCESS_STOP_SUPERCOOLING = 7;
 
     private function GetFormStatus()
     {

@@ -5,29 +5,6 @@ declare(strict_types=1);
 require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
 require_once __DIR__ . '/../libs/local.php';   // lokale Funktionen
 
-if (!defined('ACTION_START')) {
-    define('ACTION_UNDEF', 0);
-    define('ACTION_START', 1);
-    define('ACTION_PAUSE', 2);
-    define('ACTION_STOP', 3);
-
-    define('LIGHT_UNDEF', 0);
-    define('LIGHT_ENABLE', 1);
-    define('LIGHT_DISABLE', 2);
-
-    define('POWER_UNDEF', 0);
-    define('POWER_ON', 1);
-    define('POWER_OFF', 2);
-
-    define('PROCESS_START', 1);
-    define('PROCESS_STOP', 2);
-    define('PROCESS_PAUSE', 3);
-    define('PROCESS_START_SUPERFREEZING', 4);
-    define('PROCESS_STOP_SUPERFREEZING', 5);
-    define('PROCESS_START_SUPERCOOLING', 6);
-    define('PROCESS_STOP_SUPERCOOLING', 7);
-}
-
 class MieleAtHomeDevice extends IPSModule
 {
     use MieleAtHomeCommonLib;
@@ -58,25 +35,25 @@ class MieleAtHomeDevice extends IPSModule
         $this->CreateVarProfile('MieleAtHome.WorkProgress', VARIABLETYPE_INTEGER, ' %', 0, 0, 0, 0, '');
 
         $associations = [];
-        $associations[] = ['Wert' => STATUS_UNKNOWN, 'Name' => $this->Translate('Unknown'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_RESERVED, 'Name' => $this->Translate('Reserved'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_OFF, 'Name' => $this->Translate('Off'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_ON, 'Name' => $this->Translate('On'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_PROGRAMMED, 'Name' => $this->Translate('Programmed'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_WAITING_TO_START, 'Name' => $this->Translate('Waiting to start'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_RUNNING, 'Name' => $this->Translate('Running'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_PAUSE, 'Name' => $this->Translate('Pause'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_END_PROGRAMMED, 'Name' => $this->Translate('End programmed'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_FAILURE, 'Name' => $this->Translate('Failure'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_PROGRAM_INTERRUPTED, 'Name' => $this->Translate('Program interrupted'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_IDLE, 'Name' => $this->Translate('Idle'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_RINSE_HOLD, 'Name' => $this->Translate('Rinse hold'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_SERVICE, 'Name' => $this->Translate('Service'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_SUPERFREEZING, 'Name' => $this->Translate('Superfreezing'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_SUPERCOOLING, 'Name' => $this->Translate('Supercooling'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_SUPERHEATING, 'Name' => $this->Translate('Superheating'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_NOT_CONNECTED, 'Name' => $this->Translate('Not connected'), 'Farbe' => -1];
-        $associations[] = ['Wert' => STATUS_SUPERCOOLING_SUPERFREEZING, 'Name' => $this->Translate('Superfrost/cooling'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_UNKNOWN, 'Name' => $this->Translate('Unknown'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_RESERVED, 'Name' => $this->Translate('Reserved'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_OFF, 'Name' => $this->Translate('Off'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_ON, 'Name' => $this->Translate('On'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_PROGRAMMED, 'Name' => $this->Translate('Programmed'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_WAITING_TO_START, 'Name' => $this->Translate('Waiting to start'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_RUNNING, 'Name' => $this->Translate('Running'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_PAUSE, 'Name' => $this->Translate('Pause'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_END_PROGRAMMED, 'Name' => $this->Translate('End programmed'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_FAILURE, 'Name' => $this->Translate('Failure'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_PROGRAM_INTERRUPTED, 'Name' => $this->Translate('Program interrupted'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_IDLE, 'Name' => $this->Translate('Idle'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_RINSE_HOLD, 'Name' => $this->Translate('Rinse hold'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_SERVICE, 'Name' => $this->Translate('Service'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_SUPERFREEZING, 'Name' => $this->Translate('Superfreezing'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_SUPERCOOLING, 'Name' => $this->Translate('Supercooling'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_SUPERHEATING, 'Name' => $this->Translate('Superheating'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_NOT_CONNECTED, 'Name' => $this->Translate('Not connected'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$STATUS_SUPERCOOLING_SUPERFREEZING, 'Name' => $this->Translate('Superfrost/cooling'), 'Farbe' => -1];
         $this->CreateVarProfile('MieleAtHome.Status', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations);
 
         $associations = [];
@@ -85,29 +62,29 @@ class MieleAtHomeDevice extends IPSModule
         $this->CreateVarProfile('MieleAtHome.Door', VARIABLETYPE_BOOLEAN, '', 0, 0, 0, 1, 'Door', $associations);
 
         $associations = [];
-        $associations[] = ['Wert' => LIGHT_ENABLE, 'Name' => $this->Translate('On'), 'Farbe' => -1];
-        $associations[] = ['Wert' => LIGHT_DISABLE, 'Name' => $this->Translate('Off'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$LIGHT_ENABLE, 'Name' => $this->Translate('On'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$LIGHT_DISABLE, 'Name' => $this->Translate('Off'), 'Farbe' => -1];
         $this->CreateVarProfile('MieleAtHome.Light', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, 'Light', $associations);
 
         $associations = [];
-        $associations[] = ['Wert' => POWER_ON, 'Name' => $this->Translate('switch on'), 'Farbe' => -1];
-        $associations[] = ['Wert' => POWER_OFF, 'Name' => $this->Translate('switch off'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$POWER_ON, 'Name' => $this->Translate('switch on'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$POWER_OFF, 'Name' => $this->Translate('switch off'), 'Farbe' => -1];
         $this->CreateVarProfile('MieleAtHome.PowerSupply', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, 'Power', $associations);
 
         $associations = [];
-        $associations[] = ['Wert' => ACTION_START, 'Name' => $this->Translate('start'), 'Farbe' => -1];
-        $associations[] = ['Wert' => ACTION_PAUSE, 'Name' => $this->Translate('pause'), 'Farbe' => -1];
-        $associations[] = ['Wert' => ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$ACTION_START, 'Name' => $this->Translate('start'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$ACTION_PAUSE, 'Name' => $this->Translate('pause'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1];
         $this->CreateVarProfile('MieleAtHome.Action', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations);
 
         $associations = [];
-        $associations[] = ['Wert' => ACTION_START, 'Name' => $this->Translate('start'), 'Farbe' => -1];
-        $associations[] = ['Wert' => ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$ACTION_START, 'Name' => $this->Translate('start'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1];
         $this->CreateVarProfile('MieleAtHome.Superfreezing', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations);
 
         $associations = [];
-        $associations[] = ['Wert' => ACTION_START, 'Name' => $this->Translate('start'), 'Farbe' => -1];
-        $associations[] = ['Wert' => ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$ACTION_START, 'Name' => $this->Translate('start'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1];
         $this->CreateVarProfile('MieleAtHome.Supercooling', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations);
 
         $this->RegisterTimer('UpdateData', 0, 'MieleAtHome_UpdateData(' . $this->InstanceID . ');');
@@ -138,7 +115,7 @@ class MieleAtHomeDevice extends IPSModule
         $with['enabled_powersupply'] = false;
 
         switch ($deviceId) {
-            case DEVICE_WASHING_MACHINE:   		// Waschmaschine
+            case self::$DEVICE_WASHING_MACHINE:   		// Waschmaschine
                 $with['ProgramName'] = true;
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
@@ -151,7 +128,7 @@ class MieleAtHomeDevice extends IPSModule
                 $with['enabled_action'] = true;
                 $with['enabled_starttime'] = true;
                 break;
-            case DEVICE_TUMBLE_DRYER:      		// Trockner
+            case self::$DEVICE_TUMBLE_DRYER:      		// Trockner
                 $with['ProgramName'] = true;
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
@@ -163,7 +140,7 @@ class MieleAtHomeDevice extends IPSModule
                 $with['enabled_action'] = true;
                 $with['enabled_starttime'] = true;
                 break;
-            case DEVICE_DISHWASHER:         	// Geschirrspüler
+            case self::$DEVICE_DISHWASHER:         	// Geschirrspüler
                 $with['ProgramName'] = true;
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
@@ -174,7 +151,7 @@ class MieleAtHomeDevice extends IPSModule
                 $with['enabled_action'] = true;
                 $with['enabled_starttime'] = true;
                 break;
-            case DEVICE_OVEN:               	// Backofen
+            case self::$DEVICE_OVEN:               	// Backofen
                 $with['ProgramName'] = true;
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
@@ -184,7 +161,7 @@ class MieleAtHomeDevice extends IPSModule
 
                 $with['enabled_powersupply'] = true;
                 break;
-            case DEVICE_OVEN_MICROWAVE:     	// Backofen mit Mikrowelle
+            case self::$DEVICE_OVEN_MICROWAVE:     	// Backofen mit Mikrowelle
                 $with['ProgramName'] = true;
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
@@ -194,7 +171,7 @@ class MieleAtHomeDevice extends IPSModule
 
                 $with['enabled_powersupply'] = true;
                 break;
-            case DEVICE_FRIDGE_FREEZER:			// Kühl-/Gefrierkombination
+            case self::$DEVICE_FRIDGE_FREEZER:			// Kühl-/Gefrierkombination
                 $with['fridge_temp'] = true;
                 $with['freezer_temp'] = true;
                 $with['Door'] = true;
@@ -203,7 +180,7 @@ class MieleAtHomeDevice extends IPSModule
                 $with['enabled_superfreezing'] = true;
                 $with['enabled_supercooling'] = true;
                 break;
-            case DEVICE_STEAM_OVEN_COMBINATION: // Dampfgarer mit Backofen-Funktion
+            case self::$DEVICE_STEAM_OVEN_COMBINATION: // Dampfgarer mit Backofen-Funktion
                 $with['ProgramName'] = true;
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
@@ -492,7 +469,7 @@ class MieleAtHomeDevice extends IPSModule
 
         $value_raw = $this->GetArrayElem($jdata, 'status.value_raw', 0);
         $r = IPS_GetVariableProfile('MieleAtHome.Status');
-        $status = STATUS_UNKNOWN;
+        $status = self::$STATUS_UNKNOWN;
         foreach ($r['Associations'] as $a) {
             if ($a['Value'] == $value_raw) {
                 $status = $value_raw;
@@ -500,7 +477,7 @@ class MieleAtHomeDevice extends IPSModule
             }
         }
         $this->SaveValue('State', $status, $is_changed);
-        if ($status == STATUS_UNKNOWN) {
+        if ($status == self::$STATUS_UNKNOWN) {
             $e = 'unknown value ' . $value_raw;
             $value_localized = $this->GetArrayElem($jdata, 'status.value_localized', '');
             if ($value_localized != '') {
@@ -510,9 +487,9 @@ class MieleAtHomeDevice extends IPSModule
             $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_NOTIFY);
         }
 
-        $off = $status == STATUS_OFF;
-        $delayed = $status == STATUS_WAITING_TO_START;
-        $standby = $status == STATUS_ON;
+        $off = $status == self::$STATUS_OFF;
+        $delayed = $status == self::$STATUS_WAITING_TO_START;
+        $standby = $status == self::$STATUS_ON;
 
         $signalFailure = (bool) $this->GetArrayElem($jdata, 'signalFailure', false);
         $this->SaveValue('Failure', $signalFailure, $is_changed);
@@ -712,16 +689,16 @@ class MieleAtHomeDevice extends IPSModule
         if ($with['enabled_action']) {
             if ($this->checkAction('Start', false)) {
                 $b = true;
-                $v = ACTION_START;
+                $v = self::$ACTION_START;
             } elseif ($this->checkAction('Stop', false)) {
                 $b = true;
-                $v = ACTION_STOP;
+                $v = self::$ACTION_STOP;
             } elseif ($this->checkAction('Pause', false)) {
                 $b = true;
-                $v = ACTION_PAUSE;
+                $v = self::$ACTION_PAUSE;
             } else {
                 $b = false;
-                $v = ACTION_UNDEF;
+                $v = self::$ACTION_UNDEF;
             }
             $this->SetValue('Action', $v);
             $this->MaintainAction('Action', $b);
@@ -731,13 +708,13 @@ class MieleAtHomeDevice extends IPSModule
         if ($with['enabled_superfreezing']) {
             if ($this->checkAction('StartSuperfreezing', false)) {
                 $b = true;
-                $v = ACTION_START;
+                $v = self::$ACTION_START;
             } elseif ($this->checkAction('StopSuperfreezing', false)) {
                 $b = true;
-                $v = ACTION_STOP;
+                $v = self::$ACTION_STOP;
             } else {
                 $b = false;
-                $v = ACTION_UNDEF;
+                $v = self::$ACTION_UNDEF;
             }
             $this->SetValue('Superfreezing', $v);
             $this->MaintainAction('Superfreezing', $b);
@@ -747,13 +724,13 @@ class MieleAtHomeDevice extends IPSModule
         if ($with['enabled_supercooling']) {
             if ($this->checkAction('StartSupercooling', false)) {
                 $b = true;
-                $v = ACTION_START;
+                $v = self::$ACTION_START;
             } elseif ($this->checkAction('StopSupercooling', false)) {
                 $b = true;
-                $v = ACTION_STOP;
+                $v = self::$ACTION_STOP;
             } else {
                 $b = false;
-                $v = ACTION_UNDEF;
+                $v = self::$ACTION_UNDEF;
             }
             $this->SetValue('Supercooling', $v);
             $this->MaintainAction('Supercooling', $b);
@@ -768,13 +745,13 @@ class MieleAtHomeDevice extends IPSModule
 
             if ($this->checkAction('LightEnable', false)) {
                 $b = true;
-                $v = LIGHT_ENABLE;
+                $v = self::$LIGHT_ENABLE;
             } elseif ($this->checkAction('LightDisable', false)) {
                 $b = true;
-                $v = LIGHT_DISABLE;
+                $v = self::$LIGHT_DISABLE;
             } else {
                 $b = false;
-                $v = LIGHT_UNDEF;
+                $v = self::$LIGHT_UNDEF;
             }
             $this->SetValue('Light', $v);
             $this->MaintainAction('Light', $b);
@@ -793,19 +770,19 @@ class MieleAtHomeDevice extends IPSModule
 
         if ($with['enabled_powersupply']) {
             /*
-            $power = $status == STATUS_OFF ? POWER_OFF : POWER_ON;
+            $power = $status == self::$STATUS_OFF ? self::$POWER_OFF : self::$POWER_ON;
             $this->SaveValue('PowerSupply', $power, $is_changed);
              */
 
             if ($this->checkAction('PowerOn', false)) {
                 $b = true;
-                $v = POWER_ON;
+                $v = self::$POWER_ON;
             } elseif ($this->checkAction('PowerOff', false)) {
                 $b = true;
-                $v = POWER_OFF;
+                $v = self::$POWER_OFF;
             } else {
                 $b = false;
-                $v = POWER_UNDEF;
+                $v = self::$POWER_UNDEF;
             }
             $this->SetValue('PowerSupply', $v);
             $this->MaintainAction('PowerSupply', $b);
@@ -844,12 +821,12 @@ class MieleAtHomeDevice extends IPSModule
                 3 => 'Cleaning-/Care program',
             ],
 
-            DEVICE_TUMBLE_DRYER => [
+            self::$DEVICE_TUMBLE_DRYER => [
                 2 => 'Automatic plus',
                 3 => 'Cotton',
             ],
 
-            DEVICE_DISHWASHER => [
+            self::$DEVICE_DISHWASHER => [
                 2 => 'Intensiv',
             ],
         ];
@@ -873,7 +850,7 @@ class MieleAtHomeDevice extends IPSModule
             0 => [
                 0 => 'Ready',
             ],
-            DEVICE_WASHING_MACHINE => [
+            self::$DEVICE_WASHING_MACHINE => [
                 256 => 'Not running',
                 257 => 'Pre-wash',
                 258 => 'Soak',
@@ -897,7 +874,7 @@ class MieleAtHomeDevice extends IPSModule
                 295 => 'Steam smoothing',
             ],
 
-            DEVICE_TUMBLE_DRYER => [
+            self::$DEVICE_TUMBLE_DRYER => [
                 512 => 'Not running',
                 513 => 'Program running',
                 514 => 'Drying',
@@ -924,7 +901,7 @@ class MieleAtHomeDevice extends IPSModule
                 539 => 'Safety cooling',
             ],
 
-            DEVICE_DISHWASHER => [
+            self::$DEVICE_DISHWASHER => [
                 1792 => 'Not running',
                 1793 => 'Reactivating',
                 1794 => 'Pre-wash',
@@ -937,7 +914,7 @@ class MieleAtHomeDevice extends IPSModule
                 1801 => 'Pre-wash',
             ],
 
-            DEVICE_OVEN => [
+            self::$DEVICE_OVEN => [
                 3072 => 'Not running',
                 3073 => 'Heating up',
                 3074 => 'In progress',
@@ -945,7 +922,7 @@ class MieleAtHomeDevice extends IPSModule
                 3840 => 'Save energy',
             ],
 
-            DEVICE_STEAM_OVEN_COMBINATION => [
+            self::$DEVICE_STEAM_OVEN_COMBINATION => [
                 3840 => 'Rinse',
                 7938 => 'In progress',
                 7940 => 'Heating up',
@@ -1033,47 +1010,47 @@ class MieleAtHomeDevice extends IPSModule
 
         switch ($func) {
             case 'Start':
-                if (in_array(PROCESS_START, $processAction)) {
+                if (in_array(self::$PROCESS_START, $processAction)) {
                     $enabled = true;
                 }
                 break;
             case 'Stop':
-                if (in_array(PROCESS_STOP, $processAction)) {
+                if (in_array(self::$PROCESS_STOP, $processAction)) {
                     $enabled = true;
                 }
                 break;
             case 'Pause':
-                if (in_array(PROCESS_PAUSE, $processAction)) {
+                if (in_array(self::$PROCESS_PAUSE, $processAction)) {
                     $enabled = true;
                 }
                 break;
             case 'StartSuperfreezing':
-                if (in_array(PROCESS_START_SUPERFREEZING, $processAction)) {
+                if (in_array(self::$PROCESS_START_SUPERFREEZING, $processAction)) {
                     $enabled = true;
                 }
                 break;
             case 'StopSuperfreezing':
-                if (in_array(PROCESS_STOP_SUPERFREEZING, $processAction)) {
+                if (in_array(self::$PROCESS_STOP_SUPERFREEZING, $processAction)) {
                     $enabled = true;
                 }
                 break;
             case 'StartSupercooling':
-                if (in_array(PROCESS_START_SUPERCOOLING, $processAction)) {
+                if (in_array(self::$PROCESS_START_SUPERCOOLING, $processAction)) {
                     $enabled = true;
                 }
                 break;
             case 'StopSupercooling':
-                if (in_array(PROCESS_STOP_SUPERCOOLING, $processAction)) {
+                if (in_array(self::$PROCESS_STOP_SUPERCOOLING, $processAction)) {
                     $enabled = true;
                 }
                 break;
             case 'LightEnable':
-                if (in_array(LIGHT_ENABLE, $light)) {
+                if (in_array(self::$LIGHT_ENABLE, $light)) {
                     $enabled = true;
                 }
                 break;
             case 'LightDisable':
-                if (in_array(LIGHT_DISABLE, $light)) {
+                if (in_array(self::$LIGHT_DISABLE, $light)) {
                     $enabled = true;
                 }
                 break;
@@ -1090,7 +1067,7 @@ class MieleAtHomeDevice extends IPSModule
             case 'SetStarttime':
                 /*
                 $state = $this->GetValue('State');
-                if (in_array($state, [STATUS_ON, STATUS_PROGRAMMED, STATUS_WAITING_TO_START])) {
+                if (in_array($state, [self::$STATUS_ON, self::$STATUS_PROGRAMMED, self::$STATUS_WAITING_TO_START])) {
                     $enabled = true;
                 }
                  */
@@ -1139,7 +1116,7 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-            'processAction' => PROCESS_START
+            'processAction' => self::$PROCESS_START
         ];
 
         return $this->CallAction(__FUNCTION__, $action);
@@ -1152,7 +1129,7 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-            'processAction' => PROCESS_STOP
+            'processAction' => self::$PROCESS_STOP
         ];
 
         return $this->CallAction(__FUNCTION__, $action);
@@ -1165,7 +1142,7 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-            'processAction' => PROCESS_PAUSE
+            'processAction' => self::$PROCESS_PAUSE
         ];
 
         return $this->CallAction(__FUNCTION__, $action);
@@ -1178,7 +1155,7 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-            'processAction' => PROCESS_START_SUPERFREEZING
+            'processAction' => self::$PROCESS_START_SUPERFREEZING
         ];
 
         return $this->CallAction(__FUNCTION__, $action);
@@ -1191,7 +1168,7 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-            'processAction' => PROCESS_STOP_SUPERFREEZING
+            'processAction' => self::$PROCESS_STOP_SUPERFREEZING
         ];
 
         return $this->CallAction(__FUNCTION__, $action);
@@ -1204,7 +1181,7 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-            'processAction' => PROCESS_START_SUPERCOOLING
+            'processAction' => self::$PROCESS_START_SUPERCOOLING
         ];
 
         return $this->CallAction(__FUNCTION__, $action);
@@ -1217,7 +1194,7 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-            'processAction' => PROCESS_STOP_SUPERCOOLING
+            'processAction' => self::$PROCESS_STOP_SUPERCOOLING
         ];
 
         return $this->CallAction(__FUNCTION__, $action);
@@ -1230,7 +1207,7 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-            'light' => LIGHT_ENABLE
+            'light' => self::$LIGHT_ENABLE
         ];
 
         return $this->CallAction(__FUNCTION__, $action);
@@ -1243,7 +1220,7 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         $action = [
-            'light' => LIGHT_DISABLE
+            'light' => self::$LIGHT_DISABLE
         ];
 
         return $this->CallAction(__FUNCTION__, $action);
@@ -1308,13 +1285,13 @@ class MieleAtHomeDevice extends IPSModule
                 break;
             case 'Action':
                 switch ($Value) {
-                    case ACTION_START:
+                    case self::$ACTION_START:
                         $r = $this->Start();
                         break;
-                    case ACTION_PAUSE:
+                    case self::$ACTION_PAUSE:
                         $r = $this->Pause();
                         break;
-                    case ACTION_STOP:
+                    case self::$ACTION_STOP:
                         $r = $this->Stop();
                         break;
                     default:
@@ -1325,10 +1302,10 @@ class MieleAtHomeDevice extends IPSModule
                 break;
             case 'Superfreezing':
                 switch ($Value) {
-                    case ACTION_START:
+                    case self::$ACTION_START:
                         $r = $this->StartSuperfreezing();
                         break;
-                    case ACTION_STOP:
+                    case self::$ACTION_STOP:
                         $r = $this->StopSuperfreezing();
                         break;
                     default:
@@ -1339,10 +1316,10 @@ class MieleAtHomeDevice extends IPSModule
                 break;
             case 'Supercooling':
                 switch ($Value) {
-                    case ACTION_START:
+                    case self::$ACTION_START:
                         $r = $this->StartSupercooling();
                         break;
-                    case ACTION_STOP:
+                    case self::$ACTION_STOP:
                         $r = $this->StopSupercooling();
                         break;
                     default:
@@ -1353,10 +1330,10 @@ class MieleAtHomeDevice extends IPSModule
                 break;
             case 'Light':
                 switch ($Value) {
-                    case LIGHT_ENABLE:
+                    case self::$LIGHT_ENABLE:
                         $r = $this->LightEnable();
                         break;
-                    case LIGHT_DISABLE:
+                    case self::$LIGHT_DISABLE:
                         $r = $this->LightDisable();
                         break;
                     default:
@@ -1367,10 +1344,10 @@ class MieleAtHomeDevice extends IPSModule
                 break;
             case 'PowerSupply':
                 switch ($Value) {
-                    case POWER_ON:
+                    case self::$POWER_ON:
                         $r = $this->PowerOn();
                         break;
-                    case POWER_OFF:
+                    case self::$POWER_OFF:
                         $r = $this->PowerOff();
                         break;
                     default:

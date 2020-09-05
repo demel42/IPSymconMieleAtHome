@@ -258,11 +258,12 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.24 @ 29.07.2020 09:40 (beta)
+- 1.24 @ 05.09.2020 11:12 (beta)
   - LICENSE.md hinzugefügt
   - Nutzung von HasActiveParent(): Anzeige im Konfigurationsformular sowie entsprechende Absicherung von SendDataToParent()
   - interne Funktionen sind nun "private"
   - lokale Funktionen aus common.php in locale.php verlagert
+  - define's durch statische Klassen-Variablen ersetzt
 
 - 1.23 @ 08.04.2020 16:45
   - define's durch statische Klassen-Variablen ersetzt
