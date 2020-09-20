@@ -258,6 +258,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.25 @ 20.09.2020 21:14 (beta)
+  - URL's haben kein '/' mehr am Ende
+
 - 1.24 @ 05.09.2020 11:12
   - LICENSE.md hinzugefügt
   - Nutzung von HasActiveParent(): Anzeige im Konfigurationsformular sowie entsprechende Absicherung von SendDataToParent()

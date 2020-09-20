@@ -476,7 +476,7 @@ class MieleAtHomeIO extends IPSModule
 
         $cdata = '';
         $msg = '';
-        $r = $this->do_ApiCall('/v1/devices/', $cdata, $msg);
+        $r = $this->do_ApiCall('/v1/devices', $cdata, $msg);
 
         $txt = '';
         if ($r == false) {
@@ -518,22 +518,22 @@ class MieleAtHomeIO extends IPSModule
             switch ($jdata['Function']) {
                 case 'GetDevices':
                     $msg = '';
-                    $r = $this->do_ApiCall('/v1/devices/', $ret, $msg);
+                    $r = $this->do_ApiCall('/v1/devices', $ret, $msg);
                     break;
                 case 'GetDeviceIdent':
                     $ident = $jdata['Ident'];
                     $msg = '';
-                    $r = $this->do_ApiCall('/v1/devices/' . $ident . '/ident/', $ret, $msg);
+                    $r = $this->do_ApiCall('/v1/devices/' . $ident . '/ident', $ret, $msg);
                     break;
                 case 'GetDeviceStatus':
                     $ident = $jdata['Ident'];
                     $msg = '';
-                    $r = $this->do_ApiCall('/v1/devices/' . $ident . '/state/', $ret, $msg);
+                    $r = $this->do_ApiCall('/v1/devices/' . $ident . '/state', $ret, $msg);
                     break;
                 case 'GetDeviceActions':
                     $ident = $jdata['Ident'];
                     $msg = '';
-                    $r = $this->do_ApiCall('/v1/devices/' . $ident . '/actions/', $ret, $msg);
+                    $r = $this->do_ApiCall('/v1/devices/' . $ident . '/actions', $ret, $msg);
                     break;
                 case 'Action':
                     $ident = $jdata['Ident'];
