@@ -94,7 +94,7 @@ class MieleAtHomeDevice extends IPSModule
 
         $associations = [];
         $associations[] = ['Wert' => 0, 'Name' => '-', 'Farbe' => -1];
-        $associations[] = ['Wert' => 1, 'Name' => '%.1f kWh', 'Farbe' => -1];
+        $associations[] = ['Wert' => 0.1, 'Name' => '%.1f kWh', 'Farbe' => -1];
         $this->CreateVarProfile('MieleAtHome.Energy', VARIABLETYPE_FLOAT, '', 0, 0, 0, 1, '', $associations);
 
         $associations = [];
