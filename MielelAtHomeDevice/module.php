@@ -32,7 +32,12 @@ class MieleAtHomeDevice extends IPSModule
         $this->CreateVarProfile('MieleAtHome.Duration', VARIABLETYPE_INTEGER, ' min', 0, 0, 0, 0, 'Hourglass');
         $this->CreateVarProfile('MieleAtHome.Temperature', VARIABLETYPE_INTEGER, ' °C', 0, 0, 0, 0, 'Temperature');
         $this->CreateVarProfile('MieleAtHome.SpinningSpeed', VARIABLETYPE_INTEGER, ' U/min', 0, 0, 0, 0, '');
-        $this->CreateVarProfile('MieleAtHome.WorkProgress', VARIABLETYPE_INTEGER, ' %', 0, 0, 0, 0, '');
+        $this->CreateVarProfile('MieleAtHome.BatteryLevel', VARIABLETYPE_INTEGER, ' %', 0, 0, 0, 0, '');
+
+        $associations = [];
+        $associations[] = ['Wert' => 0, 'Name' => '-', 'Farbe' => -1];
+        $associations[] = ['Wert' => 1, 'Name' => '%d %%', 'Farbe' => -1];
+        $this->CreateVarProfile('MieleAtHome.WorkProgress', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations);
 
         $associations = [];
         $associations[] = ['Wert' => self::$STATUS_UNKNOWN, 'Name' => $this->Translate('Unknown'), 'Farbe' => -1];
@@ -87,6 +92,16 @@ class MieleAtHomeDevice extends IPSModule
         $associations[] = ['Wert' => self::$ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1];
         $this->CreateVarProfile('MieleAtHome.Supercooling', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations);
 
+        $associations = [];
+        $associations[] = ['Wert' => 0, 'Name' => '-', 'Farbe' => -1];
+        $associations[] = ['Wert' => 1, 'Name' => '%.1f kWh', 'Farbe' => -1];
+        $this->CreateVarProfile('MieleAtHome.Energy', VARIABLETYPE_FLOAT, '', 0, 0, 0, 1, '', $associations);
+
+        $associations = [];
+        $associations[] = ['Wert' => 0, 'Name' => '-', 'Farbe' => -1];
+        $associations[] = ['Wert' => 1, 'Name' => '%.0f l', 'Farbe' => -1];
+        $this->CreateVarProfile('MieleAtHome.Water', VARIABLETYPE_FLOAT, '', 0, 0, 0, 1, '', $associations);
+
         $this->RegisterTimer('UpdateData', 0, 'MieleAtHome_UpdateData(' . $this->InstanceID . ');');
 
         $this->ConnectParent('{996743FB-1712-47A3-9174-858A08A13523}');
@@ -106,6 +121,9 @@ class MieleAtHomeDevice extends IPSModule
         $with['fridge_temp'] = false;
         $with['freezer_temp'] = false;
         $with['Door'] = false;
+        $with['ecoFeedback_Water'] = false;
+        $with['ecoFeedback_Energy'] = false;
+        $with['batteryLevel'] = false;
 
         $with['enabled_action'] = false;
         $with['enabled_starttime'] = false;
@@ -123,6 +141,8 @@ class MieleAtHomeDevice extends IPSModule
                 $with['wash_temp'] = true;
                 $with['SpinningSpeed'] = true;
                 $with['Door'] = true;
+                $with['ecoFeedback_Water'] = true;
+                $with['ecoFeedback_Energy'] = true;
 
                 $with['enabled_powersupply'] = true;
                 $with['enabled_action'] = true;
@@ -135,6 +155,7 @@ class MieleAtHomeDevice extends IPSModule
                 $with['times'] = true;
                 $with['DryingStep'] = true;
                 $with['Door'] = true;
+                $with['ecoFeedback_Energy'] = true;
 
                 $with['enabled_powersupply'] = true;
                 $with['enabled_action'] = true;
@@ -146,6 +167,8 @@ class MieleAtHomeDevice extends IPSModule
                 $with['ProgramPhase'] = true;
                 $with['times'] = true;
                 $with['Door'] = true;
+                $with['ecoFeedback_Water'] = true;
+                $with['ecoFeedback_Energy'] = true;
 
                 $with['enabled_powersupply'] = true;
                 $with['enabled_action'] = true;
@@ -249,6 +272,17 @@ class MieleAtHomeDevice extends IPSModule
 
         $this->MaintainVariable('Oven_TargetTemperature', $this->Translate('Target temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $with['oven_temp']);
         $this->MaintainVariable('Oven_Temperature', $this->Translate('Temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $with['oven_temp']);
+
+        $vpos = 80;
+        $this->MaintainVariable('CurrentWaterConsumption', $this->Translate('Current water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $with['ecoFeedback_Water']);
+        $this->MaintainVariable('EstimatedWaterConsumption', $this->Translate('Estimated water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $with['ecoFeedback_Water']);
+        $this->MaintainVariable('LastWaterConsumption', $this->Translate('Last water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $with['ecoFeedback_Water']);
+        $this->MaintainVariable('CurrentEnergyConsumption', $this->Translate('Current energy consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Energy', $vpos++, $with['ecoFeedback_Energy']);
+        $this->MaintainVariable('EstimatedEnergyConsumption', $this->Translate('Estimated energy consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Energy', $vpos++, $with['ecoFeedback_Energy']);
+        $this->MaintainVariable('LastEnergyConsumption', $this->Translate('Last energy consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Energy', $vpos++, $with['ecoFeedback_Energy']);
+
+        $vpos = 90;
+        $this->MaintainVariable('BatteryLevel', $this->Translate('Battery level'), VARIABLETYPE_INTEGER, 'MieleAtHome.BatteryLevel', $vpos++, $with['batteryLevel']);
 
         $vpos = 100;
         $this->MaintainVariable('LastChange', $this->Translate('last change'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
@@ -664,6 +698,58 @@ class MieleAtHomeDevice extends IPSModule
             $this->SaveValue('Oven_Temperature', $temperature, $is_changed);
         }
 
+        if ($with['ecoFeedback_Water']) {
+            $ecoFeedback = $this->GetArrayElem($jdata, 'ecoFeedback', '');
+            $state = $this->GetValue('State');
+            if ($state == self::$STATUS_END_PROGRAMMED) {
+                $ecoFeedback = false;
+            }
+            if ($ecoFeedback != false) {
+                $currentWaterConsumption = $this->GetArrayElem($ecoFeedback, 'currentWaterConsumption.value', 0);
+                $waterforecast = $this->GetArrayElem($ecoFeedback, 'waterforecast', 0);
+                $estimatedWaterConsumption = $currentWaterConsumption * (float) $waterforecast * 100;
+                $this->SendDebug(__FUNCTION__, 'WaterConsumption: current=' . $currentWaterConsumption . ', forecast=' . $waterforecast . ', $estimated=' . $estimatedWaterConsumption, 0);
+            } else {
+                $currentWaterConsumption = $this->GetValue('CurrentWaterConsumption');
+                if ($currentWaterConsumption > 0) {
+                    $this->SaveValue('LastWaterConsumption', $currentWaterConsumption, $is_changed);
+                }
+                $currentWaterConsumption = 0;
+                $estimatedWaterConsumption = 0;
+            }
+            $this->SaveValue('CurrentWaterConsumption', $currentWaterConsumption, $is_changed);
+            $this->SaveValue('EstimatedWaterConsumption', $estimatedWaterConsumption, $is_changed);
+        }
+        if ($with['ecoFeedback_Energy']) {
+            $ecoFeedback = $this->GetArrayElem($jdata, 'ecoFeedback', '');
+            $this->SendDebug(__FUNCTION__, 'ecoFeedback=' . print_r($ecoFeedback, true), 0);
+            $state = $this->GetValue('State');
+            if ($state == self::$STATUS_END_PROGRAMMED) {
+                $ecoFeedback = false;
+            }
+            if ($ecoFeedback != false) {
+                $currentEnergyConsumption = $this->GetArrayElem($ecoFeedback, 'currentEnergyConsumption.value', 0);
+                $energyforecast = $this->GetArrayElem($ecoFeedback, 'energyforecast', 0);
+                $estimatedEnergyConsumption = $currentEnergyConsumption * (float) $energyforecast * 100;
+                $this->SendDebug(__FUNCTION__, 'EnergyConsumption: current=' . $currentEnergyConsumption . ', forecast=' . $energyforecast . ', $estimated=' . $estimatedEnergyConsumption, 0);
+            } else {
+                $currentEnergyConsumption = $this->GetValue('CurrentEnergyConsumption');
+                if ($currentEnergyConsumption > 0) {
+                    $this->SaveValue('LastEnergyConsumption', $currentEnergyConsumption, $is_changed);
+                }
+                $currentEnergyConsumption = 0;
+                $estimatedEnergyConsumption = 0;
+            }
+            $this->SaveValue('CurrentEnergyConsumption', $currentEnergyConsumption, $is_changed);
+            $this->SaveValue('EstimatedEnergyConsumption', $estimatedEnergyConsumption, $is_changed);
+        }
+
+        if ($with['batteryLevel']) {
+            $batteryLevel = $this->GetArrayElem($jdata, 'batteryLevel', 0);
+            $this->SendDebug(__FUNCTION__, 'batteryLevel=' . print_r($batteryLevel, true), 0);
+            $this->SaveValue('BatteryLevel', (int) $batteryLevel, $is_changed);
+        }
+
         if ($is_changed) {
             $this->SetValue('LastChange', $now);
         }
@@ -723,8 +809,8 @@ class MieleAtHomeDevice extends IPSModule
 
         if ($with['enabled_light']) {
             /*
-            $light = (bool) $this->GetArrayElem($jdata, 'light', false);
-            $this->SaveValue('Light', $light, $is_changed);
+               $light = (bool) $this->GetArrayElem($jdata, 'light', false);
+               $this->SaveValue('Light', $light, $is_changed);
              */
 
             if ($this->checkAction('LightEnable', false)) {
@@ -754,8 +840,8 @@ class MieleAtHomeDevice extends IPSModule
 
         if ($with['enabled_powersupply']) {
             /*
-            $power = $status == self::$STATUS_OFF ? self::$POWER_OFF : self::$POWER_ON;
-            $this->SaveValue('PowerSupply', $power, $is_changed);
+               $power = $status == self::$STATUS_OFF ? self::$POWER_OFF : self::$POWER_ON;
+               $this->SaveValue('PowerSupply', $power, $is_changed);
              */
 
             if ($this->checkAction('PowerOn', false)) {
@@ -1050,10 +1136,10 @@ class MieleAtHomeDevice extends IPSModule
                 break;
             case 'SetStarttime':
                 /*
-                $state = $this->GetValue('State');
-                if (in_array($state, [self::$STATUS_ON, self::$STATUS_PROGRAMMED, self::$STATUS_WAITING_TO_START])) {
-                    $enabled = true;
-                }
+                   $state = $this->GetValue('State');
+                   if (in_array($state, [self::$STATUS_ON, self::$STATUS_PROGRAMMED, self::$STATUS_WAITING_TO_START])) {
+                        $enabled = true;
+                   }
                  */
                 break;
             default:

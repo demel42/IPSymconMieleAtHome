@@ -258,8 +258,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.26 @ 18.12.2020 14:57 (beta)
+- 1.26 @ 01.02.2021 18:30 (beta)
   - PHP_CS_FIXER_IGNORE_ENV=1 in github/workflows/style.yml eingefügt
+  - API-Version 1.0.4 (ecoFeedback)
 
 - 1.25 @ 20.09.2020 21:14
   - URL's haben kein '/' mehr am Ende
