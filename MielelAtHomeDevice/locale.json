@@ -3,7 +3,7 @@
 		"de": {
 			"Instance has no active parent instance": "Instanz hat keine aktive übergeordnete Instanz",
 
-			"Instance is disabled": "Instanz ist deaktiviert",
+			"Disable instance": "Instanz deaktivieren",
 
 			"Basic configuration (don't change)": "Basis-Konfiguration (nicht ändern)",
 			"Device id": "Geräete-Typ-ID",
