@@ -174,9 +174,6 @@ class MieleAtHomeDevice extends IPSModule
                 $with['enabled_action'] = true;
                 $with['enabled_starttime'] = true;
                 break;
-            case self::$DEVICE_DISH_WARMER:							// Wärmeschublade
-                $with['ProgramName'] = true;
-                break;
             case self::$DEVICE_OVEN:               					// Backofen
                 $with['ProgramName'] = true;
                 $with['ProgramType'] = true;
@@ -205,6 +202,9 @@ class MieleAtHomeDevice extends IPSModule
                 $with['enabled_powersupply'] = true;
                 $with['enabled_superfreezing'] = true;
                 $with['enabled_supercooling'] = true;
+                break;
+            case self::$DEVICE_DISH_WARMER:							// Wärmeschublade
+                $with['ProgramName'] = true;
                 break;
             case self::$DEVICE_STEAM_OVEN_COMBINATION: 				// Dampfgarer mit Backofen-Funktion
                 $with['ProgramName'] = true;
