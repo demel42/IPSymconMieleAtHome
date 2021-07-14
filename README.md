@@ -223,13 +223,15 @@ Bisher unterstützte Gerätetypen
 
 | Geräete-Typ-ID | Geräte-Typ |
 | :------------- | :--------- |
-| 1 | Waschmaschine |
-| 2 | Wäschetrockner |
-| 7 | Geschirrspüler |
-| 12 | Backofen |
-| 13 | Backofen mit Mikrowelle |
-| 21 | Kühl/Gefrier-Kombination |
-| 45 | Dampfgarer mit Backofen-Funktion |
+| 1              | Waschmaschine |
+| 2              | Wäschetrockner |
+| 7              | Geschirrspüler |
+| 12             | Backofen |
+| 13             | Backofen mit Mikrowelle |
+| 21             | Kühl/Gefrier-Kombination |
+| 25             | Wärmeschublade |
+| 31             | Dampfgarer mit Backofen-Funktion |
+| 45             | Dampfgarer mit Mikrowelle |
 
 ### Variablenprofile
 
@@ -258,9 +260,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.26 @ 01.02.2021 18:30 (beta)
+- 1.26 @ 14.07.2021 14:24 (beta)
   - PHP_CS_FIXER_IGNORE_ENV=1 in github/workflows/style.yml eingefügt
   - API-Version 1.0.4 (ecoFeedback)
+  - Typ 25(Wärmeschublade) und 45(Dampfgarer mit Mikrowelle) hinzugefügt
 
 - 1.25 @ 20.09.2020 21:14
   - URL's haben kein '/' mehr am Ende

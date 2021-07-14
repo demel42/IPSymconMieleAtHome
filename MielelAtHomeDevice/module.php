@@ -133,7 +133,7 @@ class MieleAtHomeDevice extends IPSModule
         $with['enabled_powersupply'] = false;
 
         switch ($deviceId) {
-            case self::$DEVICE_WASHING_MACHINE:   		// Waschmaschine
+            case self::$DEVICE_WASHING_MACHINE:   					// Waschmaschine
                 $with['ProgramName'] = true;
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
@@ -148,7 +148,7 @@ class MieleAtHomeDevice extends IPSModule
                 $with['enabled_action'] = true;
                 $with['enabled_starttime'] = true;
                 break;
-            case self::$DEVICE_TUMBLE_DRYER:      		// Trockner
+            case self::$DEVICE_TUMBLE_DRYER:      					// Trockner
                 $with['ProgramName'] = true;
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
@@ -161,7 +161,7 @@ class MieleAtHomeDevice extends IPSModule
                 $with['enabled_action'] = true;
                 $with['enabled_starttime'] = true;
                 break;
-            case self::$DEVICE_DISHWASHER:         	// Geschirrspüler
+            case self::$DEVICE_DISHWASHER:         					// Geschirrspüler
                 $with['ProgramName'] = true;
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
@@ -174,7 +174,10 @@ class MieleAtHomeDevice extends IPSModule
                 $with['enabled_action'] = true;
                 $with['enabled_starttime'] = true;
                 break;
-            case self::$DEVICE_OVEN:               	// Backofen
+            case self::$DEVICE_DISH_WARMER:							// Wärmeschublade
+                $with['ProgramName'] = true;
+                break;
+            case self::$DEVICE_OVEN:               					// Backofen
                 $with['ProgramName'] = true;
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
@@ -184,7 +187,7 @@ class MieleAtHomeDevice extends IPSModule
 
                 $with['enabled_powersupply'] = true;
                 break;
-            case self::$DEVICE_OVEN_MICROWAVE:     	// Backofen mit Mikrowelle
+            case self::$DEVICE_OVEN_MICROWAVE:     					// Backofen mit Mikrowelle
                 $with['ProgramName'] = true;
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
@@ -194,7 +197,7 @@ class MieleAtHomeDevice extends IPSModule
 
                 $with['enabled_powersupply'] = true;
                 break;
-            case self::$DEVICE_FRIDGE_FREEZER:			// Kühl-/Gefrierkombination
+            case self::$DEVICE_FRIDGE_FREEZER:						// Kühl-/Gefrierkombination
                 $with['fridge_temp'] = true;
                 $with['freezer_temp'] = true;
                 $with['Door'] = true;
@@ -203,7 +206,17 @@ class MieleAtHomeDevice extends IPSModule
                 $with['enabled_superfreezing'] = true;
                 $with['enabled_supercooling'] = true;
                 break;
-            case self::$DEVICE_STEAM_OVEN_COMBINATION: // Dampfgarer mit Backofen-Funktion
+            case self::$DEVICE_STEAM_OVEN_COMBINATION: 				// Dampfgarer mit Backofen-Funktion
+                $with['ProgramName'] = true;
+                $with['ProgramType'] = true;
+                $with['ProgramPhase'] = true;
+                $with['times'] = true;
+                $with['oven_temp'] = true;
+                $with['Door'] = true;
+
+                $with['enabled_powersupply'] = true;
+                break;
+            case self::$DEVICE_STEAM_OVEN_MICROWAVE_COMBINATION:	// Dampfgarer mit Mikrowelle
                 $with['ProgramName'] = true;
                 $with['ProgramType'] = true;
                 $with['ProgramPhase'] = true;
