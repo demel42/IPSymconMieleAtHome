@@ -170,7 +170,7 @@ Anmerkung: es ist unklar, bei welchen Gerätetypen es funktioniert, das Geräte 
 
 | Eigenschaft             | Typ     | Standardwert | Beschreibung |
 | :---------------------- | :------ | :----------- | :----------- |
-| Instanz ist deaktiviert | boolean | false        | Instanz temporär deaktivieren |
+| Instanz deaktivieren    | boolean | false        | Instanz temporär deaktivieren |
 |                         |         |              | |
 | Verbindugstyp           | integer | 0            | Auswahl der Art der Verbindung (**OAuth** oder **Developer**) |
 |                         |         |              | |
