@@ -260,7 +260,7 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.26 @ 14.07.2021 18:12 (beta)
+- 1.26 @ 14.07.2021 18:12
   - PHP_CS_FIXER_IGNORE_ENV=1 in github/workflows/style.yml eingefügt
   - API-Version 1.0.4 (ecoFeedback)
   - Typ 25(Wärmeschublade) und 45(Dampfgarer mit Mikrowelle) hinzugefügt
