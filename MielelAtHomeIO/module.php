@@ -2,19 +2,26 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
-require_once __DIR__ . '/../libs/local.php';   // lokale Funktionen
-require_once __DIR__ . '/../libs/images.php';  // eingebettete Images
+require_once __DIR__ . '/../libs/common.php';
+require_once __DIR__ . '/../libs/local.php';
+require_once __DIR__ . '/../libs/images.php';
 
 class MieleAtHomeIO extends IPSModule
 {
-    use MieleAtHomeCommonLib;
+    use MieleAtHome\StubsCommonLib;
     use MieleAtHomeLocalLib;
     use MieleAtHomeImagesLib;
 
-    //This one needs to be available on our OAuth client backend.
-    //Please contact us to register for an identifier: https://www.symcon.de/kontakt/#OAuth
     private $oauthIdentifer = 'miele_at_home';
+
+    private $ModuleDir;
+
+    public function __construct(string $InstanceID)
+    {
+        parent::__construct($InstanceID);
+
+        $this->ModuleDir = __DIR__;
+    }
 
     public function Create()
     {
@@ -34,14 +41,18 @@ class MieleAtHomeIO extends IPSModule
 
         $this->RegisterAttributeString('RefreshToken', '');
 
+        $this->RegisterAttributeString('UpdateInfo', '');
+
+        $this->InstallVarProfiles(false);
+
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
 
-    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+    public function MessageSink($tstamp, $senderID, $message, $data)
     {
-        parent::MessageSink($TimeStamp, $SenderID, $Message, $Data);
+        parent::MessageSink($tstamp, $senderID, $message, $data);
 
-        if ($Message == IPS_KERNELMESSAGE && $Data[0] == KR_READY) {
+        if ($message == IPS_KERNELMESSAGE && $data[0] == KR_READY) {
             $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
             if ($oauth_type == self::$CONNECTION_OAUTH) {
                 $this->RegisterOAuth($this->oauthIdentifer);
@@ -49,9 +60,57 @@ class MieleAtHomeIO extends IPSModule
         }
     }
 
+    private function CheckModuleConfiguration()
+    {
+        $r = [];
+
+        $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
+        if ($oauth_type == self::$CONNECTION_DEVELOPER) {
+            $userid = $this->ReadPropertyString('Netatmo_User');
+            if ($userid == '') {
+                $this->SendDebug(__FUNCTION__, '"userid" is needed', 0);
+                $r[] = $this->Translate('Username must be specified');
+            }
+            $password = $this->ReadPropertyString('password');
+            if ($password == '') {
+                $this->SendDebug(__FUNCTION__, '"password" is needed', 0);
+                $r[] = $this->Translate('Password must be specified');
+            }
+            $client_id = $this->ReadPropertyString('client_id');
+            if ($client_id == '') {
+                $this->SendDebug(__FUNCTION__, '"client_id" is needed', 0);
+                $r[] = $this->Translate('Client-ID must be specified');
+            }
+            $client_secret = $this->ReadPropertyString('client_secret');
+            if ($client_secret == '') {
+                $this->SendDebug(__FUNCTION__, '"client_secret" is needed', 0);
+                $r[] = $this->Translate('Client-Secret must be specified');
+            }
+        }
+
+        return $r;
+    }
+
     public function ApplyChanges()
     {
         parent::ApplyChanges();
+
+        $this->MaintainReferences();
+
+        if ($this->CheckPrerequisites() != false) {
+            $this->SetStatus(self::$IS_INVALIDPREREQUISITES);
+            return;
+        }
+
+        if ($this->CheckUpdate() != false) {
+            $this->SetStatus(self::$IS_UPDATEUNCOMPLETED);
+            return;
+        }
+
+        if ($this->CheckConfiguration() != false) {
+            $this->SetStatus(self::$IS_INVALIDCONFIG);
+            return;
+        }
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
@@ -62,14 +121,6 @@ class MieleAtHomeIO extends IPSModule
         $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
         switch ($oauth_type) {
             case self::$CONNECTION_DEVELOPER:
-                $userid = $this->ReadPropertyString('userid');
-                $password = $this->ReadPropertyString('password');
-                $client_id = $this->ReadPropertyString('client_id');
-                $client_secret = $this->ReadPropertyString('client_secret');
-                if ($userid == '' && $password == '' && $client_id == '' && $client_secret == '') {
-                    $this->SetStatus(self::$IS_INVALIDCONFIG);
-                    return;
-                }
                 $this->SetStatus(IS_ACTIVE);
                 break;
             case self::$CONNECTION_OAUTH:
@@ -78,7 +129,6 @@ class MieleAtHomeIO extends IPSModule
                     return;
                 }
                 $refresh_token = $this->ReadAttributeString('RefreshToken');
-                $this->SendDebug(__FUNCTION__, 'refresh_token=' . $refresh_token, 0);
                 if ($refresh_token == '') {
                     $this->SetStatus(self::$IS_NOLOGIN);
                 } else {
@@ -292,37 +342,28 @@ class MieleAtHomeIO extends IPSModule
 
     private function GetFormElements()
     {
-        $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
+        $formElements = $this->GetCommonFormElements('Miele@Home I/O');
 
-        $formElements = [];
+        if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
+            return $formElements;
+        }
+
+        $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
+        if ($oauth_type == self::$CONNECTION_OAUTH) {
+            $formElements[] = [
+                'type'    => 'Label',
+                'caption' => $this->GetConnectStatusText(),
+            ];
+        }
+
         $formElements[] = [
             'type'    => 'CheckBox',
             'name'    => 'module_disable',
             'caption' => 'Disable instance'
         ];
 
-        if ($oauth_type == self::$CONNECTION_OAUTH) {
-            $instID = IPS_GetInstanceListByModuleID('{9486D575-BE8C-4ED8-B5B5-20930E26DE6F}')[0];
-            if (IPS_GetInstance($instID)['InstanceStatus'] != IS_ACTIVE) {
-                $msg = 'Error: Symcon Connect is not active!';
-            } else {
-                $msg = 'Status: Symcon Connect is OK!';
-            }
-            $formElements[] = [
-                'type'    => 'Label',
-                'caption' => $msg
-            ];
-        }
-
-        $formElements[] = [
-            'type'  => 'Image',
-            'image' => 'data:image/png;base64,' . $this->GetBrandImage()
-        ];
-
         $formElements[] = [
             'type'    => 'Select',
-            'name'    => 'OAuth_Type',
-            'caption' => 'Connection Type',
             'options' => [
                 [
                     'caption' => 'Please select a connection type',
@@ -336,100 +377,125 @@ class MieleAtHomeIO extends IPSModule
                     'caption' => 'Miele@Home Developer Key',
                     'value'   => self::$CONNECTION_DEVELOPER
                 ]
-            ]
+            ],
+            'name'    => 'OAuth_Type',
+            'caption' => 'Connection Type',
         ];
 
         switch ($oauth_type) {
             case self::$CONNECTION_OAUTH:
-                $items = [];
-                $items[] = [
-                    'type'    => 'Label',
-                    'caption' => 'Push "Login" in the action part of this configuration form.'
-                ];
-                $items[] = [
-                    'type'    => 'Label',
-                    'caption' => 'At the webpage from Miele log in with your Miele@Home username and your Miele@Home password.'
-                ];
-                $items[] = [
-                    'type'    => 'Label',
-                    'caption' => 'If the connection to IP-Symcon was successfull you get the message: "Miele@Home successfully connected!". Close the browser window.'
-                ];
-                $items[] = [
-                    'type'    => 'Label',
-                    'caption' => 'Return to this configuration form.'
-                ];
                 $formElements[] = [
                     'type'    => 'ExpansionPanel',
-                    'items'   => $items,
+                    'items'   => [
+                        [
+                            'type'    => 'Label',
+                            'caption' => 'Push "Login" in the action part of this configuration form.'
+                        ],
+                        [
+                            'type'    => 'Label',
+                            'caption' => 'At the webpage from Miele log in with your Miele@Home username and your Miele@Home password.'
+                        ],
+                        [
+                            'type'    => 'Label',
+                            'caption' => 'If the connection to IP-Symcon was successfull you get the message: "Miele@Home successfully connected!". Close the browser window.'
+                        ],
+                        [
+                            'type'    => 'Label',
+                            'caption' => 'Return to this configuration form.'
+                        ],
+                    ],
                     'caption' => 'Miele@Home Login'
                 ];
                 break;
             case self::$CONNECTION_DEVELOPER:
-                $items = [];
-                $items[] = [
-                    'type'    => 'Label',
-                    'caption' => 'Miele@Home Account via Miele@mobile-App or from https://www.miele.de'
-                ];
-                $items[] = [
-                    'name'    => 'userid',
-                    'type'    => 'ValidationTextBox',
-                    'caption' => 'User-ID (email)'
-                ];
-                $items[] = [
-                    'name'    => 'password',
-                    'type'    => 'PasswordTextBox',
-                    'caption' => 'Password'
-                ];
-
-                $items[] = [
-                    'type'    => 'Label',
-                    'caption' => 'Miele@Home Language Settings'
-                ];
-
-                $opts_language = [];
-                $opts_language[] = ['caption' => $this->Translate('England'), 'value'   => 'en'];
-                $opts_language[] = ['caption' => $this->Translate('Germany'), 'value'   => 'de'];
-                $items[] = [
-                    'type'    => 'Select',
-                    'name'    => 'language',
-                    'caption' => 'Language',
-                    'options' => $opts_language
-                ];
-
-                $opts_vg_selector = [];
-                $opts_vg_selector[] = ['caption' => $this->Translate('England'), 'value' => 'en-GB'];
-                $opts_vg_selector[] = ['caption' => $this->Translate('Germany'), 'value' => 'de-DE'];
-                $opts_vg_selector[] = ['caption' => $this->Translate('Switzerland'), 'value' => 'de-CH'];
-                $opts_vg_selector[] = ['caption' => $this->Translate('Austria'), 'value' => 'de-AT'];
-                $opts_vg_selector[] = ['caption' => $this->Translate('Netherlands'), 'value' => 'nl-NL'];
-                $opts_vg_selector[] = ['caption' => $this->Translate('Belgium'), 'value' => 'nl-BE'];
-                $opts_vg_selector[] = ['caption' => $this->Translate('Luxembourg'), 'value' => 'de-LU'];
-                $items[] = [
-                    'type'    => 'Select',
-                    'name'    => 'vg_selector',
-                    'caption' => 'VG-Selector',
-                    'options' => $opts_vg_selector
-                ];
-
-                $items[] = [
-                    'type'    => 'Label',
-                    'caption' => 'Miele@Home API-Access from https://www.miele.com/developer'
-                ];
-                $items[] = [
-                    'name'    => 'client_id',
-                    'type'    => 'ValidationTextBox',
-                    'caption' => 'Client-ID'
-                ];
-                $items[] = [
-                    'name'    => 'client_secret',
-                    'type'    => 'ValidationTextBox',
-                    'caption' => 'Client-Secret'
-                ];
-
                 $formElements[] = [
                     'type'    => 'ExpansionPanel',
-                    'items'   => $items,
-                    'caption' => 'Miele@Home Access-Details'
+                    'items'   => [
+                        [
+                            'type'    => 'Label',
+                            'caption' => 'Miele@Home Account via Miele@mobile-App or from https://www.miele.de'
+                        ],
+                        [
+                            'name'    => 'userid',
+                            'type'    => 'ValidationTextBox',
+                            'caption' => 'User-ID (email)'
+                        ],
+                        [
+                            'name'    => 'password',
+                            'type'    => 'PasswordTextBox',
+                            'caption' => 'Password'
+                        ],
+                        [
+                            'type'    => 'Label',
+                            'caption' => 'Miele@Home Language Settings'
+                        ],
+                        [
+                            'type'    => 'Select',
+                            'options' => [
+                                [
+                                    'caption' => $this->Translate('England'),
+                                    'value'   => 'en'
+                                ],
+                                [
+                                    'caption' => $this->Translate('Germany'),
+                                    'value'   => 'de'
+                                ],
+                            ],
+                            'name'    => 'language',
+                            'caption' => 'Language',
+                        ],
+
+                        [
+                            'type'    => 'Select',
+                            'options' => [
+                                [
+                                    'caption' => $this->Translate('England'),
+                                    'value'   => 'en-GB'
+                                ],
+                                [
+                                    'caption' => $this->Translate('Germany'),
+                                    'value'   => 'de-DE'
+                                ],
+                                [
+                                    'caption' => $this->Translate('Switzerland'),
+                                    'value'   => 'de-CH'
+                                ],
+                                [
+                                    'caption' => $this->Translate('Austria'),
+                                    'value'   => 'de-AT'
+                                ],
+                                [
+                                    'caption' => $this->Translate('Netherlands'),
+                                    'value'   => 'nl-NL'
+                                ],
+                                [
+                                    'caption' => $this->Translate('Belgium'),
+                                    'value'   => 'nl-BE'
+                                ],
+                                [
+                                    'caption' => $this->Translate('Luxembourg'),
+                                    'value'   => 'de-LU'
+                                ],
+                            ],
+                            'name'    => 'vg_selector',
+                            'caption' => 'VG-Selector',
+                        ],
+                        [
+                            'type'    => 'Label',
+                            'caption' => 'Miele@Home API-Access from https://www.miele.com/developer'
+                        ],
+                        [
+                            'name'    => 'client_id',
+                            'type'    => 'ValidationTextBox',
+                            'caption' => 'Client-ID'
+                        ],
+                        [
+                            'name'    => 'client_secret',
+                            'type'    => 'ValidationTextBox',
+                            'caption' => 'Client-Secret'
+                        ],
+                    ],
+                    'caption' => 'Miele@Home Access-Details',
                 ];
                 break;
         default:
@@ -441,10 +507,18 @@ class MieleAtHomeIO extends IPSModule
 
     private function GetFormActions()
     {
-        $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
-
         $formActions = [];
 
+        if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
+            $formActions[] = $this->GetCompleteUpdateFormAction();
+
+            $formActions[] = $this->GetInformationFormAction();
+            $formActions[] = $this->GetReferencesFormAction();
+
+            return $formActions;
+        }
+
+        $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
         if ($oauth_type == self::$CONNECTION_OAUTH) {
             $formActions[] = [
                 'type'    => 'Label',
@@ -453,24 +527,39 @@ class MieleAtHomeIO extends IPSModule
             $formActions[] = [
                 'type'    => 'Button',
                 'caption' => 'Login at Miele@Home',
-                'onClick' => 'echo MieleAtHome_Login($id);'
+                'onClick' => 'echo ' . $this->GetModulePrefix() . '_Login($id);'
             ];
         }
 
         $formActions[] = [
             'type'    => 'Button',
             'caption' => 'Test access',
-            'onClick' => 'MieleAtHome_TestAccess($id);'
+            'onClick' => $this->GetModulePrefix() . '_TestAccess($id);'
         ];
 
+        $formActions[] = $this->GetInformationFormAction();
+        $formActions[] = $this->GetReferencesFormAction();
+
         return $formActions;
+    }
+
+    public function RequestAction($ident, $value)
+    {
+        if ($this->CommonRequestAction($ident, $value)) {
+            return;
+        }
+        switch ($ident) {
+            default:
+                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);
+                break;
+        }
     }
 
     public function TestAccess()
     {
         if ($this->GetStatus() == IS_INACTIVE) {
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
-            echo $this->translate('Instance is inactive') . PHP_EOL;
+            echo $this->Translate('Instance is inactive') . PHP_EOL;
             return;
         }
 
@@ -480,13 +569,13 @@ class MieleAtHomeIO extends IPSModule
 
         $txt = '';
         if ($r == false) {
-            $txt .= $this->translate('invalid account-data') . PHP_EOL;
+            $txt .= $this->Translate('invalid account-data') . PHP_EOL;
             $txt .= PHP_EOL;
             if ($msg != '') {
-                $txt .= $this->translate('message') . ': ' . $msg . PHP_EOL;
+                $txt .= $this->Translate('message') . ': ' . $msg . PHP_EOL;
             }
         } else {
-            $txt = $this->translate('valid account-data') . PHP_EOL;
+            $txt = $this->Translate('valid account-data') . PHP_EOL;
             $devices = json_decode($cdata, true);
             $n_devices = count($devices);
             $txt .= $n_devices . ' ' . $this->Translate('registered devices found');

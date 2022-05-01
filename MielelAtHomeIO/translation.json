@@ -1,13 +1,20 @@
 {
 	"translations": {
 		"de": {
-			"Status: Symcon Connect is OK!": "Status: Symcon Connect ist OK!",
-			"Error: Symcon Connect is not active!": "Fehler: Symcon Connect ist nicht aktiv!",
+			"Miele@Home I/O": "Miele@Home I/O",
+
+			"__function__": "CheckConfiguration",
+			"Username must be specified": "Benutzername muss angegeben werden",
+			"Password must be specified": "Passwort muss angegeben werden",
+			"Client-ID must be specified": "Client-ID muss angegeben werden",
+			"Client-Secret must be specified": "Client-Secret muss angegeben werden",
+
+			"__elements__": "",
+			"Disable instance": "Instanz deaktivieren",
 
 			"Connection Type": "Verbindungstyp",
-			"Please select a connection type": "Bitte einen Verbindungstyp auswählen",
-			"Miele@Home via IP-Symcon Connect": "Miele@Home über IP-Symcon Connect",
-			"Miele@Home Developer Key": "Miele@Home Entwickler-Schlüssel",
+
+			"Miele@Home Login": "Miele@Home Anmeldung",
 			"Push \"Login\" in the action part of this configuration form.":
 				"\"Anmelden\" in der Aktionsbereich dieses Konfigurationsformulares drücken.",
 			"At the webpage from Miele log in with your Miele@Home username and your Miele@Home password.":
@@ -19,15 +26,11 @@
 			"Login with your Miele@Home username and Miele@Home password:":
 				"Mit dem Miele@Home Benutzernamen und dem Miele@Home Passwort anmelden:",
 
-			"Login at Miele@Home": "Miele@Home Anmeldung",
-			"Disable instance": "Instanz deaktivieren",
-
-			"Miele@Home Login": "Miele@Home Anmeldung",
 			"Miele@Home Access-Details": "Miele@Home Zugangsdaten",
-
 			"Miele@Home Account via Miele@mobile-App or from https://www.miele.de": "Miele@Home Konto via Miele@mobile-App oder von https://www.miele.de",
 			"User-ID (email)": "Benutzer (EMail)",
 			"Password": "Passwort",
+
 			"Miele@Home Language Settings": "Miele@Home Spracheinstellungen",
 			"Language": "Sprache",
 			"VG-Selector": "VG-Auswahl",
@@ -35,6 +38,16 @@
 			"Client-ID": "Client-ID",
 			"Client-Secret": "Client-Secret",
 
+			"__options__": "OAuth_Type",
+			"Please select a connection type": "Bitte einen Verbindungstyp auswählen",
+			"Miele@Home via IP-Symcon Connect": "Miele@Home über IP-Symcon Connect",
+			"Miele@Home Developer Key": "Miele@Home Entwickler-Schlüssel",
+
+			"__options__": "language",
+			"England": "England",
+			"Germany": "Deutschland",
+
+			"__options__": "vg_selector",
 			"Austria": "Österreich",
 			"Belgium": "Belgien",
 			"England": "England",
@@ -43,28 +56,17 @@
 			"Netherlands": "Niederlande",
 			"Switzerland": "Schweiz",
 
+			"__actions__": "",
+			"Login at Miele@Home": "Miele@Home Anmeldung",
 			"Test access": "Zugang prüfen",
-			"Module description": "Modulbeschreibung",
 
+			"__function__": "TestAccess",
 			"invalid account-data": "ungültige Zugangsdaten",
 			"message": "Mitteilung",
 			"valid account-data": "gültige Zugangsdaten",
 			"registered devices found": "registrierte Geräte gefunden",
 
-			"Instance getting created": "Instanz wird erstellt",
-			"Instance is active": "Instanz ist aktiv",
-			"Instance is deleted": "Instanz wird gelöscht",
-			"Instance is inactive": "Instanz ist inaktiv",
-			"Instance is not created": "Instanz wurde nicht erzeugt",
-
-			"Instance is inactive (invalid configuration)": "Instanz ist inaktiv (ungültige Konfiguration)",
-			"Instance is inactive (unauthorized)": "Instanz ist inaktiv (Authorisierung fehlerhaft)",
-			"Instance is inactive (server error)": "Instanz ist inaktiv (Serverfehler)",
-			"Instance is inactive (http error)": "Instanz ist inaktiv (HTTP-Fehler)",
-			"Instance is inactive (invalid data)": "Instanz ist inaktiv (ungültige Daten)",
-			"Instance is inactive (no Symcon-Connect)": "Instanz ist inaktiv (kein Symcon-Connect)",
-			"Instance is inactive (not logged in)": "Instanz ist inaktiv (nicht angemeldet)",
-			"Instance is inactive (no data)": "Instanz ist inaktiv (keine Daten)"
+			"__end__": ""
 		}
 	}
 }

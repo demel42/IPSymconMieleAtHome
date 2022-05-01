@@ -260,6 +260,13 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.27 @ 01.05.2022 18:03
+  - Anpassungen an IPS 6.2 (Prüfung auf ungültige ID's)
+  - IPS-Version ist nun minimal 6.0
+  - Anzeige der Referenzen der Instanz incl. Statusvariablen und Instanz-Timer
+  - Implememtierung einer Update-Logik
+  - diverse interne Änderungen
+
 - 1.26 @ 14.07.2021 18:12
   - PHP_CS_FIXER_IGNORE_ENV=1 in github/workflows/style.yml eingefügt
   - API-Version 1.0.4 (ecoFeedback)

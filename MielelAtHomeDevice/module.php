@@ -2,13 +2,24 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
-require_once __DIR__ . '/../libs/local.php';   // lokale Funktionen
+require_once __DIR__ . '/../libs/common.php';
+require_once __DIR__ . '/../libs/local.php';
+require_once __DIR__ . '/../libs/images.php';
 
 class MieleAtHomeDevice extends IPSModule
 {
-    use MieleAtHomeCommonLib;
+    use MieleAtHome\StubsCommonLib;
     use MieleAtHomeLocalLib;
+    use MieleAtHomeImagesLib;
+
+    private $ModuleDir;
+
+    public function __construct(string $InstanceID)
+    {
+        parent::__construct($InstanceID);
+
+        $this->ModuleDir = __DIR__;
+    }
 
     public function Create()
     {
@@ -29,82 +40,15 @@ class MieleAtHomeDevice extends IPSModule
         $this->RegisterPropertyBoolean('map_dryingStep', true);
         $this->RegisterPropertyBoolean('map_ventilationStep', true);
 
-        $this->CreateVarProfile('MieleAtHome.Duration', VARIABLETYPE_INTEGER, ' min', 0, 0, 0, 0, 'Hourglass');
-        $this->CreateVarProfile('MieleAtHome.Temperature', VARIABLETYPE_INTEGER, ' °C', 0, 0, 0, 0, 'Temperature');
-        $this->CreateVarProfile('MieleAtHome.SpinningSpeed', VARIABLETYPE_INTEGER, ' U/min', 0, 0, 0, 0, '');
-        $this->CreateVarProfile('MieleAtHome.BatteryLevel', VARIABLETYPE_INTEGER, ' %', 0, 0, 0, 0, '');
+        $this->RegisterAttributeString('UpdateInfo', '');
 
-        $associations = [];
-        $associations[] = ['Wert' => 0, 'Name' => '-', 'Farbe' => -1];
-        $associations[] = ['Wert' => 1, 'Name' => '%d %%', 'Farbe' => -1];
-        $this->CreateVarProfile('MieleAtHome.WorkProgress', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations);
-
-        $associations = [];
-        $associations[] = ['Wert' => self::$STATUS_UNKNOWN, 'Name' => $this->Translate('Unknown'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_RESERVED, 'Name' => $this->Translate('Reserved'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_OFF, 'Name' => $this->Translate('Off'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_ON, 'Name' => $this->Translate('On'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_PROGRAMMED, 'Name' => $this->Translate('Programmed'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_WAITING_TO_START, 'Name' => $this->Translate('Waiting to start'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_RUNNING, 'Name' => $this->Translate('Running'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_PAUSE, 'Name' => $this->Translate('Pause'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_END_PROGRAMMED, 'Name' => $this->Translate('End programmed'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_FAILURE, 'Name' => $this->Translate('Failure'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_PROGRAM_INTERRUPTED, 'Name' => $this->Translate('Program interrupted'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_IDLE, 'Name' => $this->Translate('Idle'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_RINSE_HOLD, 'Name' => $this->Translate('Rinse hold'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_SERVICE, 'Name' => $this->Translate('Service'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_SUPERFREEZING, 'Name' => $this->Translate('Superfreezing'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_SUPERCOOLING, 'Name' => $this->Translate('Supercooling'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_SUPERHEATING, 'Name' => $this->Translate('Superheating'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_NOT_CONNECTED, 'Name' => $this->Translate('Not connected'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$STATUS_SUPERCOOLING_SUPERFREEZING, 'Name' => $this->Translate('Superfrost/cooling'), 'Farbe' => -1];
-        $this->CreateVarProfile('MieleAtHome.Status', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations);
-
-        $associations = [];
-        $associations[] = ['Wert' => false, 'Name' => $this->Translate('Closed'), 'Farbe' => -1];
-        $associations[] = ['Wert' => true, 'Name' => $this->Translate('Opened'), 'Farbe' => 0xEE0000];
-        $this->CreateVarProfile('MieleAtHome.Door', VARIABLETYPE_BOOLEAN, '', 0, 0, 0, 1, 'Door', $associations);
-
-        $associations = [];
-        $associations[] = ['Wert' => self::$LIGHT_ENABLE, 'Name' => $this->Translate('On'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$LIGHT_DISABLE, 'Name' => $this->Translate('Off'), 'Farbe' => -1];
-        $this->CreateVarProfile('MieleAtHome.Light', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, 'Light', $associations);
-
-        $associations = [];
-        $associations[] = ['Wert' => self::$POWER_ON, 'Name' => $this->Translate('switch on'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$POWER_OFF, 'Name' => $this->Translate('switch off'), 'Farbe' => -1];
-        $this->CreateVarProfile('MieleAtHome.PowerSupply', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, 'Power', $associations);
-
-        $associations = [];
-        $associations[] = ['Wert' => self::$ACTION_START, 'Name' => $this->Translate('start'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$ACTION_PAUSE, 'Name' => $this->Translate('pause'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1];
-        $this->CreateVarProfile('MieleAtHome.Action', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations);
-
-        $associations = [];
-        $associations[] = ['Wert' => self::$ACTION_START, 'Name' => $this->Translate('start'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1];
-        $this->CreateVarProfile('MieleAtHome.Superfreezing', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations);
-
-        $associations = [];
-        $associations[] = ['Wert' => self::$ACTION_START, 'Name' => $this->Translate('start'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1];
-        $this->CreateVarProfile('MieleAtHome.Supercooling', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations);
-
-        $associations = [];
-        $associations[] = ['Wert' => 0, 'Name' => '-', 'Farbe' => -1];
-        $associations[] = ['Wert' => 0.1, 'Name' => '%.1f kWh', 'Farbe' => -1];
-        $this->CreateVarProfile('MieleAtHome.Energy', VARIABLETYPE_FLOAT, '', 0, 0, 0, 1, '', $associations);
-
-        $associations = [];
-        $associations[] = ['Wert' => 0, 'Name' => '-', 'Farbe' => -1];
-        $associations[] = ['Wert' => 1, 'Name' => '%.0f l', 'Farbe' => -1];
-        $this->CreateVarProfile('MieleAtHome.Water', VARIABLETYPE_FLOAT, '', 0, 0, 0, 1, '', $associations);
-
-        $this->RegisterTimer('UpdateData', 0, 'MieleAtHome_UpdateData(' . $this->InstanceID . ');');
+        $this->InstallVarProfiles(false);
 
         $this->ConnectParent('{996743FB-1712-47A3-9174-858A08A13523}');
+
+        $this->RegisterTimer('UpdateData', 0, $this->GetModulePrefix() . '_UpdateData(' . $this->InstanceID . ');');
+
+        $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
 
     private function device2with($deviceId)
@@ -230,17 +174,59 @@ class MieleAtHomeDevice extends IPSModule
         return $with;
     }
 
+    public function MessageSink($tstamp, $senderID, $message, $data)
+    {
+        parent::MessageSink($tstamp, $senderID, $message, $data);
+
+        if ($message == IPS_KERNELMESSAGE && $data[0] == KR_READY) {
+            $this->SetUpdateInterval();
+        }
+    }
+
+    private function CheckModuleConfiguration()
+    {
+        $r = [];
+
+        $deviceId = $this->ReadPropertyInteger('deviceId');
+        if ($deviceId == 0) {
+            $this->SendDebug(__FUNCTION__, '"deviceId" is needed', 0);
+            $r[] = $this->Translate('Device id must be specified');
+        }
+        $fabNumber = $this->ReadPropertyString('fabNumber');
+        if ($fabNumber == '') {
+            $this->SendDebug(__FUNCTION__, '"fabNumber" is needed', 0);
+            $r[] = $this->Translate('Fabrication number must be specified');
+        }
+
+        return $r;
+    }
+
     public function ApplyChanges()
     {
         parent::ApplyChanges();
 
+        $this->MaintainReferences();
+
+        if ($this->CheckPrerequisites() != false) {
+            $this->MaintainTimer('UpdateData', 0);
+            $this->SetStatus(self::$IS_INVALIDPREREQUISITES);
+            return;
+        }
+
+        if ($this->CheckUpdate() != false) {
+            $this->MaintainTimer('UpdateData', 0);
+            $this->SetStatus(self::$IS_UPDATEUNCOMPLETED);
+            return;
+        }
+
+        if ($this->CheckConfiguration() != false) {
+            $this->MaintainTimer('UpdateData', 0);
+            $this->SetStatus(self::$IS_INVALIDCONFIG);
+            return;
+        }
+
         $deviceId = $this->ReadPropertyInteger('deviceId');
-        $deviceType = $this->ReadPropertyString('deviceType');
-        $techType = $this->ReadPropertyString('techType');
-        $fabNumber = $this->ReadPropertyString('fabNumber');
-
         $with = $this->device2with($deviceId);
-
         $this->SendDebug(__FUNCTION__, 'with=' . print_r($with, true), 0);
 
         $vpos = 1;
@@ -300,20 +286,15 @@ class MieleAtHomeDevice extends IPSModule
         $vpos = 100;
         $this->MaintainVariable('LastChange', $this->Translate('last change'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
 
+        $techType = $this->ReadPropertyString('techType');
+        $fabNumber = $this->ReadPropertyString('fabNumber');
         $this->SetSummary($techType . ' (#' . $fabNumber . ')');
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
-            $this->SetTimerInterval('UpdateData', 0);
+            $this->MaintainTimer('UpdateData', 0);
             $this->SetStatus(IS_INACTIVE);
             return;
-        }
-
-        if ($deviceId > 0 && $fabNumber != '') {
-            $this->SetStatus(IS_ACTIVE);
-            $this->SetUpdateInterval();
-        } else {
-            $this->SetStatus(self::$IS_INVALIDCONFIG);
         }
 
         if ($with['enabled_action']) {
@@ -334,17 +315,20 @@ class MieleAtHomeDevice extends IPSModule
         if ($with['enabled_powersupply']) {
             $this->MaintainAction('PowerSupply', true);
         }
+
+        $this->SetStatus(IS_ACTIVE);
+
+        if (IPS_GetKernelRunlevel() == KR_READY) {
+            $this->SetUpdateInterval();
+        }
     }
 
     private function GetFormElements()
     {
-        $formElements = [];
+        $formElements = $this->GetCommonFormElements('Miele@Home device');
 
-        if ($this->HasActiveParent() == false) {
-            $formElements[] = [
-                'type'    => 'Label',
-                'caption' => 'Instance has no active parent instance',
-            ];
+        if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
+            return $formElements;
         }
 
         $formElements[] = [
@@ -353,82 +337,84 @@ class MieleAtHomeDevice extends IPSModule
             'caption' => 'Disable instance'
         ];
 
-        $items = [];
-        $items[] = [
-            'type'    => 'NumberSpinner',
-            'name'    => 'deviceId',
-            'caption' => 'Device id'
-        ];
-        $items[] = [
-            'type'    => 'ValidationTextBox',
-            'name'    => 'deviceType',
-            'caption' => 'Device type'
-        ];
-        $items[] = [
-            'type'    => 'ValidationTextBox',
-            'name'    => 'fabNumber',
-            'caption' => 'Fabrication number'
-        ];
-        $items[] = [
-            'type'    => 'ValidationTextBox',
-            'name'    => 'techType',
-            'caption' => 'Model'
-        ];
         $formElements[] = [
             'type'    => 'ExpansionPanel',
-            'items'   => $items,
+            'items'   => [
+                [
+                    'type'    => 'NumberSpinner',
+                    'enabled' => false,
+                    'name'    => 'deviceId',
+                    'caption' => 'Device id'
+                ],
+                [
+                    'type'    => 'ValidationTextBox',
+                    'enabled' => false,
+                    'name'    => 'deviceType',
+                    'caption' => 'Device type'
+                ],
+                [
+                    'type'    => 'ValidationTextBox',
+                    'enabled' => false,
+                    'name'    => 'fabNumber',
+                    'caption' => 'Fabrication number'
+                ],
+                [
+                    'type'    => 'ValidationTextBox',
+                    'enabled' => false,
+                    'name'    => 'techType',
+                    'caption' => 'Model'
+                ],
+            ],
             'caption' => 'Basic configuration (don\'t change)'
         ];
 
-        $items = [];
-        $items[] = [
-            'type'    => 'Label',
-            'caption' => 'mapping code to text of field ...'
-        ];
-        $items[] = [
-            'type'    => 'CheckBox',
-            'name'    => 'map_programName',
-            'caption' => ' ... Program name'
-        ];
-        $items[] = [
-            'type'    => 'CheckBox',
-            'name'    => 'map_programType',
-            'caption' => ' ... Program'
-        ];
-        $items[] = [
-            'type'    => 'CheckBox',
-            'name'    => 'map_programPhase',
-            'caption' => ' ... Phase'
-        ];
-        $items[] = [
-            'type'    => 'CheckBox',
-            'name'    => 'map_dryingStep',
-            'caption' => ' ... Drying step'
-        ];
-        $items[] = [
-            'type'    => 'CheckBox',
-            'name'    => 'map_ventilationStep',
-            'caption' => ' ... Ventilation step'
-        ];
         $formElements[] = [
             'type'    => 'ExpansionPanel',
-            'items'   => $items,
+            'items'   => [
+                [
+                    'type'    => 'Label',
+                    'caption' => 'mapping code to text of field ...'
+                ],
+                [
+                    'type'    => 'CheckBox',
+                    'name'    => 'map_programName',
+                    'caption' => ' ... Program name'
+                ],
+                [
+                    'type'    => 'CheckBox',
+                    'name'    => 'map_programType',
+                    'caption' => ' ... Program'
+                ],
+                [
+                    'type'    => 'CheckBox',
+                    'name'    => 'map_programPhase',
+                    'caption' => ' ... Phase'
+                ],
+                [
+                    'type'    => 'CheckBox',
+                    'name'    => 'map_dryingStep',
+                    'caption' => ' ... Drying step'
+                ],
+                [
+                    'type'    => 'CheckBox',
+                    'name'    => 'map_ventilationStep',
+                    'caption' => ' ... Ventilation step'
+                ],
+            ],
             'caption' => 'Settings'
         ];
 
-        $items = [];
-        $items[] = [
-            'type'    => 'Label',
-            'caption' => 'Update data every X seconds'
-        ];
-        $items[] = [
-            'type'    => 'NumberSpinner',
-            'name'    => 'update_interval',
-            'caption' => 'Seconds'
-        ];
         $formElements[] = [
             'type'    => 'ExpansionPanel',
-            'items'   => $items,
+            'items'   => [
+                [
+                    'type'    => 'NumberSpinner',
+                    'minimum' => 0,
+                    'suffix'  => 'Seconds',
+                    'name'    => 'update_interval',
+                    'caption' => 'Update interval'
+                ],
+            ],
             'caption' => 'Communication'
         ];
 
@@ -439,11 +425,23 @@ class MieleAtHomeDevice extends IPSModule
     {
         $formActions = [];
 
+        if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
+            $formActions[] = $this->GetCompleteUpdateFormAction();
+
+            $formActions[] = $this->GetInformationFormAction();
+            $formActions[] = $this->GetReferencesFormAction();
+
+            return $formActions;
+        }
+
         $formActions[] = [
             'type'    => 'Button',
             'caption' => 'Update data',
-            'onClick' => 'MieleAtHome_UpdateData($id);'
+            'onClick' => $this->GetModulePrefix() . '_UpdateData($id);'
         ];
+
+        $formActions[] = $this->GetInformationFormAction();
+        $formActions[] = $this->GetReferencesFormAction();
 
         return $formActions;
     }
@@ -452,13 +450,13 @@ class MieleAtHomeDevice extends IPSModule
     {
         $sec = $this->ReadPropertyInteger('update_interval');
         $msec = $sec > 0 ? $sec * 1000 : 0;
-        $this->SetTimerInterval('UpdateData', $msec);
+        $this->MaintainTimer('UpdateData', $msec);
     }
 
     public function UpdateData()
     {
-        if ($this->GetStatus() == IS_INACTIVE) {
-            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
             return;
         }
 
@@ -500,7 +498,7 @@ class MieleAtHomeDevice extends IPSModule
 
         $value_raw = $this->GetArrayElem($jdata, 'status.value_raw', 0);
         $r = IPS_GetVariableProfile('MieleAtHome.Status');
-        $status = self::$STATUS_UNKNOWN;
+        $status = self::$STATE_UNKNOWN;
         foreach ($r['Associations'] as $a) {
             if ($a['Value'] == $value_raw) {
                 $status = $value_raw;
@@ -508,7 +506,7 @@ class MieleAtHomeDevice extends IPSModule
             }
         }
         $this->SaveValue('State', $status, $is_changed);
-        if ($status == self::$STATUS_UNKNOWN) {
+        if ($status == self::$STATE_UNKNOWN) {
             $e = 'unknown value ' . $value_raw;
             $value_localized = $this->GetArrayElem($jdata, 'status.value_localized', '');
             if ($value_localized != '') {
@@ -518,9 +516,9 @@ class MieleAtHomeDevice extends IPSModule
             $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_NOTIFY);
         }
 
-        $off = $status == self::$STATUS_OFF;
-        $delayed = $status == self::$STATUS_WAITING_TO_START;
-        $standby = $status == self::$STATUS_ON;
+        $off = $status == self::$STATE_OFF;
+        $delayed = $status == self::$STATE_WAITING_TO_START;
+        $standby = $status == self::$STATE_ON;
 
         $signalFailure = (bool) $this->GetArrayElem($jdata, 'signalFailure', false);
         $this->SaveValue('Failure', $signalFailure, $is_changed);
@@ -714,7 +712,7 @@ class MieleAtHomeDevice extends IPSModule
         if ($with['ecoFeedback_Water']) {
             $ecoFeedback = $this->GetArrayElem($jdata, 'ecoFeedback', '');
             $state = $this->GetValue('State');
-            if ($state == self::$STATUS_END_PROGRAMMED) {
+            if ($state == self::$STATE_END_PROGRAMMED) {
                 $ecoFeedback = false;
             }
             if ($ecoFeedback != false) {
@@ -737,7 +735,7 @@ class MieleAtHomeDevice extends IPSModule
             $ecoFeedback = $this->GetArrayElem($jdata, 'ecoFeedback', '');
             $this->SendDebug(__FUNCTION__, 'ecoFeedback=' . print_r($ecoFeedback, true), 0);
             $state = $this->GetValue('State');
-            if ($state == self::$STATUS_END_PROGRAMMED) {
+            if ($state == self::$STATE_END_PROGRAMMED) {
                 $ecoFeedback = false;
             }
             if ($ecoFeedback != false) {
@@ -853,7 +851,7 @@ class MieleAtHomeDevice extends IPSModule
 
         if ($with['enabled_powersupply']) {
             /*
-               $power = $status == self::$STATUS_OFF ? self::$POWER_OFF : self::$POWER_ON;
+               $power = $status == self::$STATE_OFF ? self::$POWER_OFF : self::$POWER_ON;
                $this->SaveValue('PowerSupply', $power, $is_changed);
              */
 
@@ -1150,7 +1148,7 @@ class MieleAtHomeDevice extends IPSModule
             case 'SetStarttime':
                 /*
                    $state = $this->GetValue('State');
-                   if (in_array($state, [self::$STATUS_ON, self::$STATUS_PROGRAMMED, self::$STATUS_WAITING_TO_START])) {
+                   if (in_array($state, [self::$STATE_ON, self::$STATUS_PROGRAMMED, self::$STATUS_WAITING_TO_START])) {
                         $enabled = true;
                    }
                  */
@@ -1348,26 +1346,30 @@ class MieleAtHomeDevice extends IPSModule
         return $this->CallAction(__FUNCTION__, $action);
     }
 
-    public function RequestAction($Ident, $Value)
+    public function RequestAction($ident, $value)
     {
+        if ($this->CommonRequestAction($ident, $value)) {
+            return;
+        }
+
         if ($this->GetStatus() == IS_INACTIVE) {
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
             return;
         }
 
         $r = false;
-        switch ($Ident) {
+        switch ($ident) {
             case 'StartTime':
-                $hour = (int) date('H', $Value);
-                $min = (int) date('i', $Value);
+                $hour = (int) date('H', $value);
+                $min = (int) date('i', $value);
                 $r = $this->SetStarttime($hour, $min);
                 if ($r) {
-                    $this->SetValue($Ident, $Value);
+                    $this->SetValue($ident, $value);
                 }
-                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' (' . $hour . ':' . $min . ') => ret=' . $r, 0);
+                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' (' . $hour . ':' . $min . ') => ret=' . $r, 0);
                 break;
             case 'Action':
-                switch ($Value) {
+                switch ($value) {
                     case self::$ACTION_START:
                         $r = $this->Start();
                         break;
@@ -1381,10 +1383,10 @@ class MieleAtHomeDevice extends IPSModule
                         $r = false;
                         break;
                 }
-                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' => ret=' . $r, 0);
+                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
             case 'Superfreezing':
-                switch ($Value) {
+                switch ($value) {
                     case self::$ACTION_START:
                         $r = $this->StartSuperfreezing();
                         break;
@@ -1395,10 +1397,10 @@ class MieleAtHomeDevice extends IPSModule
                         $r = false;
                         break;
                 }
-                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' => ret=' . $r, 0);
+                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
             case 'Supercooling':
-                switch ($Value) {
+                switch ($value) {
                     case self::$ACTION_START:
                         $r = $this->StartSupercooling();
                         break;
@@ -1409,10 +1411,10 @@ class MieleAtHomeDevice extends IPSModule
                         $r = false;
                         break;
                 }
-                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' => ret=' . $r, 0);
+                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
             case 'Light':
-                switch ($Value) {
+                switch ($value) {
                     case self::$LIGHT_ENABLE:
                         $r = $this->LightEnable();
                         break;
@@ -1423,10 +1425,10 @@ class MieleAtHomeDevice extends IPSModule
                         $r = false;
                         break;
                 }
-                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' => ret=' . $r, 0);
+                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
             case 'PowerSupply':
-                switch ($Value) {
+                switch ($value) {
                     case self::$POWER_ON:
                         $r = $this->PowerOn();
                         break;
@@ -1437,14 +1439,14 @@ class MieleAtHomeDevice extends IPSModule
                         $r = false;
                         break;
                 }
-                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' => ret=' . $r, 0);
+                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
             default:
-                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $Ident, 0);
+                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);
                 break;
         }
         if ($r) {
-            $this->SetTimerInterval('UpdateData', 2000);
+            $this->MaintainTimer('UpdateData', 2000);
         }
     }
 

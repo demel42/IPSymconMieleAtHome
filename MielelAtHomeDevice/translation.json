@@ -1,8 +1,13 @@
 {
 	"translations": {
 		"de": {
-			"Instance has no active parent instance": "Instanz hat keine aktive übergeordnete Instanz",
+			"Miele@Home device": "Miele@Home Gerät",
 
+			"__function__": "CheckConfiguration",
+			"Device id must be specified": "Geräete-Typ-ID muss angegeben sein",
+			"Fabrication number must be specified": "Seriennummer muss angegeben sein",
+
+			"__elements__": "",
 			"Disable instance": "Instanz deaktivieren",
 
 			"Basic configuration (don't change)": "Basis-Konfiguration (nicht ändern)",
@@ -20,12 +25,11 @@
 			" ... Ventilation step": " ... Entlüftungsstufe",
 
 			"Communication": "Kommunikation",
-			"Update data every X seconds": "Daten alle X Sekunden aktualisieren",
+			"Update interval": "Aktualisierungsintervall",
 			"Seconds": "Sekunden",
 
-			"Update data": "Daten aktualisieren",
-			"Module description": "Modulbeschreibung",
-
+			"__variables__": "",
+			"Action": "Aktion",
 			"Battery level": "Batterie-Kapazität",
 			"Current energy consumption": "aktueller Energieverbrauch",
 			"Current water consumption": "aktueller Wasserverbrauch",
@@ -40,6 +44,7 @@
 			"Freezer: temperature": "Gefrierschrank: Temperatur",
 			"Fridge: target temperature": "Kühlschrank: Soll-Temperatur",
 			"Fridge: temperature": "Kühlschrank: Temperatur",
+			"last change": "letzte Änderung",
 			"Last energy consumption": "letzter Energieverbrauch",
 			"Last water consumption": "letzter Wasserverbrauch",
 			"Light": "Licht",
@@ -56,22 +61,22 @@
 			"Ventilation step": "Entlüftungsstufe",
 			"Work progress": "Arbeitsfortschritt",
 
-			"switch off": "ausschalten",
-			"switch on": "einschalten",
-			"start": "starten",
-			"pause": "pausieren",
-			"stop": "stoppen",
+			"__actions__": "",
+			"Update data": "Daten aktualisieren",
 
-			"Action": "Aktion",
-
-			"last change": "letzte Änderung",
-
-			"Anti-crease": "Knitterschutz",
+			"__function__": "programType2text",
+			"Normal operation mode": "Normalbetrieb",
+			"Own program": "Eigenes Programm",
+			"Automatic program": "Automatik-Programm",
+			"Cleaning-/Care program": "Reinigungs/Pflege-Programm",
 			"Automatic plus": "Automatic Plus",
-			"Closed": "Geschlossen",
+			"Cotton": "Baumwolle",
+			"Intensiv": "Intensiv",
+
+			"__function__": "programPhase2text",
+			"Anti-crease": "Knitterschutz",
 			"Comfort cooling": "Komfortkühlung",
 			"Cooling down": "Abkühlen",
-			"Cotton": "Baumwolle",
 			"Disinfection": "Desinfektion",
 			"Drain": "Ablaufen",
 			"Drying": "Trocknen",
@@ -90,7 +95,6 @@
 			"Normal plus": "Schranktrocken Plus",
 			"Normal": "Schranktrocken",
 			"Not running": "nicht aktiv",
-			"Opened": "Geöffnet",
 			"Pre-wash": "Vorwäsche",
 			"Program running": "Programm läuft",
 			"Reactivating": "Reaktivieren",
@@ -111,31 +115,7 @@
 			"Venting": "Entlüften",
 			"Warm air": "Warme Luft",
 
-			"Unknown": "Unbekannt",
-			"Reserved": "Reserviert",
-			"Off": "Aus",
-			"On": "An",
-			"Programmed": "Programmiert",
-			"Waiting to start": "Warte auf Start",
-			"Running": "In Betrieb",
-			"Pause": "Pause",
-			"End programmed": "Ende",
-			"Failure": "Fehler",
-			"Program interrupted": "Programm unterbrochen",
-			"Idle": "Untätig",
-			"Rinse hold": "Spülstop",
-			"Service": "Service",
-			"Superfreezing": "Superfrost",
-			"Supercooling": "Schnellkühlen",
-			"Superheating": "Schnellaufheizen",
-			"Not connected": "Nicht verbunden",
-			"Superfreezing/cooling": "Superfrost/Schnellkühlen",
-
-			"Normal operation mode": "Normalbetrieb",
-			"Own program": "Eigenes Programm",
-			"Automatic program": "Automatik-Programm",
-			"Cleaning-/Care program": "Reinigungs/Pflege-Programm",
-
+			"__function__": "dryingStep2text",
 			"Extra Dry": "Extratrocken",
 			"Normal Plus": "Schranktrocken Plus",
 			"Normal": "Schranktrocken",
@@ -145,6 +125,7 @@
 			"Machine iron": "Mangelfeucht",
 			"Smooth": "Glätten",
 
+			"__function__": "ventilationStep2text",
 			"None": "Aus",
 			"Step 1": "Stufe 1",
 			"Step 2": "Stufe 2",
@@ -153,20 +134,7 @@
 
 			"unknown value": "unbekannter Wert",
 
-			"Instance getting created": "Instanz wird erstellt",
-			"Instance is active": "Instanz ist aktiv",
-			"Instance is deleted": "Instanz wird gelöscht",
-			"Instance is inactive": "Instanz ist inaktiv",
-			"Instance is not created": "Instanz wurde nicht erzeugt",
-
-			"Instance is inactive (invalid configuration)": "Instanz ist inaktiv (ungültige Konfiguration)",
-			"Instance is inactive (unauthorized)": "Instanz ist inaktiv (Authorisierung fehlerhaft)",
-			"Instance is inactive (server error)": "Instanz ist inaktiv (Serverfehler)",
-			"Instance is inactive (http error)": "Instanz ist inaktiv (HTTP-Fehler)",
-			"Instance is inactive (invalid data)": "Instanz ist inaktiv (ungültige Daten)",
-			"Instance is inactive (no Symcon-Connect)": "Instanz ist inaktiv (kein Symcon-Connect)",
-			"Instance is inactive (not logged in)": "Instanz ist inaktiv (nicht angemeldet)",
-			"Instance is inactive (no data)": "Instanz ist inaktiv (keine Daten)"
+			"__end__": ""
 		}
 	}
 }

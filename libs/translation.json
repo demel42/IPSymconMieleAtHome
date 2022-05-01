@@ -1,0 +1,61 @@
+{
+	"translations": {
+		"de": {
+			"__variableprofile__": "MieleAtHome.Status",
+			"Unknown": "Unbekannt",
+            "Reserved": "Reserviert",
+            "Off": "Aus",
+            "On": "An",
+            "Programmed": "Programmiert",
+            "Waiting to start": "Warte auf Start",
+            "Running": "In Betrieb",
+            "Pause": "Pause",
+            "End programmed": "Ende",
+            "Failure": "Fehler",
+            "Program interrupted": "Programm unterbrochen",
+            "Idle": "Untätig",
+            "Rinse hold": "Spülstop",
+            "Service": "Service",
+            "Superfreezing": "Superfrost",
+            "Supercooling": "Schnellkühlen",
+            "Superheating": "Schnellaufheizen",
+            "Not connected": "Nicht verbunden",
+            "Superfreezing/cooling": "Superfrost/Schnellkühlen",
+
+			"__variableprofile__": "MieleAtHome.Door",
+            "Closed": "Geschlossen",
+			"Opened": "Geöffnet",
+
+			"__variableprofile__": "MieleAtHome.Light",
+            "On": "An",
+            "Off": "Aus",
+
+			"__variableprofile__": "MieleAtHome.PowerSupply",
+            "switch on": "einschalten",
+			"switch off": "ausschalten",
+
+			"__variableprofile__": "MieleAtHome.Action'",
+			"start": "starten",
+            "pause": "pausieren",
+            "stop": "stoppen",
+
+			"__variableprofile__": "MieleAtHome.Superfreezing'",
+			"start": "starten",
+            "stop": "stoppen",
+
+			"__variableprofile__": "MieleAtHome.Supercooling'",
+			"start": "starten",
+            "stop": "stoppen",
+
+			"__status__": "",
+			"Instance is inactive (unauthorized)": "Instanz ist inaktiv (Authorisierung fehlerhaft)",
+			"Instance is inactive (server error)": "Instanz ist inaktiv (Serverfehler)",
+			"Instance is inactive (http error)": "Instanz ist inaktiv (HTTP-Fehler)",
+			"Instance is inactive (invalid data)": "Instanz ist inaktiv (ungültige Daten)",
+			"Instance is inactive (not logged in)": "Instanz ist inaktiv (nicht angemeldet)",
+			"Instance is inactive (no data)": "Instanz ist inaktiv (keine Daten)",
+
+			"__end__": ""
+		}
+	}
+}

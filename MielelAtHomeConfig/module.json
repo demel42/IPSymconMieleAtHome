@@ -3,10 +3,16 @@
 	"name": "MieleAtHomeConfig",
 	"type": 4,
 	"vendor": "Miele",
-	"aliases": ["Miele@Home Konfigurator"],
-	"parentRequirements": ["{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}"],
+	"aliases": [
+		"Miele@Home Konfigurator"
+	],
+	"parentRequirements": [
+		"{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}"
+	],
 	"childRequirements": [],
-	"implemented": ["{D39AEB86-E611-4752-81C7-DBF7E41E79E1}"],
+	"implemented": [
+		"{D39AEB86-E611-4752-81C7-DBF7E41E79E1}"
+	],
 	"prefix": "MieleAtHome",
 	"url": "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md"
 }

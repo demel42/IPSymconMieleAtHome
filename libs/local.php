@@ -4,14 +4,51 @@ declare(strict_types=1);
 
 trait MieleAtHomeLocalLib
 {
-    public static $IS_INVALIDCONFIG = IS_EBASE + 1;
-    public static $IS_UNAUTHORIZED = IS_EBASE + 2;
-    public static $IS_SERVERERROR = IS_EBASE + 3;
-    public static $IS_HTTPERROR = IS_EBASE + 4;
-    public static $IS_INVALIDDATA = IS_EBASE + 5;
-    public static $IS_NOSYMCONCONNECT = IS_EBASE + 6;
-    public static $IS_NOLOGIN = IS_EBASE + 7;
-    public static $IS_NODATA = IS_EBASE + 8;
+    public static $IS_UNAUTHORIZED = IS_EBASE + 10;
+    public static $IS_SERVERERROR = IS_EBASE + 11;
+    public static $IS_HTTPERROR = IS_EBASE + 12;
+    public static $IS_INVALIDDATA = IS_EBASE + 13;
+    public static $IS_NOLOGIN = IS_EBASE + 14;
+    public static $IS_NODATA = IS_EBASE + 15;
+
+    private function GetFormStatus()
+    {
+        $formStatus = $this->GetCommonFormStatus();
+
+        $formStatus[] = ['code' => self::$IS_UNAUTHORIZED, 'icon' => 'error', 'caption' => 'Instance is inactive (unauthorized)'];
+        $formStatus[] = ['code' => self::$IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
+        $formStatus[] = ['code' => self::$IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
+        $formStatus[] = ['code' => self::$IS_INVALIDDATA, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)'];
+        $formStatus[] = ['code' => self::$IS_NOLOGIN, 'icon' => 'error', 'caption' => 'Instance is inactive (not logged in)'];
+        $formStatus[] = ['code' => self::$IS_NODATA, 'icon' => 'error', 'caption' => 'Instance is inactive (no data)'];
+
+        return $formStatus;
+    }
+
+    public static $STATUS_INVALID = 0;
+    public static $STATUS_VALID = 1;
+    public static $STATUS_RETRYABLE = 2;
+
+    private function CheckStatus()
+    {
+        switch ($this->GetStatus()) {
+            case IS_ACTIVE:
+                $class = self::$STATUS_VALID;
+                break;
+            case self::$IS_NODATA:
+            case self::$IS_UNAUTHORIZED:
+            case self::$IS_SERVERERROR:
+            case self::$IS_HTTPERROR:
+            case self::$IS_INVALIDDATA:
+                $class = self::$STATUS_RETRYABLE;
+                break;
+            default:
+                $class = self::$STATUS_INVALID;
+                break;
+        }
+
+        return $class;
+    }
 
     public static $CONNECTION_UNDEFINED = 0;
     public static $CONNECTION_OAUTH = 1;
@@ -50,27 +87,27 @@ trait MieleAtHomeLocalLib
     public static $DEVICE_DIALOGOVEN = 67;
     public static $DEVICE_WINE_CABINET_FREEZER_COMBINATION = 68;
 
-    public static $STATUS_UNKNOWN = -1;
-    public static $STATUS_RESERVED = 0;
-    public static $STATUS_OFF = 1;
-    public static $STATUS_ON = 2;
-    public static $STATUS_PROGRAMMED = 3;
-    public static $STATUS_WAITING_TO_START = 4;
-    public static $STATUS_RUNNING = 5;
-    public static $STATUS_PAUSE = 6;
-    public static $STATUS_END_PROGRAMMED = 7;
-    public static $STATUS_FAILURE = 8;
-    public static $STATUS_PROGRAM_INTERRUPTED = 9;
-    public static $STATUS_IDLE = 10;
-    public static $STATUS_RINSE_HOLD = 11;
-    public static $STATUS_SERVICE = 12;
-    public static $STATUS_SUPERFREEZING = 13;
-    public static $STATUS_SUPERCOOLING = 14;
-    public static $STATUS_SUPERHEATING = 15;
+    public static $STATE_UNKNOWN = -1;
+    public static $STATE_RESERVED = 0;
+    public static $STATE_OFF = 1;
+    public static $STATE_ON = 2;
+    public static $STATE_PROGRAMMED = 3;
+    public static $STATE_WAITING_TO_START = 4;
+    public static $STATE_RUNNING = 5;
+    public static $STATE_PAUSE = 6;
+    public static $STATE_END_PROGRAMMED = 7;
+    public static $STATE_FAILURE = 8;
+    public static $STATE_PROGRAM_INTERRUPTED = 9;
+    public static $STATE_IDLE = 10;
+    public static $STATE_RINSE_HOLD = 11;
+    public static $STATE_SERVICE = 12;
+    public static $STATE_SUPERFREEZING = 13;
+    public static $STATE_SUPERCOOLING = 14;
+    public static $STATE_SUPERHEATING = 15;
 
-    public static $STATUS_SUPERCOOLING_SUPERFREEZING = 146;
+    public static $STATE_SUPERCOOLING_SUPERFREEZING = 146;
 
-    public static $STATUS_NOT_CONNECTED = 255;
+    public static $STATE_NOT_CONNECTED = 255;
 
     public static $ACTION_UNDEF = 0;
     public static $ACTION_START = 1;
@@ -93,25 +130,93 @@ trait MieleAtHomeLocalLib
     public static $PROCESS_START_SUPERCOOLING = 6;
     public static $PROCESS_STOP_SUPERCOOLING = 7;
 
-    private function GetFormStatus()
+    public function InstallVarProfiles(bool $reInstall = false)
     {
-        $formStatus = [];
+        if ($reInstall) {
+            $this->SendDebug(__FUNCTION__, 'reInstall=' . $this->bool2str($reInstall), 0);
+        }
 
-        $formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created'];
-        $formStatus[] = ['code' => IS_ACTIVE, 'icon' => 'active', 'caption' => 'Instance is active'];
-        $formStatus[] = ['code' => IS_DELETING, 'icon' => 'inactive', 'caption' => 'Instance is deleted'];
-        $formStatus[] = ['code' => IS_INACTIVE, 'icon' => 'inactive', 'caption' => 'Instance is inactive'];
-        $formStatus[] = ['code' => IS_NOTCREATED, 'icon' => 'inactive', 'caption' => 'Instance is not created'];
+        $this->CreateVarProfile('MieleAtHome.Duration', VARIABLETYPE_INTEGER, ' min', 0, 0, 0, 0, 'Hourglass', [], $reInstall);
+        $this->CreateVarProfile('MieleAtHome.Temperature', VARIABLETYPE_INTEGER, ' °C', 0, 0, 0, 0, 'Temperature', [], $reInstall);
+        $this->CreateVarProfile('MieleAtHome.SpinningSpeed', VARIABLETYPE_INTEGER, ' U/min', 0, 0, 0, 0, '', [], $reInstall);
+        $this->CreateVarProfile('MieleAtHome.BatteryLevel', VARIABLETYPE_INTEGER, ' %', 0, 0, 0, 0, '', [], $reInstall);
 
-        $formStatus[] = ['code' => self::$IS_INVALIDCONFIG, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid configuration)'];
-        $formStatus[] = ['code' => self::$IS_UNAUTHORIZED, 'icon' => 'error', 'caption' => 'Instance is inactive (unauthorized)'];
-        $formStatus[] = ['code' => self::$IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
-        $formStatus[] = ['code' => self::$IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
-        $formStatus[] = ['code' => self::$IS_INVALIDDATA, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)'];
-        $formStatus[] = ['code' => self::$IS_NOSYMCONCONNECT, 'icon' => 'error', 'caption' => 'Instance is inactive (no Symcon-Connect)'];
-        $formStatus[] = ['code' => self::$IS_NOLOGIN, 'icon' => 'error', 'caption' => 'Instance is inactive (not logged in)'];
-        $formStatus[] = ['code' => self::$IS_NODATA, 'icon' => 'error', 'caption' => 'Instance is inactive (no data)'];
+        $associations = [
+            ['Wert' => 0, 'Name' => '-', 'Farbe' => -1],
+            ['Wert' => 1, 'Name' => '%d %%', 'Farbe' => -1],
+        ];
+        $this->CreateVarProfile('MieleAtHome.WorkProgress', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations, $reInstall);
 
-        return $formStatus;
+        $associations = [
+            ['Wert' => self::$STATE_UNKNOWN, 'Name' => $this->Translate('Unknown'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_RESERVED, 'Name' => $this->Translate('Reserved'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_OFF, 'Name' => $this->Translate('Off'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_ON, 'Name' => $this->Translate('On'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_PROGRAMMED, 'Name' => $this->Translate('Programmed'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_WAITING_TO_START, 'Name' => $this->Translate('Waiting to start'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_RUNNING, 'Name' => $this->Translate('Running'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_PAUSE, 'Name' => $this->Translate('Pause'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_END_PROGRAMMED, 'Name' => $this->Translate('End programmed'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_FAILURE, 'Name' => $this->Translate('Failure'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_PROGRAM_INTERRUPTED, 'Name' => $this->Translate('Program interrupted'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_IDLE, 'Name' => $this->Translate('Idle'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_RINSE_HOLD, 'Name' => $this->Translate('Rinse hold'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_SERVICE, 'Name' => $this->Translate('Service'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_SUPERFREEZING, 'Name' => $this->Translate('Superfreezing'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_SUPERCOOLING, 'Name' => $this->Translate('Supercooling'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_SUPERHEATING, 'Name' => $this->Translate('Superheating'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_NOT_CONNECTED, 'Name' => $this->Translate('Not connected'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_SUPERCOOLING_SUPERFREEZING, 'Name' => $this->Translate('Superfrost/cooling'), 'Farbe' => -1],
+        ];
+        $this->CreateVarProfile('MieleAtHome.Status', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations, $reInstall);
+
+        $associations = [
+            ['Wert' => false, 'Name' => $this->Translate('Closed'), 'Farbe' => -1],
+            ['Wert' => true, 'Name' => $this->Translate('Opened'), 'Farbe' => 0xEE0000],
+        ];
+        $this->CreateVarProfile('MieleAtHome.Door', VARIABLETYPE_BOOLEAN, '', 0, 0, 0, 1, 'Door', $associations, $reInstall);
+
+        $associations = [
+            ['Wert' => self::$LIGHT_ENABLE, 'Name' => $this->Translate('On'), 'Farbe' => -1],
+            ['Wert' => self::$LIGHT_DISABLE, 'Name' => $this->Translate('Off'), 'Farbe' => -1],
+        ];
+        $this->CreateVarProfile('MieleAtHome.Light', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, 'Light', $associations, $reInstall);
+
+        $associations = [
+            ['Wert' => self::$POWER_ON, 'Name' => $this->Translate('switch on'), 'Farbe' => -1],
+            ['Wert' => self::$POWER_OFF, 'Name' => $this->Translate('switch off'), 'Farbe' => -1],
+        ];
+        $this->CreateVarProfile('MieleAtHome.PowerSupply', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, 'Power', $associations, $reInstall);
+
+        $associations = [
+            ['Wert' => self::$ACTION_START, 'Name' => $this->Translate('start'), 'Farbe' => -1],
+            ['Wert' => self::$ACTION_PAUSE, 'Name' => $this->Translate('pause'), 'Farbe' => -1],
+            ['Wert' => self::$ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1],
+        ];
+        $this->CreateVarProfile('MieleAtHome.Action', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations, $reInstall);
+
+        $associations = [
+            ['Wert' => self::$ACTION_START, 'Name' => $this->Translate('start'), 'Farbe' => -1],
+            ['Wert' => self::$ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1],
+        ];
+        $this->CreateVarProfile('MieleAtHome.Superfreezing', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations, $reInstall);
+
+        $associations = [
+            ['Wert' => self::$ACTION_START, 'Name' => $this->Translate('start'), 'Farbe' => -1],
+            ['Wert' => self::$ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1],
+        ];
+        $this->CreateVarProfile('MieleAtHome.Supercooling', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations, $reInstall);
+
+        $associations = [
+            ['Wert' => 0, 'Name' => '-', 'Farbe' => -1],
+            ['Wert' => 0.1, 'Name' => '%.1f kWh', 'Farbe' => -1],
+        ];
+        $this->CreateVarProfile('MieleAtHome.Energy', VARIABLETYPE_FLOAT, '', 0, 0, 0, 1, '', $associations, $reInstall);
+
+        $associations = [
+            ['Wert' => 0, 'Name' => '-', 'Farbe' => -1],
+            ['Wert' => 1, 'Name' => '%.0f l', 'Farbe' => -1],
+        ];
+        $this->CreateVarProfile('MieleAtHome.Water', VARIABLETYPE_FLOAT, '', 0, 0, 0, 1, '', $associations, $reInstall);
     }
 }
