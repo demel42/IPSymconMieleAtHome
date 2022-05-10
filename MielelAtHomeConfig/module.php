@@ -59,25 +59,6 @@ class MieleAtHomeConfig extends IPSModule
         $this->SetStatus(IS_ACTIVE);
     }
 
-    private function SetLocation()
-    {
-        $catID = $this->ReadPropertyInteger('ImportCategoryID');
-        $tree_position = [];
-        if ($catID >= 10000 && IPS_ObjectExists($catID)) {
-            $tree_position[] = IPS_GetName($catID);
-            $parID = IPS_GetObject($catID)['ParentID'];
-            while ($parID > 0) {
-                if ($parID > 0) {
-                    $tree_position[] = IPS_GetName($parID);
-                }
-                $parID = IPS_GetObject($parID)['ParentID'];
-            }
-            $tree_position = array_reverse($tree_position);
-        }
-        $this->SendDebug(__FUNCTION__, 'tree_position=' . print_r($tree_position, true), 0);
-        return $tree_position;
-    }
-
     private function getConfiguratorValues()
     {
         $entries = [];
@@ -91,6 +72,8 @@ class MieleAtHomeConfig extends IPSModule
             $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
             return $entries;
         }
+
+        $catID = $this->ReadPropertyInteger('ImportCategoryID');
 
         $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDevices'];
         $data = $this->SendDataToParent(json_encode($SendData));
@@ -137,7 +120,7 @@ class MieleAtHomeConfig extends IPSModule
                     'fabNumber'   => $fabNumber,
                     'create'      => [
                         'moduleID'      => $guid,
-                        'location'      => $this->SetLocation(),
+                        'location'      => $this->GetConfiguratorLocation($catID),
                         'info'          => $deviceType . ' (' . $techType . ')',
                         'configuration' => [
                             'deviceId'   => $deviceId,

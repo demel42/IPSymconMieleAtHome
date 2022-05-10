@@ -1,6 +1,6 @@
 # IPSymconMieleAtHome
 
-[![IPS-Version](https://img.shields.io/badge/Symcon_Version-5.3+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
+[![IPS-Version](https://img.shields.io/badge/Symcon_Version-6.0+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 ![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -27,7 +27,7 @@ Mit diesem Modul können diese Daten, passend zu den Gerätetypen, in IP-Symcon 
 
 ## 2. Voraussetzungen
 
- - IP-Symcon ab Version 5.3
+ - IP-Symcon ab Version 6.0
  - Miele@Home-Account
  - entweder IP-Symcon Connect oder Zugangsdaten zu Miele@Home-third-party-API
 
@@ -259,6 +259,11 @@ Verweise:
 - https://www.miele.com/developer/index.html
 
 ## 7. Versions-Historie
+
+- 1.27.1 @ 10.05.2022 15:06
+  - update submodule CommonStubs
+  - SetLocation() -> GetConfiguratorLocation()
+  - weitere Absicherung ungültiger ID's
 
 - 1.27 @ 01.05.2022 18:03
   - Anpassungen an IPS 6.2 (Prüfung auf ungültige ID's)
