@@ -260,7 +260,7 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.27.1 @ 10.05.2022 15:06
+- 1.27.1 @ 12.05.2022 18:54
   - update submodule CommonStubs
   - SetLocation() -> GetConfiguratorLocation()
   - weitere Absicherung ungültiger ID's

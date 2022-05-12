@@ -66,7 +66,7 @@ class MieleAtHomeIO extends IPSModule
 
         $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
         if ($oauth_type == self::$CONNECTION_DEVELOPER) {
-            $userid = $this->ReadPropertyString('Netatmo_User');
+            $userid = $this->ReadPropertyString('userid');
             if ($userid == '') {
                 $this->SendDebug(__FUNCTION__, '"userid" is needed', 0);
                 $r[] = $this->Translate('Username must be specified');
