@@ -260,6 +260,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.27.2 @ 17.05.2022 15:38
+  - update submodule CommonStubs
+    Fix: Absicherung gegen fehlende Objekte
+
 - 1.27.1 @ 12.05.2022 18:54
   - update submodule CommonStubs
   - SetLocation() -> GetConfiguratorLocation()
