@@ -262,7 +262,7 @@ Verweise:
 
 - 1.28 @ 28.05.2022 10:04
   - Konfigurator: nur bei unbekannten Geräten wird der der API.Call "ident" (Name, Seriennummer, ...) noch durchgeführt
-    kührt zu ca. 50% weniger API-Calls
+    führt insgesamt zu ca. 50% weniger API-Calls
   - update submodule CommonStubs
   - einige Funktionen (GetFormElements, GetFormActions) waren fehlerhafterweise "protected" und nicht "private"
   - interne Funktionen sind nun entweder private oder nur noch via IPS_RequestAction() erreichbar
