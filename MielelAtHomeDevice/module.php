@@ -46,7 +46,7 @@ class MieleAtHomeDevice extends IPSModule
 
         $this->ConnectParent('{996743FB-1712-47A3-9174-858A08A13523}');
 
-        $this->RegisterTimer('UpdateData', 0, $this->GetModulePrefix() . '_UpdateData(' . $this->InstanceID . ');');
+        $this->RegisterTimer('UpdateData', 0, 'IPS_RequestAction(' . $this->InstanceID . ', "UpdateData", "");');
 
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
@@ -437,7 +437,16 @@ class MieleAtHomeDevice extends IPSModule
         $formActions[] = [
             'type'    => 'Button',
             'caption' => 'Update data',
-            'onClick' => $this->GetModulePrefix() . '_UpdateData($id);'
+            'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "UpdateData", "");',
+        ];
+
+        $formActions[] = [
+            'type'      => 'ExpansionPanel',
+            'caption'   => 'Expert area',
+            'expanded ' => false,
+            'items'     => [
+                $this->GetInstallVarProfilesFormItem(),
+            ]
         ];
 
         $formActions[] = $this->GetInformationFormAction();
@@ -453,7 +462,7 @@ class MieleAtHomeDevice extends IPSModule
         $this->MaintainTimer('UpdateData', $msec);
     }
 
-    public function UpdateData()
+    private function UpdateData()
     {
         if ($this->CheckStatus() == self::$STATUS_INVALID) {
             $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
@@ -1440,6 +1449,9 @@ class MieleAtHomeDevice extends IPSModule
                         break;
                 }
                 $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
+                break;
+            case 'UpdateData':
+                $this->UpdateData();
                 break;
             default:
                 $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);

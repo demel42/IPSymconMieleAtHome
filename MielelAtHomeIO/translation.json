@@ -59,6 +59,7 @@
 			"__actions__": "",
 			"Login at Miele@Home": "Miele@Home Anmeldung",
 			"Test access": "Zugang prüfen",
+			"Clear Token": "Token löschen",
 
 			"__function__": "TestAccess",
 			"invalid account-data": "ungültige Zugangsdaten",

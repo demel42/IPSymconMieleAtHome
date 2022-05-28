@@ -98,17 +98,25 @@ class MieleAtHomeConfig extends IPSModule
                     }
                 }
 
-                $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDeviceIdent', 'Ident' => $fabNumber];
-                $device_data = $this->SendDataToParent(json_encode($SendData));
-                $this->SendDebug(__FUNCTION__, 'device_data=' . $device_data, 0);
+                if ($instanceID == 0) {
+                    $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDeviceIdent', 'Ident' => $fabNumber];
+                    $device_data = $this->SendDataToParent(json_encode($SendData));
+                    $this->SendDebug(__FUNCTION__, 'device_data=' . $device_data, 0);
 
-                $device = json_decode($device_data, true);
-                $deviceId = $device['type']['value_raw'];
-                $deviceType = $device['type']['value_localized'];
-                $techType = $device['deviceIdentLabel']['techType'];
-                $deviceName = $device['deviceName'];
-                if ($deviceName == '') {
-                    $deviceName = $deviceType;
+                    $device = json_decode($device_data, true);
+                    $deviceId = $device['type']['value_raw'];
+                    $deviceType = $device['type']['value_localized'];
+                    $techType = $device['deviceIdentLabel']['techType'];
+                    $deviceName = $device['deviceName'];
+                    if ($deviceName == '') {
+                        $deviceName = $deviceType;
+                    }
+                } else {
+                    $deviceId = IPS_GetProperty($instID, 'deviceId');
+                    $deviceType = IPS_GetProperty($instID, 'deviceType');
+                    $techType = IPS_GetProperty($instID, 'techType');
+                    $fabNumber = IPS_GetProperty($instID, 'fabNumber');
+                    $deviceName = IPS_GetName($instID);
                 }
 
                 $entry = [

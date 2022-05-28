@@ -169,7 +169,7 @@ class MieleAtHomeIO extends IPSModule
         }
     }
 
-    public function Login()
+    private function Login()
     {
         $url = 'https://oauth.ipmagic.de/authorize/' . $this->oauthIdentifer . '?username=' . urlencode(IPS_GetLicensee());
         $this->SendDebug(__FUNCTION__, 'url=' . $url, 0);
@@ -527,14 +527,28 @@ class MieleAtHomeIO extends IPSModule
             $formActions[] = [
                 'type'    => 'Button',
                 'caption' => 'Login at Miele@Home',
-                'onClick' => 'echo ' . $this->GetModulePrefix() . '_Login($id);'
+                'onClick' => 'echo "' . $this->Login() . '";',
             ];
         }
 
         $formActions[] = [
             'type'    => 'Button',
             'caption' => 'Test access',
-            'onClick' => $this->GetModulePrefix() . '_TestAccess($id);'
+            'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "TestAccess", "");',
+        ];
+
+        $formActions[] = [
+            'type'      => 'ExpansionPanel',
+            'caption'   => 'Expert area',
+            'expanded'  => false,
+            'items'     => [
+                $this->GetInstallVarProfilesFormItem(),
+                [
+                    'type'    => 'Button',
+                    'caption' => 'Clear Token',
+                    'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "ClearToken", "");',
+                ],
+            ]
         ];
 
         $formActions[] = $this->GetInformationFormAction();
@@ -549,13 +563,19 @@ class MieleAtHomeIO extends IPSModule
             return;
         }
         switch ($ident) {
+            case 'ClearToken':
+                $this->ClearToken();
+                break;
+            case 'TestAccess':
+                $this->TestAccess();
+                break;
             default:
                 $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);
                 break;
         }
     }
 
-    public function TestAccess()
+    private function TestAccess()
     {
         if ($this->GetStatus() == IS_INACTIVE) {
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
@@ -580,8 +600,24 @@ class MieleAtHomeIO extends IPSModule
             $n_devices = count($devices);
             $txt .= $n_devices . ' ' . $this->Translate('registered devices found');
         }
+        $this->PopupMessage($txt);
+    }
 
-        echo $txt;
+    private function ClearToken()
+    {
+        $refresh_token = $this->ReadAttributeString('RefreshToken');
+        $this->SendDebug(__FUNCTION__, 'clear refresh_token=' . $refresh_token, 0);
+        $this->WriteAttributeString('RefreshToken', '');
+
+        $jtoken = json_decode($this->GetBuffer('AccessToken'), true);
+        $access_token = isset($jtoken['access_token']) ? $jtoken['access_token'] : '';
+        $this->SendDebug(__FUNCTION__, 'clear access_token=' . $access_token, 0);
+        $this->SetBuffer('AccessToken', '');
+
+        $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
+        if ($oauth_type == self::$CONNECTION_OAUTH) {
+            $this->SetStatus(self::$IS_NOLOGIN);
+        }
     }
 
     protected function SendData($buf)
