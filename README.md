@@ -260,6 +260,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.28.1 @ 28.05.2022 11:37
+  - update submodule CommonStubs
+    Fix: Ausgabe des nächsten Timer-Zeitpunkts
+
 - 1.28 @ 28.05.2022 10:04
   - Konfigurator: nur bei unbekannten Geräten wird der der API.Call "ident" (Name, Seriennummer, ...) noch durchgeführt
     führt insgesamt zu ca. 50% weniger API-Calls
