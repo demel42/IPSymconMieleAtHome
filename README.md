@@ -260,6 +260,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.28.2 @ 29.05.2022 15:07
+  - Fix: RegisterOAuth() war doppelt vorhanden
+
 - 1.28.1 @ 28.05.2022 11:37
   - update submodule CommonStubs
     Fix: Ausgabe des nächsten Timer-Zeitpunkts
