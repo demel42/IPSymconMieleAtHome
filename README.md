@@ -260,6 +260,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.28.3 @ 22.06.2022 10:33
+  - Fix: Angabe der Kompatibilität auf 6.2 korrigiert
+
 - 1.28.2 @ 29.05.2022 15:07
   - Fix: RegisterOAuth() war doppelt vorhanden
 
