@@ -260,8 +260,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.29 @ 05.07.2022 09:40
+- 1.29 @ 05.07.2022 16:34
   - Verbesserung: IPS-Status wird nur noch gesetzt, wenn er sich ändert
+  - update submodule CommonStubs
+    Fix: keine korrekte Registrierung für OAuth
 
 - 1.28.3 @ 22.06.2022 10:33
   - Fix: Angabe der Kompatibilität auf 6.2 korrigiert
