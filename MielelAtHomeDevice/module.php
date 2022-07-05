@@ -209,19 +209,19 @@ class MieleAtHomeDevice extends IPSModule
 
         if ($this->CheckPrerequisites() != false) {
             $this->MaintainTimer('UpdateData', 0);
-            $this->SetStatus(self::$IS_INVALIDPREREQUISITES);
+            $this->MaintainStatus(self::$IS_INVALIDPREREQUISITES);
             return;
         }
 
         if ($this->CheckUpdate() != false) {
             $this->MaintainTimer('UpdateData', 0);
-            $this->SetStatus(self::$IS_UPDATEUNCOMPLETED);
+            $this->MaintainStatus(self::$IS_UPDATEUNCOMPLETED);
             return;
         }
 
         if ($this->CheckConfiguration() != false) {
             $this->MaintainTimer('UpdateData', 0);
-            $this->SetStatus(self::$IS_INVALIDCONFIG);
+            $this->MaintainStatus(self::$IS_INVALIDCONFIG);
             return;
         }
 
@@ -293,7 +293,7 @@ class MieleAtHomeDevice extends IPSModule
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
             $this->MaintainTimer('UpdateData', 0);
-            $this->SetStatus(IS_INACTIVE);
+            $this->MaintainStatus(IS_INACTIVE);
             return;
         }
 
@@ -316,7 +316,7 @@ class MieleAtHomeDevice extends IPSModule
             $this->MaintainAction('PowerSupply', true);
         }
 
-        $this->SetStatus(IS_ACTIVE);
+        $this->MaintainStatus(IS_ACTIVE);
 
         if (IPS_GetKernelRunlevel() == KR_READY) {
             $this->SetUpdateInterval();

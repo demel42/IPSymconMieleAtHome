@@ -98,41 +98,41 @@ class MieleAtHomeIO extends IPSModule
         $this->MaintainReferences();
 
         if ($this->CheckPrerequisites() != false) {
-            $this->SetStatus(self::$IS_INVALIDPREREQUISITES);
+            $this->MaintainStatus(self::$IS_INVALIDPREREQUISITES);
             return;
         }
 
         if ($this->CheckUpdate() != false) {
-            $this->SetStatus(self::$IS_UPDATEUNCOMPLETED);
+            $this->MaintainStatus(self::$IS_UPDATEUNCOMPLETED);
             return;
         }
 
         if ($this->CheckConfiguration() != false) {
-            $this->SetStatus(self::$IS_INVALIDCONFIG);
+            $this->MaintainStatus(self::$IS_INVALIDCONFIG);
             return;
         }
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
-            $this->SetStatus(IS_INACTIVE);
+            $this->MaintainStatus(IS_INACTIVE);
             return;
         }
 
         $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
         switch ($oauth_type) {
             case self::$CONNECTION_DEVELOPER:
-                $this->SetStatus(IS_ACTIVE);
+                $this->MaintainStatus(IS_ACTIVE);
                 break;
             case self::$CONNECTION_OAUTH:
                 if ($this->GetConnectUrl() == false) {
-                    $this->SetStatus(self::$IS_NOSYMCONCONNECT);
+                    $this->MaintainStatus(self::$IS_NOSYMCONCONNECT);
                     return;
                 }
                 $refresh_token = $this->ReadAttributeString('RefreshToken');
                 if ($refresh_token == '') {
-                    $this->SetStatus(self::$IS_NOLOGIN);
+                    $this->MaintainStatus(self::$IS_NOLOGIN);
                 } else {
-                    $this->SetStatus(IS_ACTIVE);
+                    $this->MaintainStatus(IS_ACTIVE);
                 }
                 break;
             default:
@@ -220,7 +220,7 @@ class MieleAtHomeIO extends IPSModule
         }
         if ($statuscode) {
             $this->SendDebug(__FUNCTION__, '    statuscode=' . $statuscode . ', err=' . $err, 0);
-            $this->SetStatus($statuscode);
+            $this->MaintainStatus($statuscode);
             return false;
         }
         return $jdata;
@@ -273,7 +273,7 @@ class MieleAtHomeIO extends IPSModule
                 $this->SendDebug(__FUNCTION__, 'has no refresh_token', 0);
                 $this->WriteAttributeString('RefreshToken', '');
                 $this->SetBuffer('AccessToken', '');
-                $this->SetStatus(self::$IS_NOLOGIN);
+                $this->MaintainStatus(self::$IS_NOLOGIN);
                 return false;
             }
             $jdata = $this->Call4AccessToken(['refresh_token' => $refresh_token]);
@@ -306,14 +306,14 @@ class MieleAtHomeIO extends IPSModule
             $this->SendDebug(__FUNCTION__, 'code missing, _GET=' . print_r($_GET, true), 0);
             $this->WriteAttributeString('RefreshToken', '');
             $this->SetBuffer('AccessToken', '');
-            $this->SetStatus(self::$IS_NOLOGIN);
+            $this->MaintainStatus(self::$IS_NOLOGIN);
             return;
         }
         $refresh_token = $this->FetchRefreshToken($_GET['code']);
         $this->SendDebug(__FUNCTION__, 'refresh_token=' . $refresh_token, 0);
         $this->WriteAttributeString('RefreshToken', $refresh_token);
         if ($this->GetStatus() == self::$IS_NOLOGIN) {
-            $this->SetStatus(IS_ACTIVE);
+            $this->MaintainStatus(IS_ACTIVE);
         }
     }
 
@@ -593,7 +593,7 @@ class MieleAtHomeIO extends IPSModule
 
         $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
         if ($oauth_type == self::$CONNECTION_OAUTH) {
-            $this->SetStatus(self::$IS_NOLOGIN);
+            $this->MaintainStatus(self::$IS_NOLOGIN);
         }
     }
 
@@ -700,7 +700,7 @@ class MieleAtHomeIO extends IPSModule
                     }
                     $this->SendDebug(__FUNCTION__, 'token: statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true) . ', msg=' . $msg, 0);
                     if ($statuscode != 0) {
-                        $this->SetStatus($statuscode);
+                        $this->MaintainStatus($statuscode);
                         return '';
                     }
 
@@ -747,11 +747,11 @@ class MieleAtHomeIO extends IPSModule
         $statuscode = $this->do_HttpRequest($func, $params, $header, '', 'GET', $data, $msg);
         $this->SendDebug(__FUNCTION__, 'statuscode=' . $statuscode . ', data=' . print_r($data, true), 0);
         if ($statuscode != 0) {
-            $this->SetStatus($statuscode);
+            $this->MaintainStatus($statuscode);
             return false;
         }
 
-        $this->SetStatus(IS_ACTIVE);
+        $this->MaintainStatus(IS_ACTIVE);
         return $statuscode ? false : true;
     }
 
@@ -780,11 +780,11 @@ class MieleAtHomeIO extends IPSModule
         $statuscode = $this->do_HttpRequest($func, $params, $header, $postdata, 'PUT', $data, $msg);
         $this->SendDebug(__FUNCTION__, 'statuscode=' . $statuscode . ', data=' . print_r($data, true), 0);
         if ($statuscode != 0) {
-            $this->SetStatus($statuscode);
+            $this->MaintainStatus($statuscode);
             return false;
         }
 
-        $this->SetStatus(IS_ACTIVE);
+        $this->MaintainStatus(IS_ACTIVE);
         return $statuscode ? false : true;
     }
 
