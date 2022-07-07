@@ -1175,8 +1175,8 @@ class MieleAtHomeDevice extends IPSModule
 
     private function CallAction($func, $action)
     {
-        if ($this->GetStatus() == IS_INACTIVE) {
-            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
             return false;
         }
         if ($this->HasActiveParent() == false) {
@@ -1362,7 +1362,7 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         if ($this->GetStatus() == IS_INACTIVE) {
-            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
             return;
         }
 

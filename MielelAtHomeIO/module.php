@@ -555,8 +555,9 @@ class MieleAtHomeIO extends IPSModule
     private function TestAccess()
     {
         if ($this->GetStatus() == IS_INACTIVE) {
-            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
-            echo $this->Translate('Instance is inactive') . PHP_EOL;
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
+            $msg = $this->GetStatusText();
+            $this->PopupMessage($msg);
             return;
         }
 
@@ -607,7 +608,7 @@ class MieleAtHomeIO extends IPSModule
     public function ForwardData($data)
     {
         if ($this->GetStatus() == IS_INACTIVE) {
-            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
             return false;
         }
 
