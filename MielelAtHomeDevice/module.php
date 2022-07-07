@@ -1355,8 +1355,25 @@ class MieleAtHomeDevice extends IPSModule
         return $this->CallAction(__FUNCTION__, $action);
     }
 
+    private function LocalRequestAction($ident, $value)
+    {
+        $r = true;
+        switch ($ident) {
+            case 'UpdateData':
+                $this->UpdateData();
+                break;
+            default:
+                $r = false;
+                break;
+        }
+        return $r;
+    }
+
     public function RequestAction($ident, $value)
     {
+        if ($this->LocalRequestAction($ident, $value)) {
+            return;
+        }
         if ($this->CommonRequestAction($ident, $value)) {
             return;
         }
@@ -1449,9 +1466,6 @@ class MieleAtHomeDevice extends IPSModule
                         break;
                 }
                 $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
-                break;
-            case 'UpdateData':
-                $this->UpdateData();
                 break;
             default:
                 $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);

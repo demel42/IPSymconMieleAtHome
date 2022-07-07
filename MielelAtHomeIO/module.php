@@ -534,11 +534,9 @@ class MieleAtHomeIO extends IPSModule
         return $formActions;
     }
 
-    public function RequestAction($ident, $value)
+    private function LocalRequestAction($ident, $value)
     {
-        if ($this->CommonRequestAction($ident, $value)) {
-            return;
-        }
+        $r = true;
         switch ($ident) {
             case 'ClearToken':
                 $this->ClearToken();
@@ -546,6 +544,23 @@ class MieleAtHomeIO extends IPSModule
             case 'TestAccess':
                 $this->TestAccess();
                 break;
+            default:
+                $r = false;
+                break;
+        }
+        return $r;
+    }
+
+    public function RequestAction($ident, $value)
+    {
+        if ($this->LocalRequestAction($ident, $value)) {
+            return;
+        }
+        if ($this->CommonRequestAction($ident, $value)) {
+            return;
+        }
+
+        switch ($ident) {
             default:
                 $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);
                 break;
