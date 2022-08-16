@@ -721,6 +721,7 @@ class MieleAtHomeDevice extends IPSModule
         if ($with['ecoFeedback_Water']) {
             $ecoFeedback = $this->GetArrayElem($jdata, 'ecoFeedback', '');
             $state = $this->GetValue('State');
+            $this->SendDebug(__FUNCTION__, 'water: state=' . $state . ', ecoFeedback=' . print_r($ecoFeedback, true), 0);
             if ($state == self::$STATE_END_PROGRAMMED) {
                 $ecoFeedback = false;
             }
@@ -728,7 +729,7 @@ class MieleAtHomeDevice extends IPSModule
                 $currentWaterConsumption = $this->GetArrayElem($ecoFeedback, 'currentWaterConsumption.value', 0);
                 $waterforecast = $this->GetArrayElem($ecoFeedback, 'waterforecast', 0);
                 $estimatedWaterConsumption = $currentWaterConsumption * (float) $waterforecast * 100;
-                $this->SendDebug(__FUNCTION__, 'WaterConsumption: current=' . $currentWaterConsumption . ', forecast=' . $waterforecast . ', $estimated=' . $estimatedWaterConsumption, 0);
+                $this->SendDebug(__FUNCTION__, 'WaterConsumption: current=' . $currentWaterConsumption . ', forecast=' . $waterforecast . ', estimated=' . $estimatedWaterConsumption, 0);
             } else {
                 $currentWaterConsumption = $this->GetValue('CurrentWaterConsumption');
                 if ($currentWaterConsumption > 0) {
@@ -742,8 +743,8 @@ class MieleAtHomeDevice extends IPSModule
         }
         if ($with['ecoFeedback_Energy']) {
             $ecoFeedback = $this->GetArrayElem($jdata, 'ecoFeedback', '');
-            $this->SendDebug(__FUNCTION__, 'ecoFeedback=' . print_r($ecoFeedback, true), 0);
             $state = $this->GetValue('State');
+            $this->SendDebug(__FUNCTION__, 'energy: state=' . $state . ', ecoFeedback=' . print_r($ecoFeedback, true), 0);
             if ($state == self::$STATE_END_PROGRAMMED) {
                 $ecoFeedback = false;
             }
@@ -751,7 +752,7 @@ class MieleAtHomeDevice extends IPSModule
                 $currentEnergyConsumption = $this->GetArrayElem($ecoFeedback, 'currentEnergyConsumption.value', 0);
                 $energyforecast = $this->GetArrayElem($ecoFeedback, 'energyforecast', 0);
                 $estimatedEnergyConsumption = $currentEnergyConsumption * (float) $energyforecast * 100;
-                $this->SendDebug(__FUNCTION__, 'EnergyConsumption: current=' . $currentEnergyConsumption . ', forecast=' . $energyforecast . ', $estimated=' . $estimatedEnergyConsumption, 0);
+                $this->SendDebug(__FUNCTION__, 'EnergyConsumption: current=' . $currentEnergyConsumption . ', forecast=' . $energyforecast . ', estimated=' . $estimatedEnergyConsumption, 0);
             } else {
                 $currentEnergyConsumption = $this->GetValue('CurrentEnergyConsumption');
                 if ($currentEnergyConsumption > 0) {

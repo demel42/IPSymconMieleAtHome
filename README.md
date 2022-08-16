@@ -260,6 +260,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.29.1 @ 16.08.2022 10:10
+  - update submodule CommonStubs
+    Fix: in den Konfiguratoren war es nicht möglich, eine Instanz direkt unter dem Wurzelverzeichnis "IP-Symcon" zu erzeugen
+
 - 1.29 @ 07.07.2022 11:50
   - Verbesserung: IPS-Status wird nur noch gesetzt, wenn er sich ändert
   - update submodule CommonStubs
