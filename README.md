@@ -260,6 +260,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.29.5 @ 12.10.2022 14:44
+  - Korrektur zu 1.29.4
+
 - 1.29.4 @ 12.10.2022 11:35
   - Ergänzung zu 1.29.3
 

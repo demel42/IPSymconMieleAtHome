@@ -98,10 +98,6 @@ class MieleAtHomeConfig extends IPSModule
                     }
                 }
 
-                if (IPS_GetInstance($instID)['ConnectionID'] != IPS_GetInstance($this->InstanceID)['ConnectionID']) {
-                    continue;
-                }
-
                 if ($instanceID == 0) {
                     $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDeviceIdent', 'Ident' => $fabNumber];
                     $device_data = $this->SendDataToParent(json_encode($SendData));
@@ -116,11 +112,15 @@ class MieleAtHomeConfig extends IPSModule
                         $deviceName = $deviceType;
                     }
                 } else {
-                    $deviceId = IPS_GetProperty($instID, 'deviceId');
-                    $deviceType = IPS_GetProperty($instID, 'deviceType');
-                    $techType = IPS_GetProperty($instID, 'techType');
-                    $fabNumber = IPS_GetProperty($instID, 'fabNumber');
-                    $deviceName = IPS_GetName($instID);
+                    $deviceId = IPS_GetProperty($instanceID, 'deviceId');
+                    $deviceType = IPS_GetProperty($instanceID, 'deviceType');
+                    $techType = IPS_GetProperty($instanceID, 'techType');
+                    $fabNumber = IPS_GetProperty($instanceID, 'fabNumber');
+                    $deviceName = IPS_GetName($instanceID);
+                }
+
+                if ($instanceID && IPS_GetInstance($instanceID)['ConnectionID'] != IPS_GetInstance($this->InstanceID)['ConnectionID']) {
+                    continue;
                 }
 
                 $entry = [
