@@ -260,6 +260,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.29.4 @ 12.10.2022 11:35
+  - Ergänzung zu 1.29.3
+
 - 1.29.3 @ 12.10.2022 10:08
   - Konfigurators betrachtet nun nur noch Geräte, die entweder noch nicht angelegt wurden oder mit dem gleichen I/O verbunden sind
   - update submodule CommonStubs

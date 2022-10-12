@@ -98,6 +98,10 @@ class MieleAtHomeConfig extends IPSModule
                     }
                 }
 
+                if (IPS_GetInstance($instID)['ConnectionID'] != IPS_GetInstance($this->InstanceID)['ConnectionID']) {
+                    continue;
+                }
+
                 if ($instanceID == 0) {
                     $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDeviceIdent', 'Ident' => $fabNumber];
                     $device_data = $this->SendDataToParent(json_encode($SendData));
