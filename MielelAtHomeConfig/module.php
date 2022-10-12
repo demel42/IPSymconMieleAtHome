@@ -155,6 +155,10 @@ class MieleAtHomeConfig extends IPSModule
                 continue;
             }
 
+            if (IPS_GetInstance($instID)['ConnectionID'] != IPS_GetInstance($this->InstanceID)['ConnectionID']) {
+                continue;
+            }
+
             $deviceName = IPS_GetName($instID);
             $deviceId = IPS_GetProperty($instID, 'deviceId');
             $deviceType = IPS_GetProperty($instID, 'deviceType');
