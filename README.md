@@ -267,7 +267,7 @@ Verweise:
   - Ergänzung zu 1.29.3
 
 - 1.29.3 @ 12.10.2022 10:08
-  - Konfigurators betrachtet nun nur noch Geräte, die entweder noch nicht angelegt wurden oder mit dem gleichen I/O verbunden sind
+  - Konfigurator betrachtet nun nur noch Geräte, die entweder noch nicht angelegt wurden oder mit dem gleichen I/O verbunden sind
   - update submodule CommonStubs
 
 - 1.29.2 @ 07.10.2022 13:59
