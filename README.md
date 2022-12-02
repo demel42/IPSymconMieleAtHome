@@ -260,6 +260,15 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.30 @ 02.12.2022 16:43
+  - Neu: Typ 19(Kühlschrank) und 20 (Gefrierschrank) hinzugefügt
+  - Neu: Möglichkeit, die Temperatur zu setzen für Kühl- und Gefrierschränke
+  - Neu: Führen einer Statistik der API-Calls im IO-Modul, Anzeige als Popup im Experten-Bereich
+  - Neu: Verwendung der Option 'discoveryInterval' im Konfigurator (ab 6.3) zur Reduzierung der API-Calls: nur noch ein Discovery/Tag
+  - Neu: Daten-Cache für Daten im Konfigurator zur Reduzierung der API-Aufrufe, wird automatisch 1/Tag oder manuell aktualisiert
+  - Fix: Variablenprofil "MieleAtHome.Status" korrigiert
+  - update submodule CommonStubs
+
 - 1.29.5 @ 12.10.2022 14:44
   - Korrektur zu 1.29.4
 

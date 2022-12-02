@@ -166,7 +166,7 @@ trait MieleAtHomeLocalLib
             ['Wert' => self::$STATE_SUPERCOOLING, 'Name' => $this->Translate('Supercooling'), 'Farbe' => -1],
             ['Wert' => self::$STATE_SUPERHEATING, 'Name' => $this->Translate('Superheating'), 'Farbe' => -1],
             ['Wert' => self::$STATE_NOT_CONNECTED, 'Name' => $this->Translate('Not connected'), 'Farbe' => -1],
-            ['Wert' => self::$STATE_SUPERCOOLING_SUPERFREEZING, 'Name' => $this->Translate('Superfrost/cooling'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_SUPERCOOLING_SUPERFREEZING, 'Name' => $this->Translate('Superfreezing/cooling'), 'Farbe' => -1],
         ];
         $this->CreateVarProfile('MieleAtHome.Status', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations, $reInstall);
 

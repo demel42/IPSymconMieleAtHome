@@ -28,6 +28,7 @@ class MieleAtHomeConfig extends IPSModule
         $this->RegisterPropertyInteger('ImportCategoryID', 0);
 
         $this->RegisterAttributeString('UpdateInfo', '');
+        $this->RegisterAttributeString('DataCache', '');
 
         $this->InstallVarProfiles(false);
 
@@ -56,6 +57,8 @@ class MieleAtHomeConfig extends IPSModule
             return;
         }
 
+        $this->SetupDataCache(24 * 60 * 60);
+
         $this->MaintainStatus(IS_ACTIVE);
     }
 
@@ -75,11 +78,24 @@ class MieleAtHomeConfig extends IPSModule
 
         $catID = $this->ReadPropertyInteger('ImportCategoryID');
 
-        $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDevices'];
-        $data = $this->SendDataToParent(json_encode($SendData));
-        $devices = json_decode($data, true);
-
-        $this->SendDebug(__FUNCTION__, 'devices=' . print_r($devices, true), 0);
+        $dataCache = $this->ReadDataCache();
+        if (isset($dataCache['data']['devices'])) {
+            $devices = $dataCache['data']['devices'];
+            $this->SendDebug(__FUNCTION__, 'devices (from cache)=' . print_r($devices, true), 0);
+        } else {
+            $SendData = [
+                'DataID'   => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', // an MieleAtHomeIO
+                'CallerID' => $this->InstanceID,
+                'Function' => 'GetDevices'
+            ];
+            $data = $this->SendDataToParent(json_encode($SendData));
+            $devices = json_decode($data, true);
+            $this->SendDebug(__FUNCTION__, 'devices=' . print_r($devices, true), 0);
+            if (is_array($devices)) {
+                $dataCache['data']['devices'] = $devices;
+            }
+            $this->WriteDataCache($dataCache, time());
+        }
 
         $guid = '{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}'; // Miele@Home Device
         $instIDs = IPS_GetInstanceListByModuleID($guid);
@@ -92,18 +108,32 @@ class MieleAtHomeConfig extends IPSModule
                 foreach ($instIDs as $instID) {
                     if ($fabNumber == IPS_GetProperty($instID, 'fabNumber')) {
                         $MieleatHome_device_name = IPS_GetName($instID);
-                        $this->SendDebug(__FUNCTION__, 'device found: ' . utf8_decode($MieleatHome_device_name) . ' (' . $instID . ')', 0);
+                        $this->SendDebug(__FUNCTION__, 'device found: ' . $MieleatHome_device_name . ' (' . $instID . ')', 0);
                         $instanceID = $instID;
                         break;
                     }
                 }
 
                 if ($instanceID == 0) {
-                    $SendData = ['DataID' => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', 'Function' => 'GetDeviceIdent', 'Ident' => $fabNumber];
-                    $device_data = $this->SendDataToParent(json_encode($SendData));
-                    $this->SendDebug(__FUNCTION__, 'device_data=' . $device_data, 0);
+                    if (isset($dataCache['data']['device'][$fabNumber])) {
+                        $device = $dataCache['data']['device'][$fabNumber];
+                        $this->SendDebug(__FUNCTION__, 'device (from cache)=' . print_r($device, true), 0);
+                    } else {
+                        $SendData = [
+                            'DataID'   => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', // an MieleAtHomeIO
+                            'CallerID' => $this->InstanceID,
+                            'Function' => 'GetDeviceIdent',
+                            'Ident'    => $fabNumber
+                        ];
+                        $device_data = $this->SendDataToParent(json_encode($SendData));
+                        $device = json_decode($device_data, true);
+                        $this->SendDebug(__FUNCTION__, 'device=' . print_r($device, true), 0);
+                        if (is_array($device)) {
+                            $dataCache['data']['device'][$fabNumber] = $device;
+                            $this->WriteDataCache($dataCache, 0);
+                        }
+                    }
 
-                    $device = json_decode($device_data, true);
                     $deviceId = $device['type']['value_raw'];
                     $deviceType = $device['type']['value_localized'];
                     $techType = $device['deviceIdentLabel']['techType'];
@@ -237,7 +267,8 @@ class MieleAtHomeConfig extends IPSModule
                     'width'   => '200px'
                 ]
             ],
-            'values' => $entries
+            'values'            => $entries,
+            'discoveryInterval' => 60 * 60 * 24,
         ];
 
         return $formElements;
@@ -255,6 +286,8 @@ class MieleAtHomeConfig extends IPSModule
 
             return $formActions;
         }
+
+        $formActions[] = $this->GetRefreshDataCacheFormAction();
 
         $formActions[] = $this->GetInformationFormAction();
         $formActions[] = $this->GetReferencesFormAction();

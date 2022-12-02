@@ -3,6 +3,9 @@
 		"de": {
 			"Miele@Home device": "Miele@Home Gerät",
 
+			"__function__": "CheckUpdate",
+			"Adjust variableprofile 'MieleAtHome.Status'": "Adjust variableprofile 'MieleAtHome.Status'",
+
 			"__function__": "CheckConfiguration",
 			"Device id must be specified": "Geräete-Typ-ID muss angegeben sein",
 			"Fabrication number must be specified": "Seriennummer muss angegeben sein",

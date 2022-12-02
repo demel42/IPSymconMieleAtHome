@@ -14,13 +14,17 @@ class MieleAtHomeIO extends IPSModule
 
     private $oauthIdentifer = 'miele_at_home';
 
+    private static $semaphoreTM = 5 * 1000;
+
     private $ModuleDir;
+    private $SemaphoreID;
 
     public function __construct(string $InstanceID)
     {
         parent::__construct($InstanceID);
 
         $this->ModuleDir = __DIR__;
+        $this->SemaphoreID = __CLASS__ . '_' . $InstanceID;
     }
 
     public function Create()
@@ -42,6 +46,7 @@ class MieleAtHomeIO extends IPSModule
         $this->RegisterAttributeString('RefreshToken', '');
 
         $this->RegisterAttributeString('UpdateInfo', '');
+        $this->RegisterAttributeString('ApiCallStats', json_encode([]));
 
         $this->InstallVarProfiles(false);
 
@@ -522,9 +527,10 @@ class MieleAtHomeIO extends IPSModule
                 $this->GetInstallVarProfilesFormItem(),
                 [
                     'type'    => 'Button',
-                    'caption' => 'Clear Token',
+                    'caption' => 'Clear token',
                     'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "ClearToken", "");',
                 ],
+                $this->GetApiCallStatsFormItem(),
             ]
         ];
 
@@ -598,6 +604,11 @@ class MieleAtHomeIO extends IPSModule
 
     private function ClearToken()
     {
+        if (IPS_SemaphoreEnter($this->SemaphoreID, self::$semaphoreTM) == false) {
+            $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
+            return false;
+        }
+
         $refresh_token = $this->ReadAttributeString('RefreshToken');
         $this->SendDebug(__FUNCTION__, 'clear refresh_token=' . $refresh_token, 0);
         $this->WriteAttributeString('RefreshToken', '');
@@ -611,6 +622,8 @@ class MieleAtHomeIO extends IPSModule
         if ($oauth_type == self::$CONNECTION_OAUTH) {
             $this->MaintainStatus(self::$IS_NOLOGIN);
         }
+
+        IPS_SemaphoreLeave($this->SemaphoreID);
     }
 
     protected function SendData($buf)
@@ -629,6 +642,10 @@ class MieleAtHomeIO extends IPSModule
 
         $jdata = json_decode($data, true);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($jdata, true), 0);
+
+        $callerID = $jdata['CallerID'];
+        $this->SendDebug(__FUNCTION__, 'caller=' . $callerID . '(' . IPS_GetName($callerID) . ')', 0);
+        $_IPS['CallerID'] = $callerID;
 
         $ret = '';
 
@@ -674,6 +691,11 @@ class MieleAtHomeIO extends IPSModule
 
     private function GetAccessToken(&$msg)
     {
+        if (IPS_SemaphoreEnter($this->SemaphoreID, self::$semaphoreTM) == false) {
+            $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
+            return false;
+        }
+
         $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
         switch ($oauth_type) {
             case self::$CONNECTION_OAUTH:
@@ -717,6 +739,7 @@ class MieleAtHomeIO extends IPSModule
                     $this->SendDebug(__FUNCTION__, 'token: statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true) . ', msg=' . $msg, 0);
                     if ($statuscode != 0) {
                         $this->MaintainStatus($statuscode);
+                        IPS_SemaphoreLeave($this->SemaphoreID);
                         return '';
                     }
 
@@ -738,6 +761,7 @@ class MieleAtHomeIO extends IPSModule
                 $access_token = false;
                 break;
         }
+        IPS_SemaphoreLeave($this->SemaphoreID);
         return $access_token;
     }
 
@@ -748,6 +772,11 @@ class MieleAtHomeIO extends IPSModule
         $access_token = $this->GetAccessToken($msg);
         if ($access_token == false) {
             return false;
+        }
+
+        if (IPS_SemaphoreEnter($this->SemaphoreID, self::$semaphoreTM) == false) {
+            $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
+            return;
         }
 
         $params = [
@@ -764,10 +793,12 @@ class MieleAtHomeIO extends IPSModule
         $this->SendDebug(__FUNCTION__, 'statuscode=' . $statuscode . ', data=' . print_r($data, true), 0);
         if ($statuscode != 0) {
             $this->MaintainStatus($statuscode);
+            IPS_SemaphoreLeave($this->SemaphoreID);
             return false;
         }
 
         $this->MaintainStatus(IS_ACTIVE);
+        IPS_SemaphoreLeave($this->SemaphoreID);
         return $statuscode ? false : true;
     }
 
@@ -778,6 +809,11 @@ class MieleAtHomeIO extends IPSModule
         $access_token = $this->GetAccessToken($msg);
         if ($access_token == false) {
             return false;
+        }
+
+        if (IPS_SemaphoreEnter($this->SemaphoreID, self::$semaphoreTM) == false) {
+            $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
+            return;
         }
 
         $params = [
@@ -797,10 +833,12 @@ class MieleAtHomeIO extends IPSModule
         $this->SendDebug(__FUNCTION__, 'statuscode=' . $statuscode . ', data=' . print_r($data, true), 0);
         if ($statuscode != 0) {
             $this->MaintainStatus($statuscode);
+            IPS_SemaphoreLeave($this->SemaphoreID);
             return false;
         }
 
         $this->MaintainStatus(IS_ACTIVE);
+        IPS_SemaphoreLeave($this->SemaphoreID);
         return $statuscode ? false : true;
     }
 
@@ -892,7 +930,7 @@ class MieleAtHomeIO extends IPSModule
             $this->LogMessage('url=' . $url . ' => statuscode=' . $statuscode . ', err=' . $err, KL_WARNING);
             $this->SendDebug(__FUNCTION__, ' => statuscode=' . $statuscode . ', err=' . $err . ', msg=' . $msg, 0);
         }
-
+        $this->ApiCallsCollect($url, $err, $statuscode);
         return $statuscode;
     }
 }
