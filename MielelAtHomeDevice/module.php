@@ -538,6 +538,8 @@ class MieleAtHomeDevice extends IPSModule
             return;
         }
 
+        $now = time();
+
         $this->SetUpdateInterval();
 
         $fabNumber = $this->ReadPropertyString('fabNumber');
@@ -600,8 +602,7 @@ class MieleAtHomeDevice extends IPSModule
         $signalFailure = (bool) $this->GetArrayElem($jdata, 'signalFailure', false);
         $this->SaveValue('Failure', $signalFailure, $is_changed);
 
-        $dt = new DateTime(date('d.m.Y H:i:00'));
-        $now = (int) $dt->format('U');
+        $base_ts = strtotime(date('d.m.Y H:i:00', $now));
 
         $startTime = 0;
         $endTime = 0;
@@ -663,7 +664,7 @@ class MieleAtHomeDevice extends IPSModule
                     $startDelay = ($startTime_H * 60 + $startTime_M) * 60;
 
                     if ($startDelay > 0) {
-                        $startTime = $now + $startDelay;
+                        $startTime = $base_ts + $startDelay;
                     }
                     if ($remainingTime > 0) {
                         $endTime = $startTime + $remainingTime * 60;
@@ -674,8 +675,8 @@ class MieleAtHomeDevice extends IPSModule
                     $elapsedTime_M = $this->GetArrayElem($jdata, 'elapsedTime.1', 0);
                     $elapsedTime = $elapsedTime_H * 60 + $elapsedTime_M;
 
-                    $endTime = $now + $remainingTime * 60;
-                    $startTime = $now - $elapsedTime * 60;
+                    $endTime = $base_ts + $remainingTime * 60;
+                    $startTime = $base_ts - $elapsedTime * 60;
 
                     if ($elapsedTime && $remainingTime) {
                         $workProgress = floor($elapsedTime / ($elapsedTime + $remainingTime) * 100);
@@ -1187,7 +1188,8 @@ class MieleAtHomeDevice extends IPSModule
         $actions = $this->getEnabledActions(false);
         $processAction = isset($actions['processAction']) ? $actions['processAction'] : [];
         $light = isset($actions['light']) ? $actions['light'] : [];
-        $targetTemperature = isset($targetTemperature['light']) ? $targetTemperature['light'] : [];
+        $startTime = isset($actions['startTime']) ? $actions['startTime'] : [];
+        $targetTemperature = isset($actions['targetTemperature']) ? $actions['targetTemperature'] : [];
         $powerOff = isset($actions['powerOff']) ? $actions['powerOff'] : false;
         $powerOn = isset($actions['powerOn']) ? $actions['powerOn'] : false;
 
@@ -1248,12 +1250,9 @@ class MieleAtHomeDevice extends IPSModule
                 }
                 break;
             case 'SetStarttime':
-                /*
-                   $state = $this->GetValue('State');
-                   if (in_array($state, [self::$STATE_ON, self::$STATUS_PROGRAMMED, self::$STATUS_WAITING_TO_START])) {
-                        $enabled = true;
-                   }
-                 */
+                if ($startTime != []) {
+                    $enabled = true;
+                }
                 break;
             case 'SetTargetTemperature_1':
                 foreach ($targetTemperature as $t) {
@@ -1517,13 +1516,29 @@ class MieleAtHomeDevice extends IPSModule
         switch ($ident) {
             case 'StartTime':
                 if ($value > 0) {
+                    /*
                     $hour = (int) date('H', $value);
                     $min = (int) date('i', $value);
-                    $r = $this->SetStarttime($hour, $min);
-                    if ($r) {
-                        $this->SetValue($ident, $value);
+                     */
+                    $sec = $value - time();
+                    if ($sec < 0) {
+                        $sec += 24 * 60 * 60;
                     }
-                    $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' (hour=' . $hour . '. min=' . $min . ') => ret=' . $r, 0);
+                    if ($sec < 0) {
+                        $sec %= 24 * 60 * 60;
+                        $hour = floor($sec / 3600);
+                        $sec %= 3600;
+                        $min = floor($sec / 60);
+                    }
+                    if ($hour > 0 || $min > 0) {
+                        $r = $this->SetStarttime($hour, $min);
+                        if ($r) {
+                            $this->SetValue($ident, $value);
+                        }
+                        $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' (hour=' . $hour . '. min=' . $min . ') => ret=' . $r, 0);
+                    } else {
+                        $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' (' . date('d.m.Y H:i:s', $value) . ') => ret=' . $r, 0);
+                    }
                 }
                 break;
             case 'Action':

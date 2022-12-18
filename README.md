@@ -260,7 +260,7 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.30 @ 02.12.2022 16:43
+- 1.30 @ 18.12.2022 09:45
   - Neu: Typ 19(Kühlschrank) und 20 (Gefrierschrank) hinzugefügt
   - Neu: Möglichkeit, die Temperatur zu setzen für Kühl- und Gefrierschränke
   - Neu: Führen einer Statistik der API-Calls im IO-Modul, Anzeige als Popup im Experten-Bereich

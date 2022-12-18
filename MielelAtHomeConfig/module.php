@@ -89,7 +89,7 @@ class MieleAtHomeConfig extends IPSModule
                 'Function' => 'GetDevices'
             ];
             $data = $this->SendDataToParent(json_encode($SendData));
-            $devices = json_decode($data, true);
+			$devices = @json_decode($data, true);
             $this->SendDebug(__FUNCTION__, 'devices=' . print_r($devices, true), 0);
             if (is_array($devices)) {
                 $dataCache['data']['devices'] = $devices;
@@ -102,13 +102,12 @@ class MieleAtHomeConfig extends IPSModule
 
         if (is_array($devices)) {
             foreach ($devices as $fabNumber => $device) {
-                $this->SendDebug(__FUNCTION__, 'fabNumber=' . $fabNumber . ', device=' . json_encode($device), 0);
+                $this->SendDebug(__FUNCTION__, 'fabNumber=' . $fabNumber . ', device=' . print_r($device, true), 0);
 
                 $instanceID = 0;
                 foreach ($instIDs as $instID) {
                     if ($fabNumber == IPS_GetProperty($instID, 'fabNumber')) {
-                        $MieleatHome_device_name = IPS_GetName($instID);
-                        $this->SendDebug(__FUNCTION__, 'device found: ' . $MieleatHome_device_name . ' (' . $instID . ')', 0);
+                        $this->SendDebug(__FUNCTION__, 'instance found: ' . IPS_GetName($instID) . ' (' . $instID . ')', 0);
                         $instanceID = $instID;
                         break;
                     }
@@ -126,7 +125,7 @@ class MieleAtHomeConfig extends IPSModule
                             'Ident'    => $fabNumber
                         ];
                         $device_data = $this->SendDataToParent(json_encode($SendData));
-                        $device = json_decode($device_data, true);
+						$device = @json_decode($device_data, true);
                         $this->SendDebug(__FUNCTION__, 'device=' . print_r($device, true), 0);
                         if (is_array($device)) {
                             $dataCache['data']['device'][$fabNumber] = $device;
