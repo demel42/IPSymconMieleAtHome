@@ -260,6 +260,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.30.1 @ 21.12.2022 09:43
+  - Verbesserung: Text zum Datencache verbessert und unter dem Konfigurator positioniert
+  - update submodule CommonStubs
+
 - 1.30 @ 18.12.2022 09:45
   - Neu: Typ 19(Kühlschrank) und 20 (Gefrierschrank) hinzugefügt
   - Neu: Möglichkeit, die Temperatur zu setzen für Kühl- und Gefrierschränke

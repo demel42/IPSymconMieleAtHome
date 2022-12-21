@@ -269,6 +269,7 @@ class MieleAtHomeConfig extends IPSModule
             'values'            => $entries,
             'discoveryInterval' => 60 * 60 * 24,
         ];
+        $formElements[] = $this->GetRefreshDataCacheFormAction();
 
         return $formElements;
     }
@@ -285,8 +286,6 @@ class MieleAtHomeConfig extends IPSModule
 
             return $formActions;
         }
-
-        $formActions[] = $this->GetRefreshDataCacheFormAction();
 
         $formActions[] = $this->GetInformationFormAction();
         $formActions[] = $this->GetReferencesFormAction();
