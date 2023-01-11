@@ -260,6 +260,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.30.2 @ 11.01.2023 14:35
+  - Fix: Handling des Datencache abgesichert
+  - update submodule CommonStubs
+
 - 1.30.1 @ 21.12.2022 09:43
   - Verbesserung: Text zum Datencache verbessert und unter dem Konfigurator positioniert
   - update submodule CommonStubs
