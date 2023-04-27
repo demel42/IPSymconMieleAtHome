@@ -260,6 +260,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.31 @ 27.04.2023 17:05
+  - Neu: Auswertung von "Hinweis" (signalInfo)
+
 - 1.30.2 @ 11.01.2023 14:35
   - Fix: Handling des Datencache abgesichert
   - update submodule CommonStubs

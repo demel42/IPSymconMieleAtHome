@@ -279,6 +279,7 @@ class MieleAtHomeDevice extends IPSModule
 
         $this->MaintainVariable('State', $this->Translate('State'), VARIABLETYPE_INTEGER, 'MieleAtHome.Status', $vpos++, true);
         $this->MaintainVariable('Failure', $this->Translate('Failure'), VARIABLETYPE_BOOLEAN, 'Alert', $vpos++, true);
+        $this->MaintainVariable('Info', $this->Translate('Info'), VARIABLETYPE_BOOLEAN, 'Alert', $vpos++, true);
 
         $this->MaintainVariable('PowerSupply', $this->Translate('Power supply'), VARIABLETYPE_INTEGER, 'MieleAtHome.PowerSupply', $vpos++, $opts['enabled_powersupply']);
 
@@ -601,6 +602,9 @@ class MieleAtHomeDevice extends IPSModule
 
         $signalFailure = (bool) $this->GetArrayElem($jdata, 'signalFailure', false);
         $this->SaveValue('Failure', $signalFailure, $is_changed);
+
+        $signalInfo = (bool) $this->GetArrayElem($jdata, 'signalInfo', false);
+        $this->SaveValue('Info', $signalInfo, $is_changed);
 
         $base_ts = strtotime(date('d.m.Y H:i:00', $now));
 
