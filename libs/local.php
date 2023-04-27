@@ -136,6 +136,12 @@ trait MieleAtHomeLocalLib
             $this->SendDebug(__FUNCTION__, 'reInstall=' . $this->bool2str($reInstall), 0);
         }
 
+        $associations = [
+            ['Wert' => false, 'Name' => $this->Translate('No'), 'Farbe' => -1],
+            ['Wert' => true, 'Name' => $this->Translate('Yes'), 'Farbe' => -1],
+        ];
+        $this->CreateVarProfile('MieleAtHome.YesNo', VARIABLETYPE_BOOLEAN, '', 0, 0, 0, 0, '', $associations, $reInstall);
+
         $this->CreateVarProfile('MieleAtHome.Duration', VARIABLETYPE_INTEGER, ' min', 0, 0, 0, 0, 'Hourglass', [], $reInstall);
         $this->CreateVarProfile('MieleAtHome.Temperature', VARIABLETYPE_INTEGER, ' °C', 0, 0, 0, 0, 'Temperature', [], $reInstall);
         $this->CreateVarProfile('MieleAtHome.SpinningSpeed', VARIABLETYPE_INTEGER, ' U/min', 0, 0, 0, 0, '', [], $reInstall);

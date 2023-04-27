@@ -1,6 +1,10 @@
 {
 	"translations": {
 		"de": {
+			"__variableprofile__": "MieleAtHome.YesNo",
+			"No": "Nein",
+			"Yes": "Ja",
+
 			"__variableprofile__": "MieleAtHome.Status",
 			"Unknown": "Unbekannt",
             "Reserved": "Reserviert",
