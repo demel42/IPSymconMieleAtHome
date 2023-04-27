@@ -278,8 +278,8 @@ class MieleAtHomeDevice extends IPSModule
         $vpos = 1;
 
         $this->MaintainVariable('State', $this->Translate('State'), VARIABLETYPE_INTEGER, 'MieleAtHome.Status', $vpos++, true);
-        $this->MaintainVariable('Failure', $this->Translate('Failure'), VARIABLETYPE_BOOLEAN, 'Alert', $vpos++, true);
-        $this->MaintainVariable('Info', $this->Translate('Info'), VARIABLETYPE_BOOLEAN, 'Alert', $vpos++, true);
+        $this->MaintainVariable('Failure', $this->Translate('Failure detected'), VARIABLETYPE_BOOLEAN, 'Alert', $vpos++, true);
+        $this->MaintainVariable('Info', $this->Translate('Information available'), VARIABLETYPE_BOOLEAN, 'Alert', $vpos++, true);
 
         $this->MaintainVariable('PowerSupply', $this->Translate('Power supply'), VARIABLETYPE_INTEGER, 'MieleAtHome.PowerSupply', $vpos++, $opts['enabled_powersupply']);
 

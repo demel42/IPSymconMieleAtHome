@@ -260,7 +260,7 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.31 @ 27.04.2023 17:05
+- 1.31 @ 27.04.2023 18:08
   - Neu: Auswertung von "Hinweis" (signalInfo)
 
 - 1.30.2 @ 11.01.2023 14:35
