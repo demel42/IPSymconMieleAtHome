@@ -260,6 +260,12 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.32  @ 05.07.2023 17:02
+  - Vorbereitung auf IPS 7 / PHP 8.2
+  - Neu: Schalter, um die Meldung eines inaktiven Gateway zu steuern
+  - update submodule CommonStubs
+    - Absicherung bei Zugriff auf Objekte und Inhalte
+
 - 1.31 @ 27.04.2023 18:08
   - Neu: Auswertung von "Hinweis" (signalInfo)
 

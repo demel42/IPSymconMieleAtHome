@@ -31,6 +31,11 @@
 			"Update interval": "Aktualisierungsintervall",
 			"Seconds": "Sekunden",
 
+			"Generate message when the gateway is inactive": "Meldung erzeugen wenn der Gateway inaktiv ist",
+
+			"__messages__": "",
+			"Instance has no active gateway": "Instanz hat keinen aktiven Gateway",
+
 			"__variables__": "",
 			"Action": "Aktion",
 			"Battery level": "Batterie-Kapazität",
