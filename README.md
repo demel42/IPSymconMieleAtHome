@@ -260,7 +260,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.32  @ 05.07.2023 17:02
+- 1.32.1 @ 10.07.2023 09:34
+  - Fix: Setzen von Kühl-/Tiefküh-Temperatur
+
+- 1.32 @ 05.07.2023 17:02
   - Vorbereitung auf IPS 7 / PHP 8.2
   - Neu: Schalter, um die Meldung eines inaktiven Gateway zu steuern
   - update submodule CommonStubs

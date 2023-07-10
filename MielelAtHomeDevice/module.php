@@ -1,5 +1,8 @@
 <?php
 
+// coreTemperature, coreTargetTemperature
+// type 12, 13, 31
+
 declare(strict_types=1);
 
 require_once __DIR__ . '/../libs/common.php';
@@ -152,6 +155,7 @@ class MieleAtHomeDevice extends IPSModule
 
                 $opts['enabled_powersupply'] = true;
                 $opts['enabled_supercooling'] = true;
+                $opts['enabled_fridge_temp'] = true;
                 break;
             case self::$DEVICE_FREEZER:								// Gefrierschrank
                 $opts['freezer_temp'] = true;
@@ -160,6 +164,7 @@ class MieleAtHomeDevice extends IPSModule
 
                 $opts['enabled_powersupply'] = true;
                 $opts['enabled_superfreezing'] = true;
+                $opts['enabled_freezer_temp'] = true;
                 break;
             case self::$DEVICE_FRIDGE_FREEZER:						// Kühl-/Gefrierkombination
                 $opts['fridge_temp'] = true;
@@ -171,6 +176,8 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['enabled_powersupply'] = true;
                 $opts['enabled_superfreezing'] = true;
                 $opts['enabled_supercooling'] = true;
+                $opts['enabled_freezer_temp'] = true;
+                $opts['enabled_fridge_temp'] = true;
                 break;
             case self::$DEVICE_DISH_WARMER:							// Wärmeschublade
                 $opts['program_name'] = true;
