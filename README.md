@@ -263,7 +263,7 @@ Verweise:
 - 1.33 @ 11.07.2023 09:18
   - Fix: Setzen von Kühl-/Tiefkühl-Temperatur
   - Neu: Unterstützung der Miele-API-Version 1.0.7 (05.07.2023)
-    - Kerntemoeratur (bei Öfen)
+    - Kerntemperatur (bei Öfen)
 	- bislang nicht unterstützt (mangels Testmöglichkeit):
 	  - Abzugshaube: Einschaltdauer sowie Farbe des Umgebungslichts
 
