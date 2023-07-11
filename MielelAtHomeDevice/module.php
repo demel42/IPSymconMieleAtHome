@@ -1534,8 +1534,10 @@ class MieleAtHomeDevice extends IPSModule
 
         $action = [
             'targetTemperature' => [
-                'zone'  => $zone,
-                'value' => $temp,
+                [
+                    'zone'  => $zone,
+                    'value' => $temp,
+                ],
             ],
         ];
 
