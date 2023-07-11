@@ -1658,7 +1658,7 @@ class MieleAtHomeDevice extends IPSModule
             case 'Fridge_TargetTemperature':
                 $deviceId = $this->ReadPropertyInteger('deviceId');
                 $opts = $this->getDeviceOptions($deviceId);
-                $zone = $opts['fridge_zone'];
+                $zone = $opts['fridge_zone'] - 1;
                 $r = $this->SetTargetTemperature($zone, $value);
                 if ($r) {
                     $this->SetValue($ident, $value);
@@ -1668,7 +1668,7 @@ class MieleAtHomeDevice extends IPSModule
             case 'Freezer_TargetTemperature':
                 $deviceId = $this->ReadPropertyInteger('deviceId');
                 $opts = $this->getDeviceOptions($deviceId);
-                $zone = $opts['freezer_zone'];
+                $zone = $opts['freezer_zone'] - 1;
                 $r = $this->SetTargetTemperature($zone, $value);
                 if ($r) {
                     $this->SetValue($ident, $value);
