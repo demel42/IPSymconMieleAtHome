@@ -67,6 +67,8 @@
 			"State": "Status",
 			"Target temperature": "Soll-Temperatur",
 			"Temperature": "Temperatur",
+			"Target core temperature": "Ziel-Kerntemperatur",
+			"Core temperature": "Kerntemperatur",
 			"Ventilation step": "Entlüftungsstufe",
 			"Work progress": "Arbeitsfortschritt",
 

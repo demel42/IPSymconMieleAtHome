@@ -1,8 +1,5 @@
 <?php
 
-// coreTemperature, coreTargetTemperature
-// type 12, 13, 31
-
 declare(strict_types=1);
 
 require_once __DIR__ . '/../libs/common.php';
@@ -84,6 +81,7 @@ class MieleAtHomeDevice extends IPSModule
             'enabled_powersupply'   => false,
             'enabled_fridge_temp'   => false,
             'enabled_freezer_temp'  => false,
+            'core_temp'             => false,
         ];
 
         switch ($deviceId) {
@@ -134,6 +132,7 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['program_phase'] = true;
                 $opts['times'] = true;
                 $opts['oven_temp'] = true;
+                $opts['core_temp'] = true;
                 $opts['door'] = true;
 
                 $opts['enabled_powersupply'] = true;
@@ -188,6 +187,7 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['program_phase'] = true;
                 $opts['times'] = true;
                 $opts['oven_temp'] = true;
+                $opts['core_temp'] = true;
                 $opts['door'] = true;
 
                 $opts['enabled_powersupply'] = true;
@@ -327,6 +327,9 @@ class MieleAtHomeDevice extends IPSModule
 
         $this->MaintainVariable('Oven_TargetTemperature', $this->Translate('Target temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $opts['oven_temp']);
         $this->MaintainVariable('Oven_Temperature', $this->Translate('Temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $opts['oven_temp']);
+
+        $this->MaintainVariable('Core_TargetTemperature', $this->Translate('Target core temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $opts['core_temp']);
+        $this->MaintainVariable('Core_Temperature', $this->Translate('Core temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $opts['core_temp']);
 
         $vpos = 80;
         $this->MaintainVariable('CurrentWaterConsumption', $this->Translate('Current water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $opts['ecoFeedback_Water']);
@@ -813,6 +816,19 @@ class MieleAtHomeDevice extends IPSModule
                 $temperature = 0;
             }
             $this->SaveValue('Oven_Temperature', $temperature, $is_changed);
+        }
+        if ($opts['core_temp']) {
+            $targetTemperature = $this->GetArrayElem($jdata, 'coreTargetTemperature.0.value_localized', 0);
+            if ($targetTemperature <= -326) {
+                $targetTemperature = 0;
+            }
+            $this->SaveValue('Core_TargetTemperature', $targetTemperature, $is_changed);
+
+            $temperature = $this->GetArrayElem($jdata, 'coreTemperature.0.value_localized', 0);
+            if ($temperature <= -326) {
+                $temperature = 0;
+            }
+            $this->SaveValue('Core_Temperature', $temperature, $is_changed);
         }
 
         if ($opts['ecoFeedback_Water']) {
@@ -1640,6 +1656,7 @@ class MieleAtHomeDevice extends IPSModule
                 $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
             case 'Fridge_TargetTemperature':
+                $deviceId = $this->ReadPropertyInteger('deviceId');
                 $opts = $this->getDeviceOptions($deviceId);
                 $zone = $opts['fridge_zone'];
                 $r = $this->SetTargetTemperature($zone, $value);
@@ -1649,6 +1666,7 @@ class MieleAtHomeDevice extends IPSModule
                 $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
             case 'Freezer_TargetTemperature':
+                $deviceId = $this->ReadPropertyInteger('deviceId');
                 $opts = $this->getDeviceOptions($deviceId);
                 $zone = $opts['freezer_zone'];
                 $r = $this->SetTargetTemperature($zone, $value);

@@ -260,8 +260,12 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.32.1 @ 10.07.2023 09:34
-  - Fix: Setzen von Kühl-/Tiefküh-Temperatur
+- 1.33 @ 11.07.2023 09:18
+  - Fix: Setzen von Kühl-/Tiefkühl-Temperatur
+  - Neu: Unterstützung der Miele-API-Version 1.0.7 (05.07.2023)
+    - Kerntemoeratur (bei Öfen)
+	- bislang nicht unterstützt (mangels Testmöglichkeit):
+	  - Abzugshaube: Einschaltdauer sowie Farbe des Umgebungslichts
 
 - 1.32 @ 05.07.2023 17:02
   - Vorbereitung auf IPS 7 / PHP 8.2
