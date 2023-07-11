@@ -260,7 +260,7 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 1.33 @ 11.07.2023 09:44
+- 1.33 @ 11.07.2023 11:19
   - Fix: Setzen von Kühl-/Tiefkühl-Temperatur
   - Neu: Unterstützung der Miele-API-Version 1.0.7 (05.07.2023)
     - Kerntemperatur (bei Öfen)

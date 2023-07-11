@@ -173,10 +173,10 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['door'] = true;
 
                 $opts['enabled_powersupply'] = true;
-                $opts['enabled_superfreezing'] = true;
                 $opts['enabled_supercooling'] = true;
-                $opts['enabled_freezer_temp'] = true;
+                $opts['enabled_superfreezing'] = true;
                 $opts['enabled_fridge_temp'] = true;
+                $opts['enabled_freezer_temp'] = true;
                 break;
             case self::$DEVICE_DISH_WARMER:							// Wärmeschublade
                 $opts['program_name'] = true;
@@ -990,7 +990,7 @@ class MieleAtHomeDevice extends IPSModule
 
         if ($opts['enabled_fridge_temp']) {
             $zone = $opts['fridge_zone'];
-            if ($zone >= 0 && $this->checkAction('SetTargetTemperature_' . $zone, false)) {
+            if ($zone > 0 && $this->checkAction('SetTargetTemperature_' . $zone, false)) {
                 $b = true;
             } else {
                 $b = false;
@@ -1001,7 +1001,7 @@ class MieleAtHomeDevice extends IPSModule
 
         if ($opts['enabled_freezer_temp']) {
             $zone = $opts['freezer_zone'];
-            if ($zone >= 0 && $this->checkAction('SetTargetTemperature_' . $zone, false)) {
+            if ($zone > 0 && $this->checkAction('SetTargetTemperature_' . $zone, false)) {
                 $b = true;
             } else {
                 $b = false;
@@ -1515,6 +1515,23 @@ class MieleAtHomeDevice extends IPSModule
             return false;
         }
 
+        $actions = $this->getEnabledActions(false);
+        $targetTemperature = isset($actions['targetTemperature']) ? $actions['targetTemperature'] : [];
+        foreach ($targetTemperature as $t) {
+            if ($t['zone'] == $zone) {
+                $this->SendDebug(__FUNCTION__, 't=' . print_r($t, true), 0);
+                if (isset($t['min']) && $temp < $t['min']) {
+                    $this->SendDebug(__FUNCTION__, 'temp=' . $temp . ' is < min=' . $t['min'], 0);
+                    return false;
+                }
+                if (isset($t['max']) && $temp > $t['max']) {
+                    $this->SendDebug(__FUNCTION__, 'temp=' . $temp . ' is > max=' . $t['max'], 0);
+                    return false;
+                }
+                break;
+            }
+        }
+
         $action = [
             'targetTemperature' => [
                 'zone'  => $zone,
@@ -1658,7 +1675,7 @@ class MieleAtHomeDevice extends IPSModule
             case 'Fridge_TargetTemperature':
                 $deviceId = $this->ReadPropertyInteger('deviceId');
                 $opts = $this->getDeviceOptions($deviceId);
-                $zone = $opts['fridge_zone'] - 1;
+                $zone = $opts['fridge_zone'];
                 $r = $this->SetTargetTemperature($zone, $value);
                 if ($r) {
                     $this->SetValue($ident, $value);
@@ -1668,7 +1685,7 @@ class MieleAtHomeDevice extends IPSModule
             case 'Freezer_TargetTemperature':
                 $deviceId = $this->ReadPropertyInteger('deviceId');
                 $opts = $this->getDeviceOptions($deviceId);
-                $zone = $opts['freezer_zone'] - 1;
+                $zone = $opts['freezer_zone'];
                 $r = $this->SetTargetTemperature($zone, $value);
                 if ($r) {
                     $this->SetValue($ident, $value);
