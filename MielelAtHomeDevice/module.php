@@ -12,13 +12,16 @@ class MieleAtHomeDevice extends IPSModule
     use MieleAtHomeLocalLib;
     use MieleAtHomeImagesLib;
 
-    private $ModuleDir;
-
     public function __construct(string $InstanceID)
     {
         parent::__construct($InstanceID);
 
-        $this->ModuleDir = __DIR__;
+        $this->CommonContruct(__DIR__);
+    }
+
+    public function __destruct()
+    {
+        $this->CommonDestruct();
     }
 
     public function Create()
@@ -42,7 +45,8 @@ class MieleAtHomeDevice extends IPSModule
         $this->RegisterPropertyBoolean('map_dryingStep', true);
         $this->RegisterPropertyBoolean('map_ventilationStep', true);
 
-        $this->RegisterAttributeString('UpdateInfo', '');
+        $this->RegisterAttributeString('UpdateInfo', json_encode([]));
+        $this->RegisterAttributeString('ModuleStats', json_encode([]));
 
         $this->InstallVarProfiles(false);
 

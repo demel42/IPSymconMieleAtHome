@@ -260,6 +260,11 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 1.34 @ 15.10.2023 13:51
+  - Neu: Ermittlung von Speicherbedarf und Laufzeit (aktuell und für 31 Tage) und Anzeige im Panel "Information"
+  - Fix: die Statistik der ApiCalls wird nicht mehr nach uri sondern nur noch host+cmd differenziert
+  - update submodule CommonStubs
+
 - 1.33 @ 11.07.2023 11:42
   - Fix: Setzen von Kühl-/Tiefkühl-Temperatur
   - Neu: Unterstützung der Miele-API-Version 1.0.7 (05.07.2023)
