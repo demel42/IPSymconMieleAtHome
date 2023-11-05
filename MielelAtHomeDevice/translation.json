@@ -5,6 +5,8 @@
 
 			"__function__": "CheckUpdate",
 			"Adjust variableprofile 'MieleAtHome.Status'": "Adjust variableprofile 'MieleAtHome.Status'",
+			"Changing the polling interval to hourly (due to the use of server sent events (SSE))":
+				"Änderung des Abfrageintervalls auf stündlich (aufgrund der Nutzung von Server-Sent-Events (SSE))",
 
 			"__function__": "CheckConfiguration",
 			"Device id must be specified": "Geräete-Typ-ID muss angegeben sein",
@@ -29,7 +31,7 @@
 
 			"Communication": "Kommunikation",
 			"Update interval": "Aktualisierungsintervall",
-			"Seconds": "Sekunden",
+			"Minutes": "Minuten",
 
 			"Generate message when the gateway is inactive": "Meldung erzeugen wenn der Gateway inaktiv ist",
 

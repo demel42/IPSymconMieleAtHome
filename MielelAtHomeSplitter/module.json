@@ -1,0 +1,22 @@
+{
+	"id": "{996743FB-1712-47A3-9174-858A08A13523}",
+	"name": "MieleAtHomeSplitter",
+	"type": 2,
+	"vendor": "Miele",
+	"aliases": [
+		"Miele@Home Splitter"
+	],
+	"parentRequirements": [
+		"{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}"
+	],
+	"childRequirements": [
+		"{D39AEB86-E611-4752-81C7-DBF7E41E79E1}",
+		"{40C8346D-9284-1D83-67C7-F9B46EF28C05}"
+	],
+	"implemented": [
+		"{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}",
+		"{5A709184-B602-D394-227F-207611A33BDF}"
+	],
+	"prefix": "MieleAtHome",
+	"url": "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md"
+}

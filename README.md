@@ -248,17 +248,25 @@ GUIDs
 
 - Modul: `{122A97CE-7642-4D77-B656-242B3E08AEA9}`
 - Instanzen:
-  - MielelAtHomeIO: `{996743FB-1712-47A3-9174-858A08A13523}`
+  - MielelAtHomeSplitter: `{996743FB-1712-47A3-9174-858A08A13523}`
   - MielelAtHomeConfig: `{1381CC46-77BF-4EA7-B954-85A0FDD28997}`
   - MielelAtHomeDevice: `{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}`
 - Nachrichten:
+	- `{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}`: an MieleAtHomeSplitter
 	- `{D39AEB86-E611-4752-81C7-DBF7E41E79E1}`: an MieleAtHomeConfig, MieleAtHomeDevice
-	- `{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}`: an MieleAtHomeIO
+	- `{40C8346D-9284-1D83-67C7-F9B46EF28C05}`: an MieleAtHomeDevice
 
 Verweise:
 - https://www.miele.com/developer/index.html
 
 ## 7. Versions-Historie
+
+- 2.0 @ 01.11.2023 15:02
+  - Neu: Benutzung der Event-Schnittstelle von Miele (Server-Sent Events)
+	Hierüber werden alle Änderungsmeldung der Geräte zeitnah empfangen ohne zyklischen Datenabruf!
+    Ein aktiver Abruf ist nur noch unter bestimmten Umständen sinnvoll und kann daher auf ein langes Intervall gesetzt werden; dieses wird nun in Minuten angegeben.
+    Diese Änderung erfordert, das die Miele@Home-I/O-Instanz nun als Splitter-Instanz geführt wird; das erfolgt beim Modul-Update automatisch.
+  - update submodule CommonStubs
 
 - 1.34 @ 15.10.2023 13:51
   - Neu: Ermittlung von Speicherbedarf und Laufzeit (aktuell und für 31 Tage) und Anzeige im Panel "Information"

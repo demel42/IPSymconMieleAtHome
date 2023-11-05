@@ -11,7 +11,8 @@
 	],
 	"childRequirements": [],
 	"implemented": [
-		"{D39AEB86-E611-4752-81C7-DBF7E41E79E1}"
+		"{D39AEB86-E611-4752-81C7-DBF7E41E79E1}",
+		"{40C8346D-9284-1D83-67C7-F9B46EF28C05}"
 	],
 	"prefix": "MieleAtHome",
 	"url": "https://github.com/demel42/IPSymconMieleAtHome/blob/master/README.md"

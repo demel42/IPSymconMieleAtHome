@@ -227,6 +227,10 @@ class MieleAtHomeDevice extends IPSModule
             $r[] = $this->Translate('Adjust variableprofile \'MieleAtHome.Status\'');
         }
 
+        if ($this->version2num($oldInfo) < $this->version2num('2.0')) {
+            $r[] = $this->Translate('Changing the polling interval to hourly (due to the use of server sent events (SSE))');
+        }
+
         return $r;
     }
 
@@ -237,6 +241,10 @@ class MieleAtHomeDevice extends IPSModule
                 IPS_DeleteVariableProfile('MieleAtHome.Status');
             }
             $this->InstallVarProfiles(false);
+        }
+
+        if ($this->version2num($oldInfo) < $this->version2num('2.0')) {
+            IPS_SetProperty($this->InstanceID, 'update_interval', 60);
         }
 
         return '';
@@ -479,7 +487,7 @@ class MieleAtHomeDevice extends IPSModule
                 [
                     'type'    => 'NumberSpinner',
                     'minimum' => 0,
-                    'suffix'  => 'Seconds',
+                    'suffix'  => 'Minutes',
                     'name'    => 'update_interval',
                     'caption' => 'Update interval'
                 ],
@@ -543,33 +551,39 @@ class MieleAtHomeDevice extends IPSModule
 
     protected function SetUpdateInterval()
     {
-        $sec = $this->ReadPropertyInteger('update_interval');
-        $msec = $sec > 0 ? $sec * 1000 : 0;
+        $min = $this->ReadPropertyInteger('update_interval');
+        $msec = $min > 0 ? $min * 60 * 1000 : 0;
         $this->MaintainTimer('UpdateData', $msec);
     }
 
-    private function UpdateData()
+    public function ReceiveData($data)
     {
         if ($this->CheckStatus() == self::$STATUS_INVALID) {
             $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
             return;
         }
 
-        if ($this->HasActiveParent() == false) {
-            $this->SendDebug(__FUNCTION__, 'has no active parent/gateway', 0);
-            $log_no_parent = $this->ReadPropertyBoolean('log_no_parent');
-            if ($log_no_parent) {
-                $this->LogMessage($this->Translate('Instance has no active gateway'), KL_WARNING);
-            }
-            return;
-        }
-
-        $now = time();
-
-        $this->SetUpdateInterval();
-
+        $jdata = json_decode($data, true);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($jdata, true), 0);
+        $event = $this->GetArrayElem($jdata, 'Event', 0);
+        $data = $this->GetArrayElem($jdata, 'Data', 0);
+        $jdata = json_decode($data, true);
         $fabNumber = $this->ReadPropertyString('fabNumber');
-        $deviceId = $this->ReadPropertyInteger('deviceId');
+        if (isset($jdata[$fabNumber])) {
+            $this->SendDebug(__FUNCTION__, 'event=' . $event . '=' . print_r($jdata[$fabNumber], true), 0);
+            if ($event == 'devices' && isset($jdata[$fabNumber]['state'])) {
+                $this->DecodeDevice('Event', $jdata[$fabNumber]['state']);
+            }
+            if ($event == 'actions') {
+                $this->DecodeActions('Event', $jdata[$fabNumber]);
+                $this->SetBuffer('EnabledActions', json_encode($jdata[$fabNumber]));
+            }
+        }
+    }
+
+    private function DecodeDevice($tag, $jdata)
+    {
+        $this->SendDebug(__FUNCTION__, 'tag=' . $tag . ', jdata=' . print_r($jdata, true), 0);
 
         $map_programName = $this->ReadPropertyBoolean('map_programName');
         $map_programType = $this->ReadPropertyBoolean('map_programType');
@@ -577,103 +591,110 @@ class MieleAtHomeDevice extends IPSModule
         $map_dryingStep = $this->ReadPropertyBoolean('map_dryingStep');
         $map_ventilationStep = $this->ReadPropertyBoolean('map_ventilationStep');
 
-        $SendData = [
-            'DataID'   => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}',
-            'CallerID' => $this->InstanceID,
-            'Function' => 'GetDeviceStatus',
-            'Ident'    => $fabNumber
-        ];
-        $data = $this->SendDataToParent(json_encode($SendData));
-
-        $this->SendDebug(__FUNCTION__, 'data=' . $data, 0);
-        if ($data == '') {
-            return;
-        }
-
-        $jdata = json_decode($data, true);
-        $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
-        if ($jdata == '') {
-            return;
-        }
-
+        $deviceId = $this->ReadPropertyInteger('deviceId');
         $opts = $this->getDeviceOptions($deviceId);
-        $this->SendDebug(__FUNCTION__, 'options=' . print_r($opts, true), 0);
+
+        $now = time();
 
         $is_changed = false;
+        $fnd = false;
 
-        $value_raw = $this->GetArrayElem($jdata, 'status.value_raw', 0);
-        $r = IPS_GetVariableProfile('MieleAtHome.Status');
-        $status = self::$STATE_UNKNOWN;
-        foreach ($r['Associations'] as $a) {
-            if ($a['Value'] == $value_raw) {
-                $status = $value_raw;
-                break;
+        $value_raw = $this->GetArrayElem($jdata, 'status.value_raw', 0, $fnd);
+        if ($fnd) {
+            $r = IPS_GetVariableProfile('MieleAtHome.Status');
+            $status = self::$STATE_UNKNOWN;
+            foreach ($r['Associations'] as $a) {
+                if ($a['Value'] == $value_raw) {
+                    $status = $value_raw;
+                    break;
+                }
             }
-        }
-        $this->SaveValue('State', $status, $is_changed);
-        if ($status == self::$STATE_UNKNOWN) {
-            $e = 'unknown value ' . $value_raw;
-            $value_localized = $this->GetArrayElem($jdata, 'status.value_localized', '');
-            if ($value_localized != '') {
-                $e .= ' (' . $value_localized . ')';
+            $this->SendDebug(__FUNCTION__, 'set "State" to ' . $status, 0);
+            $this->SaveValue('State', $status, $is_changed);
+            if ($status == self::$STATE_UNKNOWN) {
+                $e = 'unknown value ' . $value_raw;
+                $value_localized = $this->GetArrayElem($jdata, 'status.value_localized', '');
+                if ($value_localized != '') {
+                    $e .= ' (' . $value_localized . ')';
+                }
+                $this->SendDebug(__FUNCTION__, $e, 0);
+                $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_NOTIFY);
             }
-            $this->SendDebug(__FUNCTION__, $e, 0);
-            $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_NOTIFY);
+        } else {
+            $status = $this->GetValue('State');
         }
 
-        $off = $status == self::$STATE_OFF;
-        $delayed = $status == self::$STATE_WAITING_TO_START;
-        $standby = $status == self::$STATE_ON;
+        $signalFailure = (bool) $this->GetArrayElem($jdata, 'signalFailure', false, $fnd);
+        if ($fnd) {
+            $this->SendDebug(__FUNCTION__, 'set "Failure" to ' . $this->bool2str($signalFailure), 0);
+            $this->SaveValue('Failure', $signalFailure, $is_changed);
+        }
 
-        $signalFailure = (bool) $this->GetArrayElem($jdata, 'signalFailure', false);
-        $this->SaveValue('Failure', $signalFailure, $is_changed);
-
-        $signalInfo = (bool) $this->GetArrayElem($jdata, 'signalInfo', false);
-        $this->SaveValue('Info', $signalInfo, $is_changed);
+        $signalInfo = (bool) $this->GetArrayElem($jdata, 'signalInfo', false, $fnd);
+        if ($fnd) {
+            $this->SendDebug(__FUNCTION__, 'set "Info" to ' . $this->bool2str($signalInfo), 0);
+            $this->SaveValue('Info', $signalInfo, $is_changed);
+        }
 
         $base_ts = strtotime(date('d.m.Y H:i:00', $now));
 
-        $startTime = 0;
-        $endTime = 0;
-
         if ($opts['program_type']) {
-            if ($off) {
-                $programType = '';
+            $programType = '';
+            if ($status == self::$STATE_OFF) {
+                $fnd = true;
             } else {
-                $programType = $map_programType ? '' : $this->GetArrayElem($jdata, 'programType.value_localized', '');
-                if ($programType == '') {
-                    $value_raw = $this->GetArrayElem($jdata, 'programType.value_raw', 0);
-                    $programType = $this->programType2text($deviceId, $value_raw);
+                if ($map_programType) {
+                    $value_raw = $this->GetArrayElem($jdata, 'programType.value_raw', 0, $fnd);
+                    if ($fnd) {
+                        $programType = $this->programType2text($deviceId, $value_raw);
+                    }
+                } else {
+                    $programType = $this->GetArrayElem($jdata, 'programType.value_localized', '', $fnd);
                 }
             }
-            $this->SaveValue('ProgramType', $programType, $is_changed);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "ProgramType" to "' . $programType . '"', 0);
+                $this->SaveValue('ProgramType', $programType, $is_changed);
+            }
         }
         if ($opts['program_name']) {
-            if ($off) {
-                $programName = '';
+            $programName = '';
+            if ($status == self::$STATE_OFF) {
+                $fnd = true;
             } else {
-                $programName = $map_programName ? '' : $this->GetArrayElem($jdata, 'ProgramID.value_localized', '');
-                if ($programName == '') {
-                    $value_raw = $this->GetArrayElem($jdata, 'programID.value_raw', 0);
-                    $programName = $this->programId2text($deviceId, $value_raw);
+                if ($map_programName) {
+                    $value_raw = $this->GetArrayElem($jdata, 'programID.value_raw', 0, $fnd);
+                    if ($fnd) {
+                        $programName = $this->programId2text($deviceId, $value_raw);
+                    }
+                } else {
+                    $programName = $this->GetArrayElem($jdata, 'ProgramID.value_localized', '', $fnd);
                 }
             }
-            $this->SaveValue('ProgramName', $programName, $is_changed);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "ProgramName" to "' . $programName . '"', 0);
+                $this->SaveValue('ProgramName', $programName, $is_changed);
+            }
         }
 
         if ($opts['program_phase']) {
-            if ($off) {
-                $programPhase = '';
+            $programPhase = '';
+            if ($status == self::$STATE_OFF) {
+                $fnd = true;
             } else {
-                $programPhase = $map_programPhase ? '' : $this->GetArrayElem($jdata, 'programPhase.value_localized', '');
-                if ($programPhase == '') {
-                    $value_raw = $this->GetArrayElem($jdata, 'programPhase.value_raw', 0);
-                    if ($value_raw != 65535) {
+                if ($map_programPhase) {
+                    $value_raw = $this->GetArrayElem($jdata, 'programPhase.value_raw', 0, $fnd);
+                    if ($fnd && $value_raw != 65535) {
                         $programPhase = $this->programPhase2text($deviceId, $value_raw);
                     }
+                } else {
+                    $programPhase = $this->GetArrayElem($jdata, 'programPhase.value_localized', '', $fnd);
                 }
             }
-            $this->SaveValue('ProgramPhase', $programPhase, $is_changed);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "ProgramPhase" to "' . $programPhase . '"', 0);
+                $this->SaveValue('ProgramPhase', $programPhase, $is_changed);
+            }
         }
 
         if ($opts['times']) {
@@ -682,12 +703,12 @@ class MieleAtHomeDevice extends IPSModule
             $startTime = 0;
             $endTime = 0;
             $workProgress = 0;
-            if (!$off) {
+            if ($status != self::$STATE_OFF) {
                 $remainingTime_H = $this->GetArrayElem($jdata, 'remainingTime.0', 0);
                 $remainingTime_M = $this->GetArrayElem($jdata, 'remainingTime.1', 0);
                 $remainingTime = $remainingTime_H * 60 + $remainingTime_M;
 
-                if ($delayed) {
+                if ($status == self::$STATE_WAITING_TO_START) {
                     $startTime_H = $this->GetArrayElem($jdata, 'startTime.0', 0);
                     $startTime_M = $this->GetArrayElem($jdata, 'startTime.1', 0);
                     $startDelay = ($startTime_H * 60 + $startTime_M) * 60;
@@ -699,7 +720,7 @@ class MieleAtHomeDevice extends IPSModule
                         $endTime = $startTime + $remainingTime * 60;
                     }
                     $elapsedTime = 0;
-                } elseif (!$standby) {
+                } elseif ($status != self::$STATE_ON) {
                     $elapsedTime_H = $this->GetArrayElem($jdata, 'elapsedTime.0', 0);
                     $elapsedTime_M = $this->GetArrayElem($jdata, 'elapsedTime.1', 0);
                     $elapsedTime = $elapsedTime_H * 60 + $elapsedTime_M;
@@ -715,184 +736,254 @@ class MieleAtHomeDevice extends IPSModule
                     }
                 }
             }
+            $this->SendDebug(__FUNCTION__, 'set "RemainingTime" to ' . $remainingTime, 0);
             $this->SaveValue('RemainingTime', $remainingTime, $is_changed);
+            $this->SendDebug(__FUNCTION__, 'set "ElapsedTime" to ' . $elapsedTime, 0);
             $this->SaveValue('ElapsedTime', $elapsedTime, $is_changed);
+            $this->SendDebug(__FUNCTION__, 'set "StartTime" to ' . $startTime, 0);
             $this->SaveValue('StartTime', $startTime, $is_changed);
+            $this->SendDebug(__FUNCTION__, 'set "EndTime" to ' . $endTime, 0);
             $this->SaveValue('EndTime', $endTime, $is_changed);
+            $this->SendDebug(__FUNCTION__, 'set "WorkProgress" to ' . $workProgress, 0);
             $this->SaveValue('WorkProgress', $workProgress, $is_changed);
         }
 
         if ($opts['wash_temp']) {
-            if ($off) {
-                $targetTemperature = 0;
+            $targetTemperature = 0;
+            if ($status == self::$STATE_OFF) {
+                $fnd = true;
             } else {
-                $targetTemperature = $this->GetArrayElem($jdata, 'targetTemperature.0.value_localized', 0);
+                $targetTemperature = $this->GetArrayElem($jdata, 'targetTemperature.0.value_localized', 0, $fnd);
                 if ($targetTemperature <= -326) {
                     $targetTemperature = 0;
                 }
             }
-            $this->SaveValue('Wash_TargetTemperature', $targetTemperature, $is_changed);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "Wash_TargetTemperature" to ' . $targetTemperature, 0);
+                $this->SaveValue('Wash_TargetTemperature', $targetTemperature, $is_changed);
+            }
         }
 
         if ($opts['spinning_speed']) {
-            if ($off) {
-                $spinningSpeed = 0;
+            $spinningSpeed = 0;
+            if ($status == self::$STATE_OFF) {
+                $fnd = true;
             } else {
-                $spinningSpeed = $this->GetArrayElem($jdata, 'spinningSpeed.value_raw', 0);
+                $spinningSpeed = $this->GetArrayElem($jdata, 'spinningSpeed.value_raw', 0, $fnd);
             }
-            $this->SaveValue('SpinningSpeed', $spinningSpeed, $is_changed);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "SpinningSpeed" to ' . $spinningSpeed, 0);
+                $this->SaveValue('SpinningSpeed', $spinningSpeed, $is_changed);
+            }
         }
 
         if ($opts['drying_step']) {
-            if ($off) {
-                $dryingStep = '';
+            $dryingStep = '';
+            if ($status == self::$STATE_OFF) {
+                $fnd = true;
             } else {
-                $dryingStep = $map_dryingStep ? '' : $this->GetArrayElem($jdata, 'dryingStep.value_localized', '');
-                if ($dryingStep == '') {
-                    $value_raw = $this->GetArrayElem($jdata, 'dryingStep.value_raw', 0);
-                    $dryingStep = $this->dryingStep2text($deviceId, $value_raw);
+                if ($map_dryingStep) {
+                    $value_raw = $this->GetArrayElem($jdata, 'dryingStep.value_raw', 0, $fnd);
+                    if ($fnd) {
+                        $dryingStep = $this->dryingStep2text($deviceId, $value_raw);
+                    }
+                } else {
+                    $dryingStep = $this->GetArrayElem($jdata, 'dryingStep.value_localized', '', $fnd);
                 }
             }
-            $this->SaveValue('DryingStep', $dryingStep, $is_changed);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "DryingStep" to ' . $dryingStep, 0);
+                $this->SaveValue('DryingStep', $dryingStep, $is_changed);
+            }
         }
 
         if ($opts['ventilation_step']) {
-            if ($off) {
-                $ventilationStep = '';
+            $ventilationStep = '';
+            if ($status == self::$STATE_OFF) {
+                $fnd = true;
             } else {
-                $ventilationStep = $map_ventilationStep ? '' : $this->GetArrayElem($jdata, 'ventilationStep.value_localized', '');
-                if ($ventilationStep == '') {
-                    $value_raw = $this->GetArrayElem($jdata, 'ventilationStep.value_raw', 0);
-                    $ventilationStep = $this->ventilationStep2text($deviceId, $value_raw);
+                if ($map_ventilationStep) {
+                    $value_raw = $this->GetArrayElem($jdata, 'ventilationStep.value_raw', 0, $fnd);
+                    if ($fnd) {
+                        $ventilationStep = $this->ventilationStep2text($deviceId, $value_raw);
+                    }
+                } else {
+                    $ventilationStep = $this->GetArrayElem($jdata, 'ventilationStep.value_localized', '', $fnd);
                 }
             }
-            $this->SaveValue('VentilationStep', $ventilationStep, $is_changed);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "VentilationStep" to ' . $ventilationStep, 0);
+                $this->SaveValue('VentilationStep', $ventilationStep, $is_changed);
+            }
         }
 
         if ($opts['fridge_temp']) {
             $zone = $opts['fridge_zone'] - 1;
             if ($zone >= 0) {
-                $targetTemperature = $this->GetArrayElem($jdata, 'targetTemperature.' . $zone . '.value_localized', 0);
-                if ($targetTemperature <= -326) {
-                    $targetTemperature = 0;
+                $targetTemperature = $this->GetArrayElem($jdata, 'targetTemperature.' . $zone . '.value_localized', 0, $fnd);
+                if ($fnd) {
+                    if ($targetTemperature <= -326) {
+                        $targetTemperature = 0;
+                    }
+                    $this->SendDebug(__FUNCTION__, 'set "Fridge_TargetTemperature" to ' . $targetTemperature, 0);
+                    $this->SaveValue('Fridge_TargetTemperature', $targetTemperature, $is_changed);
                 }
-                $this->SaveValue('Fridge_TargetTemperature', $targetTemperature, $is_changed);
 
-                $temperature = $this->GetArrayElem($jdata, 'temperature.' . $zone . '.value_localized', 0);
-                if ($temperature <= -326) {
-                    $temperature = 0;
+                $temperature = $this->GetArrayElem($jdata, 'temperature.' . $zone . '.value_localized', 0, $fnd);
+                if ($fnd) {
+                    if ($temperature <= -326) {
+                        $temperature = 0;
+                    }
+                    $this->SendDebug(__FUNCTION__, 'set "Fridge_Temperature" to ' . $temperature, 0);
+                    $this->SaveValue('Fridge_Temperature', $temperature, $is_changed);
                 }
-                $this->SaveValue('Fridge_Temperature', $temperature, $is_changed);
             }
         }
 
         if ($opts['freezer_temp']) {
             $zone = $opts['freezer_zone'] - 1;
             if ($zone >= 0) {
-                $targetTemperature = $this->GetArrayElem($jdata, 'targetTemperature.' . $zone . '.value_localized', 0);
+                $targetTemperature = $this->GetArrayElem($jdata, 'targetTemperature.' . $zone . '.value_localized', 0, $fnd);
+                if ($fnd) {
+                    if ($targetTemperature <= -326) {
+                        $targetTemperature = 0;
+                    }
+                    $this->SendDebug(__FUNCTION__, 'set "Freezer_TargetTemperature" to ' . $targetTemperature, 0);
+                    $this->SaveValue('Freezer_TargetTemperature', $targetTemperature, $is_changed);
+                }
+
+                $temperature = $this->GetArrayElem($jdata, 'temperature.' . $zone . '.value_localized', 0, $fnd);
+                if ($fnd) {
+                    if ($temperature <= -326) {
+                        $temperature = 0;
+                    }
+                    $this->SendDebug(__FUNCTION__, 'set "Freezer_Temperature" to ' . $temperature, 0);
+                    $this->SaveValue('Freezer_Temperature', $temperature, $is_changed);
+                }
+            }
+        }
+
+        if ($opts['oven_temp']) {
+            $targetTemperature = $this->GetArrayElem($jdata, 'targetTemperature.0.value_localized', 0, $fnd);
+            if ($fnd) {
                 if ($targetTemperature <= -326) {
                     $targetTemperature = 0;
                 }
-                $this->SaveValue('Freezer_TargetTemperature', $targetTemperature, $is_changed);
+                $this->SendDebug(__FUNCTION__, 'set "Oven_TargetTemperature" to ' . $targetTemperature, 0);
+                $this->SaveValue('Oven_TargetTemperature', $targetTemperature, $is_changed);
+            }
 
-                $temperature = $this->GetArrayElem($jdata, 'temperature.' . $zone . '.value_localized', 0);
+            $temperature = $this->GetArrayElem($jdata, 'temperature.0.value_localized', 0, $fnd);
+            if ($fnd) {
                 if ($temperature <= -326) {
                     $temperature = 0;
                 }
-                $this->SaveValue('Freezer_Temperature', $temperature, $is_changed);
+                $this->SendDebug(__FUNCTION__, 'set "Oven_Temperature" to ' . $temperature, 0);
+                $this->SaveValue('Oven_Temperature', $temperature, $is_changed);
+            }
+        }
+
+        if ($opts['core_temp']) {
+            $targetTemperature = $this->GetArrayElem($jdata, 'coreTargetTemperature.0.value_localized', 0, $fnd);
+            if ($fnd) {
+                if ($targetTemperature <= -326) {
+                    $targetTemperature = 0;
+                }
+                $this->SendDebug(__FUNCTION__, 'set "Core_TargetTemperature" to ' . $targetTemperature, 0);
+                $this->SaveValue('Core_TargetTemperature', $targetTemperature, $is_changed);
+            }
+
+            $temperature = $this->GetArrayElem($jdata, 'coreTemperature.0.value_localized', 0, $fnd);
+            if ($fnd) {
+                if ($temperature <= -326) {
+                    $temperature = 0;
+                }
+                $this->SendDebug(__FUNCTION__, 'set "Core_Temperature" to ' . $temperature, 0);
+                $this->SaveValue('Core_Temperature', $temperature, $is_changed);
             }
         }
 
         if ($opts['door']) {
-            $signalDoor = (bool) $this->GetArrayElem($jdata, 'signalDoor', false);
-            $this->SaveValue('Door', $signalDoor, $is_changed);
-        }
-
-        if ($opts['oven_temp']) {
-            $targetTemperature = $this->GetArrayElem($jdata, 'targetTemperature.0.value_localized', 0);
-            if ($targetTemperature <= -326) {
-                $targetTemperature = 0;
+            $signalDoor = (bool) $this->GetArrayElem($jdata, 'signalDoor', false, $fnd);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "Door" to ' . $this->bool2str($signalDoor), 0);
+                $this->SaveValue('Door', $signalDoor, $is_changed);
             }
-            $this->SaveValue('Oven_TargetTemperature', $targetTemperature, $is_changed);
-
-            $temperature = $this->GetArrayElem($jdata, 'temperature.0.value_localized', 0);
-            if ($temperature <= -326) {
-                $temperature = 0;
-            }
-            $this->SaveValue('Oven_Temperature', $temperature, $is_changed);
-        }
-        if ($opts['core_temp']) {
-            $targetTemperature = $this->GetArrayElem($jdata, 'coreTargetTemperature.0.value_localized', 0);
-            if ($targetTemperature <= -326) {
-                $targetTemperature = 0;
-            }
-            $this->SaveValue('Core_TargetTemperature', $targetTemperature, $is_changed);
-
-            $temperature = $this->GetArrayElem($jdata, 'coreTemperature.0.value_localized', 0);
-            if ($temperature <= -326) {
-                $temperature = 0;
-            }
-            $this->SaveValue('Core_Temperature', $temperature, $is_changed);
         }
 
         if ($opts['ecoFeedback_Water']) {
-            $ecoFeedback = $this->GetArrayElem($jdata, 'ecoFeedback', '');
-            $state = $this->GetValue('State');
-            $this->SendDebug(__FUNCTION__, 'water: state=' . $state . ', ecoFeedback=' . print_r($ecoFeedback, true), 0);
-            if ($state == self::$STATE_END_PROGRAMMED) {
-                $ecoFeedback = false;
-            }
-            if ($ecoFeedback != false) {
-                $currentWaterConsumption = $this->GetArrayElem($ecoFeedback, 'currentWaterConsumption.value', 0);
-                $waterforecast = $this->GetArrayElem($ecoFeedback, 'waterforecast', 0);
-                $estimatedWaterConsumption = $currentWaterConsumption * (float) $waterforecast * 100;
-                $this->SendDebug(__FUNCTION__, 'WaterConsumption: current=' . $currentWaterConsumption . ', forecast=' . $waterforecast . ', estimated=' . $estimatedWaterConsumption, 0);
-            } else {
-                $currentWaterConsumption = $this->GetValue('CurrentWaterConsumption');
-                if ($currentWaterConsumption > 0) {
-                    $this->SaveValue('LastWaterConsumption', $currentWaterConsumption, $is_changed);
+            $ecoFeedback = $this->GetArrayElem($jdata, 'ecoFeedback', '', $fnd);
+            if ($fnd) {
+                if ($status == self::$STATE_END_PROGRAMMED) {
+                    $ecoFeedback = false;
                 }
-                $currentWaterConsumption = 0;
-                $estimatedWaterConsumption = 0;
+                if ($ecoFeedback != false) {
+                    $currentWaterConsumption = $this->GetArrayElem($ecoFeedback, 'currentWaterConsumption.value', 0);
+                    $waterforecast = $this->GetArrayElem($ecoFeedback, 'waterforecast', 0);
+                    $estimatedWaterConsumption = $currentWaterConsumption * (float) $waterforecast * 100;
+                    $this->SendDebug(__FUNCTION__, 'WaterConsumption: current=' . $currentWaterConsumption . ', forecast=' . $waterforecast . ', estimated=' . $estimatedWaterConsumption, 0);
+                } else {
+                    $currentWaterConsumption = $this->GetValue('CurrentWaterConsumption');
+                    if ($currentWaterConsumption > 0) {
+                        $this->SendDebug(__FUNCTION__, 'set "LastWaterConsumption" to ' . $currentWaterConsumption, 0);
+                        $this->SaveValue('LastWaterConsumption', $currentWaterConsumption, $is_changed);
+                    }
+                    $currentWaterConsumption = 0;
+                    $estimatedWaterConsumption = 0;
+                }
+                $this->SendDebug(__FUNCTION__, 'set "CurrentWaterConsumption" to ' . $currentWaterConsumption, 0);
+                $this->SaveValue('CurrentWaterConsumption', $currentWaterConsumption, $is_changed);
+                $this->SendDebug(__FUNCTION__, 'set "EstimatedWaterConsumption" to ' . $estimatedWaterConsumption, 0);
+                $this->SaveValue('EstimatedWaterConsumption', $estimatedWaterConsumption, $is_changed);
             }
-            $this->SaveValue('CurrentWaterConsumption', $currentWaterConsumption, $is_changed);
-            $this->SaveValue('EstimatedWaterConsumption', $estimatedWaterConsumption, $is_changed);
         }
+
         if ($opts['ecoFeedback_Energy']) {
-            $ecoFeedback = $this->GetArrayElem($jdata, 'ecoFeedback', '');
-            $state = $this->GetValue('State');
-            $this->SendDebug(__FUNCTION__, 'energy: state=' . $state . ', ecoFeedback=' . print_r($ecoFeedback, true), 0);
-            if ($state == self::$STATE_END_PROGRAMMED) {
-                $ecoFeedback = false;
-            }
-            if ($ecoFeedback != false) {
-                $currentEnergyConsumption = $this->GetArrayElem($ecoFeedback, 'currentEnergyConsumption.value', 0);
-                $energyforecast = $this->GetArrayElem($ecoFeedback, 'energyforecast', 0);
-                $estimatedEnergyConsumption = $currentEnergyConsumption * (float) $energyforecast * 100;
-                $this->SendDebug(__FUNCTION__, 'EnergyConsumption: current=' . $currentEnergyConsumption . ', forecast=' . $energyforecast . ', estimated=' . $estimatedEnergyConsumption, 0);
-            } else {
-                $currentEnergyConsumption = $this->GetValue('CurrentEnergyConsumption');
-                if ($currentEnergyConsumption > 0) {
-                    $this->SaveValue('LastEnergyConsumption', $currentEnergyConsumption, $is_changed);
+            $ecoFeedback = $this->GetArrayElem($jdata, 'ecoFeedback', '', $fnd);
+            if ($fnd) {
+                if ($status == self::$STATE_END_PROGRAMMED) {
+                    $ecoFeedback = false;
                 }
-                $currentEnergyConsumption = 0;
-                $estimatedEnergyConsumption = 0;
+                if ($ecoFeedback != false) {
+                    $currentEnergyConsumption = $this->GetArrayElem($ecoFeedback, 'currentEnergyConsumption.value', 0);
+                    $energyforecast = $this->GetArrayElem($ecoFeedback, 'energyforecast', 0);
+                    $estimatedEnergyConsumption = $currentEnergyConsumption * (float) $energyforecast * 100;
+                    $this->SendDebug(__FUNCTION__, 'EnergyConsumption: current=' . $currentEnergyConsumption . ', forecast=' . $energyforecast . ', estimated=' . $estimatedEnergyConsumption, 0);
+                } else {
+                    $currentEnergyConsumption = $this->GetValue('CurrentEnergyConsumption');
+                    if ($currentEnergyConsumption > 0) {
+                        $this->SendDebug(__FUNCTION__, 'set "LastEnergyConsumption" to ' . $currentEnergyConsumption, 0);
+                        $this->SaveValue('LastEnergyConsumption', $currentEnergyConsumption, $is_changed);
+                    }
+                    $currentEnergyConsumption = 0;
+                    $estimatedEnergyConsumption = 0;
+                }
+                $this->SendDebug(__FUNCTION__, 'set "CurrentEnergyConsumption" to ' . $currentEnergyConsumption, 0);
+                $this->SaveValue('CurrentEnergyConsumption', $currentEnergyConsumption, $is_changed);
+                $this->SendDebug(__FUNCTION__, 'set "EstimatedEnergyConsumption" to ' . $estimatedEnergyConsumption, 0);
+                $this->SaveValue('EstimatedEnergyConsumption', $estimatedEnergyConsumption, $is_changed);
             }
-            $this->SaveValue('CurrentEnergyConsumption', $currentEnergyConsumption, $is_changed);
-            $this->SaveValue('EstimatedEnergyConsumption', $estimatedEnergyConsumption, $is_changed);
         }
 
         if ($opts['batteryLevel']) {
-            $batteryLevel = $this->GetArrayElem($jdata, 'batteryLevel', 0);
-            $this->SendDebug(__FUNCTION__, 'batteryLevel=' . print_r($batteryLevel, true), 0);
-            $this->SaveValue('BatteryLevel', (int) $batteryLevel, $is_changed);
+            $batteryLevel = $this->GetArrayElem($jdata, 'batteryLevel', 0, $fnd);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "BatteryLevel" to ' . $batteryLevel, 0);
+                $this->SaveValue('BatteryLevel', (int) $batteryLevel, $is_changed);
+            }
         }
 
         if ($is_changed) {
             $this->SetValue('LastChange', $now);
         }
+    }
 
-        $actions = $this->getEnabledActions(true);
+    private function DecodeActions($tag, $actions)
+    {
+        $this->SendDebug(__FUNCTION__, 'tag=' . $tag . ', actions=' . print_r($actions, true), 0);
+
+        $deviceId = $this->ReadPropertyInteger('deviceId');
+        $opts = $this->getDeviceOptions($deviceId);
 
         if ($opts['enabled_action']) {
             if ($this->checkAction('Start', false)) {
@@ -946,11 +1037,6 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         if ($opts['enabled_light']) {
-            /*
-               $light = (bool) $this->GetArrayElem($jdata, 'light', false);
-               $this->SaveValue('Light', $light, $is_changed);
-             */
-
             if ($this->checkAction('LightEnable', false)) {
                 $b = true;
                 $v = self::$LIGHT_ENABLE;
@@ -1013,6 +1099,40 @@ class MieleAtHomeDevice extends IPSModule
             $this->MaintainAction('Freezer_TargetTemperature', $b);
             $this->SendDebug(__FUNCTION__, 'MaintainAction "Freezer_TargetTemperature": enabled=' . $this->bool2str($b), 0);
         }
+    }
+
+    private function UpdateData()
+    {
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
+            return;
+        }
+
+        if ($this->HasActiveParent() == false) {
+            $this->SendDebug(__FUNCTION__, 'has no active parent/gateway', 0);
+            $log_no_parent = $this->ReadPropertyBoolean('log_no_parent');
+            if ($log_no_parent) {
+                $this->LogMessage($this->Translate('Instance has no active gateway'), KL_WARNING);
+            }
+            return;
+        }
+
+        $this->SetUpdateInterval();
+
+        $fabNumber = $this->ReadPropertyString('fabNumber');
+
+        $SendData = [
+            'DataID'   => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}',
+            'CallerID' => $this->InstanceID,
+            'Function' => 'GetDeviceStatus',
+            'Ident'    => $fabNumber
+        ];
+        $data = $this->SendDataToParent(json_encode($SendData));
+        $jdata = @json_decode((string) $data, true);
+        $this->DecodeDevice('Update', $jdata);
+
+        $actions = $this->getEnabledActions(true);
+        $this->DecodeActions('Update', $actions);
     }
 
     private function programId2text($model, $id)
@@ -1730,7 +1850,6 @@ class MieleAtHomeDevice extends IPSModule
             $data = $this->SendDataToParent(json_encode($SendData));
             $this->SetBuffer('EnabledActions', $data);
             $actions = json_decode($data, true);
-            $this->SendDebug(__FUNCTION__, 'enabled actions=' . print_r($actions, true), 0);
         } else {
             $actions = json_decode($data, true);
         }

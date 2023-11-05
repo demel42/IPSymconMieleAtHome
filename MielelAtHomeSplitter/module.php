@@ -6,7 +6,7 @@ require_once __DIR__ . '/../libs/common.php';
 require_once __DIR__ . '/../libs/local.php';
 require_once __DIR__ . '/../libs/images.php';
 
-class MieleAtHomeIO extends IPSModule
+class MieleAtHomeSplitter extends IPSModule
 {
     use MieleAtHome\StubsCommonLib;
     use MieleAtHomeLocalLib;
@@ -47,7 +47,9 @@ class MieleAtHomeIO extends IPSModule
 
         $this->RegisterPropertyInteger('OAuth_Type', self::$CONNECTION_UNDEFINED);
 
-        $this->RegisterAttributeString('RefreshToken', '');
+        $this->RegisterAttributeString('ApiRefreshToken', json_encode([]));
+        $this->RegisterAttributeString('ApiAccessToken', json_encode([]));
+        $this->RegisterAttributeInteger('ConnectionType', self::$CONNECTION_UNDEFINED);
 
         $this->RegisterAttributeString('UpdateInfo', json_encode([]));
         $this->RegisterAttributeString('ApiCallStats', json_encode([]));
@@ -55,19 +57,76 @@ class MieleAtHomeIO extends IPSModule
 
         $this->InstallVarProfiles(false);
 
+        $this->RegisterTimer('RenewTimer', 0, 'IPS_RequestAction(' . $this->InstanceID . ', "RenewToken", "");');
+
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
+
+        $this->RequireParent('{2FADB4B7-FDAB-3C64-3E2C-068A4809849A}');
     }
 
-    public function MessageSink($tstamp, $senderID, $message, $data)
+    public function MessageSink($timestamp, $senderID, $message, $data)
     {
-        parent::MessageSink($tstamp, $senderID, $message, $data);
+        parent::MessageSink($timestamp, $senderID, $message, $data);
 
         if ($message == IPS_KERNELMESSAGE && $data[0] == KR_READY) {
             $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
             if ($oauth_type == self::$CONNECTION_OAUTH) {
                 $this->RegisterOAuth($this->oauthIdentifer);
             }
+            $this->SetRefreshTimer();
         }
+        if (IPS_GetKernelRunlevel() == KR_READY && $message == IM_CHANGESTATUS && $senderID == $this->GetConnectionID()) {
+            $this->SendDebug(__FUNCTION__, 'timestamp=' . $timestamp . ', senderID=' . $senderID . ', message=' . $message . ', data=' . print_r($data, true), 0);
+            if ($data[0] == IS_ACTIVE && $data[1] == IS_INACTIVE) {
+                $this->MaintainTimer('RenewTimer', 60 * 1000);
+            }
+        }
+    }
+
+    public function GetConfigurationForParent()
+    {
+        $headers = [
+            [
+                'Name'  => 'Accept',
+                'Value' => 'text/event-stream',
+            ],
+            [
+                'Name'  => 'Accept-Language',
+                'Value' => 'de',
+            ],
+        ];
+        $access_token = $this->GetAccessToken();
+        if ($access_token != '') {
+            $headers[] = [
+                'Name'  => 'Authorization',
+                'Value' => 'Bearer ' . $access_token,
+            ];
+        }
+
+        $module_disable = $this->ReadPropertyBoolean('module_disable');
+        $active = $module_disable != true && $access_token != [];
+
+        $r = IPS_GetConfiguration($this->GetConnectionID());
+        $j = [
+            'Active'     => $active,
+            'Headers'    => json_encode($headers),
+            'URL'        => 'https://api.mcs3.miele.com/v1/devices/all/events',
+            'VerifyHost' => true,
+            'VerifyPeer' => true,
+        ];
+        $d = json_encode($j);
+        $this->SendDebug(__FUNCTION__, $d, 0);
+        return $d;
+    }
+
+    // bei jeder Änderung des access_token muss dieser im WebsocketClient als Header gesetzt werden
+    // Rücksprache mit NT per Mail am ?????????
+    private function UpdateConfigurationForParent()
+    {
+        $this->SendDebug(__FUNCTION__, '', 0);
+        $d = $this->GetConfigurationForParent();
+        IPS_SetConfiguration($this->GetConnectionID(), $d);
+        IPS_ApplyChanges($this->GetConnectionID());
     }
 
     private function CheckModuleConfiguration()
@@ -107,6 +166,8 @@ class MieleAtHomeIO extends IPSModule
 
         $this->MaintainReferences();
 
+        $this->UnregisterMessage($this->GetConnectionID(), IM_CHANGESTATUS);
+
         if ($this->CheckPrerequisites() != false) {
             $this->MaintainStatus(self::$IS_INVALIDPREREQUISITES);
             return;
@@ -122,37 +183,138 @@ class MieleAtHomeIO extends IPSModule
             return;
         }
 
+        $connection_type = $this->ReadPropertyInteger('OAuth_Type');
+
+        $apiLimits = [];
+        $this->ApiCallsSetInfo($apiLimits, '');
+
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
             $this->MaintainStatus(IS_INACTIVE);
             return;
         }
 
+        if ($this->ReadAttributeInteger('ConnectionType') != $connection_type) {
+            $this->ClearToken();
+            $this->WriteAttributeInteger('ConnectionType', $connection_type);
+        }
+
+        $this->MaintainStatus(IS_ACTIVE);
+
+        $this->RegisterMessage($this->GetConnectionID(), IM_CHANGESTATUS);
+
         $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
-        switch ($oauth_type) {
-            case self::$CONNECTION_DEVELOPER:
-                $this->MaintainStatus(IS_ACTIVE);
-                break;
-            case self::$CONNECTION_OAUTH:
-                if ($this->GetConnectUrl() == false) {
-                    $this->MaintainStatus(self::$IS_NOSYMCONCONNECT);
-                    return;
-                }
-                $refresh_token = $this->ReadAttributeString('RefreshToken');
-                if ($refresh_token == '') {
-                    $this->MaintainStatus(self::$IS_NOLOGIN);
-                } else {
-                    $this->MaintainStatus(IS_ACTIVE);
-                }
-                break;
-            default:
-                break;
+        if ($oauth_type == self::$CONNECTION_OAUTH) {
+            if ($this->GetConnectUrl() == false) {
+                $this->MaintainStatus(self::$IS_NOSYMCONCONNECT);
+                return;
+            }
+            $refresh_token = $this->ReadAttributeString('ApiRefreshToken');
+            if ($refresh_token == '') {
+                $this->MaintainStatus(self::$IS_NOLOGIN);
+                return;
+            }
         }
 
         if (IPS_GetKernelRunlevel() == KR_READY) {
             if ($oauth_type == self::$CONNECTION_OAUTH) {
                 $this->RegisterOAuth($this->oauthIdentifer);
             }
+            $this->SetRefreshTimer();
+        }
+    }
+
+    private function SetRefreshTimer()
+    {
+        $msec = 0;
+
+        $jtoken = @json_decode($this->ReadAttributeString('ApiAccessToken'), true);
+        if ($jtoken != false) {
+            $access_token = isset($jtoken['access_token']) ? $jtoken['access_token'] : '';
+            $expiration = isset($jtoken['expiration']) ? $jtoken['expiration'] : 0;
+            if ($expiration) {
+                $sec = $expiration - time() - (60 * 15);
+                if ($sec > (24 * 60 * 60)) {
+                    $sec = 24 * 60 * 60;
+                }
+                $msec = $sec > 0 ? $sec * 1000 : 100;
+            }
+        }
+
+        $this->MaintainTimer('RenewTimer', $msec);
+    }
+
+    private function GetRefreshToken()
+    {
+        $jtoken = @json_decode($this->ReadAttributeString('ApiRefreshToken'), true);
+        if ($jtoken != false) {
+            $refresh_token = isset($jtoken['refresh_token']) ? $jtoken['refresh_token'] : '';
+            if ($refresh_token != '') {
+                $this->SendDebug(__FUNCTION__, 'old refresh_token', 0);
+            }
+        } else {
+            $this->SendDebug(__FUNCTION__, 'no saved refresh_token', 0);
+            $refresh_token = '';
+        }
+        return $refresh_token;
+    }
+
+    private function SetRefreshToken($refresh_token = '')
+    {
+        $jtoken = [
+            'tstamp'        => time(),
+            'refresh_token' => $refresh_token,
+        ];
+        $this->WriteAttributeString('ApiRefreshToken', json_encode($jtoken));
+        if ($refresh_token == '') {
+            $this->SendDebug(__FUNCTION__, 'clear refresh_token', 0);
+        } else {
+            $this->SendDebug(__FUNCTION__, 'new refresh_token', 0);
+        }
+    }
+
+    private function GetAccessToken()
+    {
+        $jtoken = @json_decode($this->ReadAttributeString('ApiAccessToken'), true);
+        if ($jtoken != false) {
+            $access_token = isset($jtoken['access_token']) ? $jtoken['access_token'] : '';
+            $expiration = isset($jtoken['expiration']) ? $jtoken['expiration'] : 0;
+            if ($expiration < time()) {
+                $this->SendDebug(__FUNCTION__, 'access_token expired', 0);
+                $access_token = '';
+            }
+            if ($access_token != '') {
+                $this->SendDebug(__FUNCTION__, 'old access_token, valid until ' . date('d.m.y H:i:s', $expiration), 0);
+            }
+        } else {
+            $this->SendDebug(__FUNCTION__, 'no saved access_token', 0);
+            $access_token = '';
+        }
+        return $access_token;
+    }
+
+    private function RenewToken()
+    {
+        $this->SendDebug(__FUNCTION__, '', 0);
+        $this->GetApiAccessToken(true);
+    }
+
+    private function SetAccessToken($access_token = '', $expiration = 0)
+    {
+        $jtoken = [
+            'tstamp'       => time(),
+            'access_token' => $access_token,
+            'expiration'   => $expiration,
+        ];
+        $this->WriteAttributeString('ApiAccessToken', json_encode($jtoken));
+        if ($access_token == '') {
+            $this->SendDebug(__FUNCTION__, 'clear access_token', 0);
+        } else {
+            $this->SendDebug(__FUNCTION__, 'new access_token, valid until ' . date('d.m.y H:i:s', $expiration), 0);
+        }
+        $this->UpdateConfigurationForParent();
+        if ($expiration) {
+            $this->SetRefreshTimer();
         }
     }
 
@@ -163,7 +325,40 @@ class MieleAtHomeIO extends IPSModule
         return $url;
     }
 
-    protected function Call4AccessToken($content)
+    protected function ProcessOAuthData()
+    {
+        if (!isset($_GET['code'])) {
+            $this->SendDebug(__FUNCTION__, 'code missing, _GET=' . print_r($_GET, true), 0);
+            $this->SetRefreshToken('');
+            $this->SetAccessToken('');
+            $this->MaintainStatus(self::$IS_NOLOGIN);
+            return;
+        }
+
+        $code = $_GET['code'];
+        $this->SendDebug(__FUNCTION__, 'code=' . $code, 0);
+
+        $jdata = $this->Call4ApiToken(['code' => $code]);
+        $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
+        if ($jdata == false) {
+            $this->SendDebug(__FUNCTION__, 'got no token', 0);
+            $this->SetRefreshToken('');
+            $this->SetAccessToken('');
+            return false;
+        }
+
+        $access_token = $jdata['access_token'];
+        $expiration = time() + $jdata['expires_in'];
+        $this->SetAccessToken($access_token, $expiration);
+        $refresh_token = $jdata['refresh_token'];
+        $this->SetRefreshToken($refresh_token);
+
+        if ($this->GetStatus() == self::$IS_NOLOGIN) {
+            $this->MaintainStatus(IS_ACTIVE);
+        }
+    }
+
+    protected function Call4ApiToken($content)
     {
         $url = 'https://oauth.ipmagic.de/access_token/' . $this->oauthIdentifer;
         $this->SendDebug(__FUNCTION__, 'url=' . $url, 0);
@@ -236,100 +431,107 @@ class MieleAtHomeIO extends IPSModule
         return $jdata;
     }
 
-    private function FetchRefreshToken($code)
+    private function DeveloperApiAccessToken()
     {
-        $this->SendDebug(__FUNCTION__, 'code=' . $code, 0);
-        $jdata = $this->Call4AccessToken(['code' => $code]);
-        if ($jdata == false) {
-            $this->SendDebug(__FUNCTION__, 'got no token', 0);
-            $this->SetBuffer('AccessToken', '');
+        $userid = $this->ReadPropertyString('userid');
+        $password = $this->ReadPropertyString('password');
+        $client_id = $this->ReadPropertyString('client_id');
+        $client_secret = $this->ReadPropertyString('client_secret');
+        $vg_selector = $this->ReadPropertyString('vg_selector');
+
+        $header = [
+            'Accept: application/json; charset=utf-8',
+            'Content-Type: application/x-www-form-urlencoded'
+        ];
+
+        $params = [
+            'client_id'     => $client_id,
+            'client_secret' => $client_secret,
+            'grant_type'    => 'password',
+            'username'      => $userid,
+            'password'      => $password,
+            'state'         => 'token',
+            'redirect_uri'  => '/v1/devices',
+            'vg'            => $vg_selector,
+        ];
+
+        $cdata = '';
+        $msg = '';
+        $statuscode = $this->do_HttpRequest('/thirdparty/token', $params, $header, '', 'POST', $cdata, $msg);
+        if ($statuscode == 0 && $cdata == '') {
+            $statuscode = self::$IS_INVALIDDATA;
+        }
+        $this->SendDebug(__FUNCTION__, 'token: statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true) . ', msg=' . $msg, 0);
+        if ($statuscode != 0) {
+            $this->MaintainStatus($statuscode);
+            IPS_SemaphoreLeave($this->SemaphoreID);
             return false;
         }
+
+        $jdata = json_decode($cdata, true);
         $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
+
+        return $jdata;
+    }
+
+    private function GetApiAccessToken($renew = false)
+    {
+        if (IPS_SemaphoreEnter($this->SemaphoreID, self::$semaphoreTM) == false) {
+            $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
+            return false;
+        }
+
+        if ($renew == false) {
+            $access_token = $this->GetAccessToken();
+            if ($access_token != '') {
+                IPS_SemaphoreLeave($this->SemaphoreID);
+                return $access_token;
+            }
+        }
+
+        $connection_type = $this->ReadPropertyInteger('OAuth_Type');
+        switch ($connection_type) {
+            case self::$CONNECTION_OAUTH:
+                $refresh_token = $this->GetRefreshToken();
+                if ($refresh_token == '') {
+                    $this->SendDebug(__FUNCTION__, 'has no refresh_token', 0);
+                    $this->SetAccessToken('');
+                    $this->MaintainStatus(self::$IS_NOLOGIN);
+                    IPS_SemaphoreLeave($this->SemaphoreID);
+                    return false;
+                }
+                $jdata = $this->Call4ApiToken(['refresh_token' => $refresh_token]);
+                break;
+            case self::$CONNECTION_DEVELOPER:
+                $jdata = $this->DeveloperApiAccessToken();
+                break;
+            default:
+                $jdata = false;
+                break;
+        }
+        if ($jdata == false) {
+            $this->SendDebug(__FUNCTION__, 'got no access_token', 0);
+            $this->SetAccessToken('');
+            IPS_SemaphoreLeave($this->SemaphoreID);
+            return false;
+        }
+
         $access_token = $jdata['access_token'];
         $expiration = time() + $jdata['expires_in'];
-        $refresh_token = $jdata['refresh_token'];
-        $this->FetchAccessToken($access_token, $expiration);
-        return $refresh_token;
-    }
-
-    private function FetchAccessToken($access_token = '', $expiration = 0)
-    {
-        if ($access_token == '' && $expiration == 0) {
-            $data = $this->GetBuffer('AccessToken');
-            if ($data != '') {
-                $jtoken = json_decode($data, true);
-                $access_token = isset($jtoken['access_token']) ? $jtoken['access_token'] : '';
-                $expiration = isset($jtoken['expiration']) ? $jtoken['expiration'] : 0;
-                $type = isset($jtoken['type']) ? $jtoken['type'] : self::$CONNECTION_UNDEFINED;
-                if ($type != self::$CONNECTION_OAUTH) {
-                    $this->WriteAttributeString('RefreshToken', '');
-                    $this->SendDebug(__FUNCTION__, 'connection-type changed', 0);
-                    $access_token = '';
-                } elseif ($expiration < time()) {
-                    $this->SendDebug(__FUNCTION__, 'access_token expired', 0);
-                    $access_token = '';
-                }
-                if ($access_token != '') {
-                    $this->SendDebug(__FUNCTION__, 'access_token=' . $access_token . ', valid until ' . date('d.m.y H:i:s', $expiration), 0);
-                    return $access_token;
-                }
-            } else {
-                $this->SendDebug(__FUNCTION__, 'no saved access_token', 0);
-            }
-            $refresh_token = $this->ReadAttributeString('RefreshToken');
-            $this->SendDebug(__FUNCTION__, 'refresh_token=' . print_r($refresh_token, true), 0);
-            if ($refresh_token == '') {
-                $this->SendDebug(__FUNCTION__, 'has no refresh_token', 0);
-                $this->WriteAttributeString('RefreshToken', '');
-                $this->SetBuffer('AccessToken', '');
-                $this->MaintainStatus(self::$IS_NOLOGIN);
-                return false;
-            }
-            $jdata = $this->Call4AccessToken(['refresh_token' => $refresh_token]);
-            if ($jdata == false) {
-                $this->SendDebug(__FUNCTION__, 'got no access_token', 0);
-                $this->SetBuffer('AccessToken', '');
-                return false;
-            }
-            $access_token = $jdata['access_token'];
-            $expiration = time() + $jdata['expires_in'];
-            if (isset($jdata['refresh_token'])) {
-                $refresh_token = $jdata['refresh_token'];
-                $this->SendDebug(__FUNCTION__, 'new refresh_token=' . $refresh_token, 0);
-                $this->WriteAttributeString('RefreshToken', $refresh_token);
-            }
+        $this->SetAccessToken($access_token, $expiration);
+        if (isset($jdata['refresh_token'])) {
+            $refresh_token = $jdata['refresh_token'];
+            $this->SetRefreshToken($refresh_token);
         }
-        $this->SendDebug(__FUNCTION__, 'new access_token=' . $access_token . ', valid until ' . date('d.m.y H:i:s', $expiration), 0);
-        $jtoken = [
-            'access_token' => $access_token,
-            'expiration'   => $expiration,
-            'type'         => self::$CONNECTION_OAUTH
-        ];
-        $this->SetBuffer('AccessToken', json_encode($jtoken));
+
+        IPS_SemaphoreLeave($this->SemaphoreID);
+        $this->MaintainStatus(IS_ACTIVE);
         return $access_token;
-    }
-
-    protected function ProcessOAuthData()
-    {
-        if (!isset($_GET['code'])) {
-            $this->SendDebug(__FUNCTION__, 'code missing, _GET=' . print_r($_GET, true), 0);
-            $this->WriteAttributeString('RefreshToken', '');
-            $this->SetBuffer('AccessToken', '');
-            $this->MaintainStatus(self::$IS_NOLOGIN);
-            return;
-        }
-        $refresh_token = $this->FetchRefreshToken($_GET['code']);
-        $this->SendDebug(__FUNCTION__, 'refresh_token=' . $refresh_token, 0);
-        $this->WriteAttributeString('RefreshToken', $refresh_token);
-        if ($this->GetStatus() == self::$IS_NOLOGIN) {
-            $this->MaintainStatus(IS_ACTIVE);
-        }
     }
 
     private function GetFormElements()
     {
-        $formElements = $this->GetCommonFormElements('Miele@Home I/O');
+        $formElements = $this->GetCommonFormElements('Miele@Home Splitter');
 
         if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
             return $formElements;
@@ -555,6 +757,9 @@ class MieleAtHomeIO extends IPSModule
             case 'TestAccess':
                 $this->TestAccess();
                 break;
+            case 'RenewToken':
+                $this->RenewToken();
+                break;
             default:
                 $r = false;
                 break;
@@ -591,6 +796,8 @@ class MieleAtHomeIO extends IPSModule
         $msg = '';
         $r = $this->do_ApiCall('/v1/devices', $cdata, $msg);
 
+        $this->UpdateConfigurationForParent();
+
         $txt = '';
         if ($r == false) {
             $txt .= $this->Translate('invalid account-data') . PHP_EOL;
@@ -614,14 +821,8 @@ class MieleAtHomeIO extends IPSModule
             return false;
         }
 
-        $refresh_token = $this->ReadAttributeString('RefreshToken');
-        $this->SendDebug(__FUNCTION__, 'clear refresh_token=' . $refresh_token, 0);
-        $this->WriteAttributeString('RefreshToken', '');
-
-        $jtoken = json_decode($this->GetBuffer('AccessToken'), true);
-        $access_token = isset($jtoken['access_token']) ? $jtoken['access_token'] : '';
-        $this->SendDebug(__FUNCTION__, 'clear access_token=' . $access_token, 0);
-        $this->SetBuffer('AccessToken', '');
+        $this->SetRefreshToken('');
+        $this->SetAccessToken('');
 
         $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
         if ($oauth_type == self::$CONNECTION_OAUTH) {
@@ -633,9 +834,32 @@ class MieleAtHomeIO extends IPSModule
 
     protected function SendData($buf)
     {
-        $data = ['DataID' => '{D39AEB86-E611-4752-81C7-DBF7E41E79E1}', 'Buffer' => $buf];
+        $data = [
+            'DataID' => '{D39AEB86-E611-4752-81C7-DBF7E41E79E1}',
+            'Buffer' => $buf
+        ];
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
         $this->SendDataToChildren(json_encode($data));
+    }
+
+    public function ReceiveData($data)
+    {
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
+            return;
+        }
+
+        $jdata = json_decode($data, true);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($jdata, true), 0);
+        if (isset($jdata['Event']) && in_array($jdata['Event'], ['devices', 'actions'])) {
+            $ndata = [
+                'DataID' => '{40C8346D-9284-1D83-67C7-F9B46EF28C05}',
+                'Event'  => $jdata['Event'],
+                'Data'   => $jdata['Data'],
+            ];
+            $this->SendDebug(__FUNCTION__, 'ndata=' . print_r($ndata, true), 0);
+            $this->SendDataToChildren(json_encode($ndata));
+        }
     }
 
     public function ForwardData($data)
@@ -692,82 +916,6 @@ class MieleAtHomeIO extends IPSModule
 
         $this->SendDebug(__FUNCTION__, 'ret=' . print_r($ret, true), 0);
         return $ret;
-    }
-
-    private function GetAccessToken(&$msg)
-    {
-        if (IPS_SemaphoreEnter($this->SemaphoreID, self::$semaphoreTM) == false) {
-            $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
-            return false;
-        }
-
-        $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
-        switch ($oauth_type) {
-            case self::$CONNECTION_OAUTH:
-                $access_token = $this->FetchAccessToken();
-                break;
-            case self::$CONNECTION_DEVELOPER:
-                $userid = $this->ReadPropertyString('userid');
-                $password = $this->ReadPropertyString('password');
-                $client_id = $this->ReadPropertyString('client_id');
-                $client_secret = $this->ReadPropertyString('client_secret');
-                $vg_selector = $this->ReadPropertyString('vg_selector');
-
-                $dtoken = $this->GetBuffer('Token');
-                $jtoken = json_decode($dtoken, true);
-                $access_token = isset($jtoken['access_token']) ? $jtoken['access_token'] : '';
-                $expiration = isset($jtoken['expiration']) ? $jtoken['expiration'] : 0;
-                $type = isset($jtoken['type']) ? $jtoken['type'] : self::$CONNECTION_UNDEFINED;
-
-                if ($type != self::$CONNECTION_DEVELOPER || $expiration < time()) {
-                    $params = [
-                        'client_id'     => $client_id,
-                        'client_secret' => $client_secret,
-                        'grant_type'    => 'password',
-                        'username'      => $userid,
-                        'password'      => $password,
-                        'state'         => 'token',
-                        'redirect_uri'  => '/v1/devices',
-                        'vg'            => $vg_selector,
-                    ];
-                    $header = [
-                        'Accept: application/json; charset=utf-8',
-                        'Content-Type: application/x-www-form-urlencoded'
-                    ];
-
-                    $cdata = '';
-                    $msg = '';
-                    $statuscode = $this->do_HttpRequest('/thirdparty/token', $params, $header, '', 'POST', $cdata, $msg);
-                    if ($statuscode == 0 && $cdata == '') {
-                        $statuscode = self::$IS_INVALIDDATA;
-                    }
-                    $this->SendDebug(__FUNCTION__, 'token: statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true) . ', msg=' . $msg, 0);
-                    if ($statuscode != 0) {
-                        $this->MaintainStatus($statuscode);
-                        IPS_SemaphoreLeave($this->SemaphoreID);
-                        return '';
-                    }
-
-                    $jdata = json_decode($cdata, true);
-                    $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
-
-                    $access_token = $jdata['access_token'];
-                    $expires_in = $jdata['expires_in'];
-
-                    $jtoken = [
-                        'access_token' => $access_token,
-                        'expiration'   => time() + $expires_in,
-                        'type'         => self::$CONNECTION_DEVELOPER
-                    ];
-                    $this->SetBuffer('Token', json_encode($jtoken));
-                }
-                break;
-            default:
-                $access_token = false;
-                break;
-        }
-        IPS_SemaphoreLeave($this->SemaphoreID);
-        return $access_token;
     }
 
     private function do_ApiCall($func, &$data, &$msg)
