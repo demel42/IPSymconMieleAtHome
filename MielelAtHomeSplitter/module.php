@@ -119,8 +119,8 @@ class MieleAtHomeSplitter extends IPSModule
         return $d;
     }
 
-    // bei jeder Änderung des access_token muss dieser im WebsocketClient als Header gesetzt werden
-    // Rücksprache mit NT per Mail am ?????????
+    // bei jeder Änderung des access_token muss dieser im SSE-Client als Header gesetzt werden
+    // Rücksprache mit NT per Mail am 07.11.2023
     private function UpdateConfigurationForParent()
     {
         $this->SendDebug(__FUNCTION__, '', 0);

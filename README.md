@@ -261,7 +261,7 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 2.0 @ 01.11.2023 15:02
+- 2.0 @ 07.11.2023 10:50
   - Neu: Benutzung der Event-Schnittstelle von Miele (Server-Sent Events)
 	Hierüber werden alle Änderungsmeldung der Geräte zeitnah empfangen ohne zyklischen Datenabruf!
     Ein aktiver Abruf ist nur noch unter bestimmten Umständen sinnvoll und kann daher auf ein langes Intervall gesetzt werden; dieses wird nun in Minuten angegeben.
