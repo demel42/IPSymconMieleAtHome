@@ -792,11 +792,18 @@ class MieleAtHomeSplitter extends IPSModule
             return;
         }
 
+        $access_token = $this->GetApiAccessToken();
+        if ($access_token == false) {
+            $msg = $this->Translate('invalid account-data') . PHP_EOL;
+            $this->PopupMessage($msg);
+            return;
+        }
+
+        $this->UpdateConfigurationForParent();
+
         $cdata = '';
         $msg = '';
         $r = $this->do_ApiCall('/v1/devices', $cdata, $msg);
-
-        $this->UpdateConfigurationForParent();
 
         $txt = '';
         if ($r == false) {
@@ -920,9 +927,7 @@ class MieleAtHomeSplitter extends IPSModule
 
     private function do_ApiCall($func, &$data, &$msg)
     {
-        $language = $this->ReadPropertyString('language');
-
-        $access_token = $this->GetAccessToken($msg);
+        $access_token = $this->GetApiAccessToken();
         if ($access_token == false) {
             return false;
         }
@@ -931,6 +936,8 @@ class MieleAtHomeSplitter extends IPSModule
             $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
             return;
         }
+
+        $language = $this->ReadPropertyString('language');
 
         $params = [
             'language' => $language,
@@ -957,9 +964,7 @@ class MieleAtHomeSplitter extends IPSModule
 
     private function do_ActionCall($func, $opts, &$data, &$msg)
     {
-        $language = $this->ReadPropertyString('language');
-
-        $access_token = $this->GetAccessToken($msg);
+        $access_token = $this->GetApiAccessToken();
         if ($access_token == false) {
             return false;
         }
@@ -968,6 +973,8 @@ class MieleAtHomeSplitter extends IPSModule
             $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
             return;
         }
+
+        $language = $this->ReadPropertyString('language');
 
         $params = [
             'language' => $language,

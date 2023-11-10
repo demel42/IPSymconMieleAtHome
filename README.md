@@ -261,6 +261,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 2.0.1 @ 10.11.2023 11:37
+  - Fix: Zugang via Entwicklerschlüssel geht wieder (zu Version 2.0)
+
 - 2.0 @ 07.11.2023 10:50
   - Neu: Benutzung der Event-Schnittstelle von Miele (Server-Sent Events)
 	Hierüber werden alle Änderungsmeldung der Geräte zeitnah empfangen ohne zyklischen Datenabruf!
