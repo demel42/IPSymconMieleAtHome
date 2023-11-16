@@ -576,14 +576,13 @@ class MieleAtHomeDevice extends IPSModule
             }
             if ($event == 'actions') {
                 $this->DecodeActions('Event', $jdata[$fabNumber]);
-                $this->SetBuffer('EnabledActions', json_encode($jdata[$fabNumber]));
             }
         }
     }
 
-    private function DecodeDevice($tag, $jdata)
+    private function DecodeDevice($source, $jdata)
     {
-        $this->SendDebug(__FUNCTION__, 'tag=' . $tag . ', jdata=' . print_r($jdata, true), 0);
+        $this->SendDebug(__FUNCTION__, 'source=' . $source . ', jdata=' . print_r($jdata, true), 0);
 
         $map_programName = $this->ReadPropertyBoolean('map_programName');
         $map_programType = $this->ReadPropertyBoolean('map_programType');
@@ -978,9 +977,11 @@ class MieleAtHomeDevice extends IPSModule
         }
     }
 
-    private function DecodeActions($tag, $actions)
+    private function DecodeActions($source, $actions)
     {
-        $this->SendDebug(__FUNCTION__, 'tag=' . $tag . ', actions=' . print_r($actions, true), 0);
+        $this->SendDebug(__FUNCTION__, 'source=' . $source . ', actions=' . print_r($actions, true), 0);
+
+        $this->setEnabledActions($actions);
 
         $deviceId = $this->ReadPropertyInteger('deviceId');
         $opts = $this->getDeviceOptions($deviceId);
@@ -1131,7 +1132,7 @@ class MieleAtHomeDevice extends IPSModule
         $jdata = @json_decode((string) $data, true);
         $this->DecodeDevice('Update', $jdata);
 
-        $actions = $this->getEnabledActions(true);
+        $actions = $this->queryEnabledActions();
         $this->DecodeActions('Update', $actions);
     }
 
@@ -1347,7 +1348,7 @@ class MieleAtHomeDevice extends IPSModule
     {
         $enabled = false;
 
-        $actions = $this->getEnabledActions(false);
+        $actions = $this->getEnabledActions();
         $processAction = isset($actions['processAction']) ? $actions['processAction'] : [];
         $light = isset($actions['light']) ? $actions['light'] : [];
         $startTime = isset($actions['startTime']) ? $actions['startTime'] : [];
@@ -1639,7 +1640,7 @@ class MieleAtHomeDevice extends IPSModule
             return false;
         }
 
-        $actions = $this->getEnabledActions(false);
+        $actions = $this->getEnabledActions();
         $targetTemperature = isset($actions['targetTemperature']) ? $actions['targetTemperature'] : [];
         foreach ($targetTemperature as $t) {
             if ($t['zone'] == $zone) {
@@ -1827,7 +1828,19 @@ class MieleAtHomeDevice extends IPSModule
         }
     }
 
-    private function getEnabledActions(bool $force)
+    private function setEnabledActions($actions)
+    {
+        $this->SetBuffer('EnabledActions', json_encode($actions));
+    }
+
+    private function getEnabledActions()
+    {
+        $data = $this->GetBuffer('EnabledActions');
+        $actions = @json_decode((string) $data, true);
+        return $actions;
+    }
+
+    private function queryEnabledActions()
     {
         if ($this->HasActiveParent() == false) {
             $this->SendDebug(__FUNCTION__, 'has no active parent/gateway', 0);
@@ -1838,21 +1851,15 @@ class MieleAtHomeDevice extends IPSModule
             return false;
         }
 
-        $data = $force ? '' : $this->GetBuffer('EnabledActions');
-        if ($data == '') {
-            $fabNumber = $this->ReadPropertyString('fabNumber');
-            $SendData = [
-                'DataID'   => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}',
-                'CallerID' => $this->InstanceID,
-                'Function' => 'GetDeviceActions',
-                'Ident'    => $fabNumber
-            ];
-            $data = $this->SendDataToParent(json_encode($SendData));
-            $this->SetBuffer('EnabledActions', $data);
-            $actions = json_decode($data, true);
-        } else {
-            $actions = json_decode($data, true);
-        }
+        $fabNumber = $this->ReadPropertyString('fabNumber');
+        $SendData = [
+            'DataID'   => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}',
+            'CallerID' => $this->InstanceID,
+            'Function' => 'GetDeviceActions',
+            'Ident'    => $fabNumber
+        ];
+        $data = $this->SendDataToParent(json_encode($SendData));
+        $actions = @json_decode((string) $data, true);
         return $actions;
     }
 }
