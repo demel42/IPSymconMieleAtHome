@@ -261,8 +261,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 2.0.2 @ 16.11.2023 18:08
+- 2.0.2 @ 16.11.2023 18:29
   - Fix: Reihenfolgeproblem bei der Verarbeitung von Action-Events
+  - Fix: Berechnung der Endzeit angepasst
 
 - 2.0.1 @ 10.11.2023 11:37
   - Fix: Zugang via Entwicklerschlüssel geht wieder (zu Version 2.0)
