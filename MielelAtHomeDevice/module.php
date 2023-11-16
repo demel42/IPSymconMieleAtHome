@@ -724,8 +724,10 @@ class MieleAtHomeDevice extends IPSModule
                     $elapsedTime_M = $this->GetArrayElem($jdata, 'elapsedTime.1', 0);
                     $elapsedTime = $elapsedTime_H * 60 + $elapsedTime_M;
 
-                    $endTime = $base_ts + $remainingTime * 60;
                     $startTime = $base_ts - $elapsedTime * 60;
+                    if ($remainingTime > 0) {
+                        $endTime = $base_ts + $remainingTime * 60;
+                    }
 
                     if ($elapsedTime && $remainingTime) {
                         $workProgress = floor($elapsedTime / ($elapsedTime + $remainingTime) * 100);
