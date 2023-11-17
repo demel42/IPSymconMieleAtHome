@@ -687,7 +687,7 @@ class MieleAtHomeSplitter extends IPSModule
                     'caption' => 'Miele@Home Access-Details',
                 ];
                 break;
-        default:
+            default:
                 break;
         }
 
