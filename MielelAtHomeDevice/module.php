@@ -86,6 +86,7 @@ class MieleAtHomeDevice extends IPSModule
             'enabled_fridge_temp'   => false,
             'enabled_freezer_temp'  => false,
             'core_temp'             => false,
+            'enabled_operationmode' => false,
         ];
 
         switch ($deviceId) {
@@ -156,6 +157,7 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['fridge_zone'] = 1;
                 $opts['door'] = true;
 
+                $opts['enabled_operationmode'] = true;
                 $opts['enabled_powersupply'] = true;
                 $opts['enabled_supercooling'] = true;
                 $opts['enabled_fridge_temp'] = true;
@@ -165,6 +167,7 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['freezer_zone'] = 1;
                 $opts['door'] = true;
 
+                $opts['enabled_operationmode'] = true;
                 $opts['enabled_powersupply'] = true;
                 $opts['enabled_superfreezing'] = true;
                 $opts['enabled_freezer_temp'] = true;
@@ -176,6 +179,7 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['freezer_zone'] = 2;
                 $opts['door'] = true;
 
+                $opts['enabled_operationmode'] = true;
                 $opts['enabled_powersupply'] = true;
                 $opts['enabled_supercooling'] = true;
                 $opts['enabled_superfreezing'] = true;
@@ -343,6 +347,8 @@ class MieleAtHomeDevice extends IPSModule
         $this->MaintainVariable('Core_TargetTemperature', $this->Translate('Target core temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $opts['core_temp']);
         $this->MaintainVariable('Core_Temperature', $this->Translate('Core temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $opts['core_temp']);
 
+        $this->MaintainVariable('OperationMode', $this->Translate('Operation mode'), VARIABLETYPE_INTEGER, 'MieleAtHome.OperationMode', $vpos++, $opts['enabled_operationmode']);
+
         $vpos = 80;
         $this->MaintainVariable('CurrentWaterConsumption', $this->Translate('Current water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $opts['ecoFeedback_Water']);
         $this->MaintainVariable('EstimatedWaterConsumption', $this->Translate('Estimated water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $opts['ecoFeedback_Water']);
@@ -391,6 +397,9 @@ class MieleAtHomeDevice extends IPSModule
         }
         if ($opts['enabled_freezer_temp']) {
             $this->MaintainAction('Freezer_TargetTemperature', true);
+        }
+        if ($opts['enabled_operationmode']) {
+            $this->MaintainAction('OperationMode', true);
         }
 
         $this->MaintainStatus(IS_ACTIVE);
@@ -1110,6 +1119,29 @@ class MieleAtHomeDevice extends IPSModule
             $this->MaintainAction('Freezer_TargetTemperature', $b);
             $this->SendDebug(__FUNCTION__, 'MaintainAction "Freezer_TargetTemperature": enabled=' . $this->bool2str($b), 0);
         }
+
+        if ($opts['enabled_operationmode']) {
+            $b = false;
+            $v = self::$OPERATIONMODE_NORMAL;
+
+            $modes = isset($actions['modes']) ? $actions['modes'] : [];
+            $this->SendDebug(__FUNCTION__, 'modes=' . print_r($modes, true), 0);
+
+            if ($modes != []) {
+                $b = true;
+                for ($mode = 0; $mode < 4; $mode++) {
+                    if (in_array($mode, $modes) == false) {
+                        $v = $mode;
+                        break;
+                    }
+                }
+            }
+            $this->SendDebug(__FUNCTION__, 'v=' . $v, 0);
+
+            $this->SetValue('OperationMode', $v);
+            $this->MaintainAction('OperationMode', $b);
+            $this->SendDebug(__FUNCTION__, 'MaintainAction "PowerSupply": enabled=' . $this->bool2str($b) . ', value=' . $this->GetValueFormatted('OperationMode'), 0);
+        }
     }
 
     private function UpdateData()
@@ -1365,6 +1397,7 @@ class MieleAtHomeDevice extends IPSModule
         $targetTemperature = isset($actions['targetTemperature']) ? $actions['targetTemperature'] : [];
         $powerOff = isset($actions['powerOff']) ? $actions['powerOff'] : false;
         $powerOn = isset($actions['powerOn']) ? $actions['powerOn'] : false;
+        $modes = isset($actions['modes']) ? $actions['modes'] : [];
 
         switch ($func) {
             case 'Start':
@@ -1441,6 +1474,15 @@ class MieleAtHomeDevice extends IPSModule
                         $enabled = true;
                         break;
                     }
+                }
+                break;
+            case 'SetOperationMode_0':
+            case 'SetOperationMode_1':
+            case 'SetOperationMode_2':
+            case 'SetOperationMode_3':
+                $mode = preg_replace('/SetOperationMode_/', '', $func);
+                if (in_array($mode, $modes)) {
+                    $enabled = true;
                 }
                 break;
             default:
@@ -1679,6 +1721,19 @@ class MieleAtHomeDevice extends IPSModule
         return $this->CallAction(__FUNCTION__, $action);
     }
 
+    public function SetOperationMode(int $mode)
+    {
+        if (!$this->checkAction(__FUNCTION__ . '_' . $mode, true)) {
+            return false;
+        }
+
+        $action = [
+            'modes' => $mode
+        ];
+
+        return $this->CallAction(__FUNCTION__, $action);
+    }
+
     private function LocalRequestAction($ident, $value)
     {
         $r = true;
@@ -1824,6 +1879,13 @@ class MieleAtHomeDevice extends IPSModule
                 $opts = $this->getDeviceOptions($deviceId);
                 $zone = $opts['freezer_zone'];
                 $r = $this->SetTargetTemperature($zone, $value);
+                if ($r) {
+                    $this->SetValue($ident, $value);
+                }
+                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
+                break;
+            case 'OperationMode':
+                $r = $this->SetOperationMode($value);
                 if ($r) {
                     $this->SetValue($ident, $value);
                 }

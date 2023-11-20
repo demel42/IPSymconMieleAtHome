@@ -130,6 +130,11 @@ trait MieleAtHomeLocalLib
     public static $PROCESS_START_SUPERCOOLING = 6;
     public static $PROCESS_STOP_SUPERCOOLING = 7;
 
+    public static $OPERATIONMODE_NORMAL = 0;
+    public static $OPERATIONMODE_SABBATH = 1;
+    public static $OPERATIONMODE_PARTY = 2;
+    public static $OPERATIONMODE_HOLIDAY = 3;
+
     private function InstallVarProfiles(bool $reInstall = false)
     {
         if ($reInstall) {
@@ -212,6 +217,14 @@ trait MieleAtHomeLocalLib
             ['Wert' => self::$ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1],
         ];
         $this->CreateVarProfile('MieleAtHome.Supercooling', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations, $reInstall);
+
+        $associations = [
+            ['Wert' => self::$OPERATIONMODE_NORMAL, 'Name' => $this->Translate('Normal operation mode'), 'Farbe' => -1],
+            ['Wert' => self::$OPERATIONMODE_SABBATH, 'Name' => $this->Translate('Sabbath mode'), 'Farbe' => -1],
+            ['Wert' => self::$OPERATIONMODE_PARTY, 'Name' => $this->Translate('Party mode'), 'Farbe' => -1],
+            ['Wert' => self::$OPERATIONMODE_HOLIDAY, 'Name' => $this->Translate('Holiday mode'), 'Farbe' => -1],
+        ];
+        $this->CreateVarProfile('MieleAtHome.OperationMode', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations, $reInstall);
 
         $associations = [
             ['Wert' => 0, 'Name' => '-', 'Farbe' => -1],

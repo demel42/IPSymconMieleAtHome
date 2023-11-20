@@ -236,11 +236,26 @@ Bisher unterstützte Gerätetypen
 ### Variablenprofile
 
 * Boolean<br>
-MieleAtHome.Door
+MieleAtHome.Door,
+MieleAtHome.YesNo
 
 * Integer<br>
-MieleAtHome.Action, MieleAtHome.Duration, MieleAtHome.Light, MieleAtHome.PowerSupply, MieleAtHome.SpinningSpeed,
-MieleAtHome.Status, MieleAtHome.Supercooling, MieleAtHome.Superfreezing, MieleAtHome.Temperature
+MieleAtHome.Action,
+MieleAtHome.BatteryLevel,
+MieleAtHome.Duration,
+MieleAtHome.Light,
+MieleAtHome.OperationMode,
+MieleAtHome.PowerSupply,
+MieleAtHome.SpinningSpeed,
+MieleAtHome.Status,
+MieleAtHome.Supercooling,
+MieleAtHome.Superfreezing,
+MieleAtHome.Temperature,
+MieleAtHome.WorkProgress
+
+* Float<br>
+MieleAtHome.Energy,
+MieleAtHome.Water
 
 ## 6. Anhang
 
@@ -260,6 +275,9 @@ Verweise:
 - https://www.miele.com/developer/index.html
 
 ## 7. Versions-Historie
+
+- 2.0.4 @ 20.11.2023 17:29
+  - Neu: Unterstützung des Betriebsmodus (Normal, Sabbat, Party, Urlaub) von Kühl- und Gefrierschränken
 
 - 2.0.3 @ 20.11.2023 10:53
   - Fix: README korrigiert
