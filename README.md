@@ -205,7 +205,7 @@ Anmerkung: es ist unklar, bei welchen Gerätetypen es funktioniert, das Geräte 
 | Geräte-Typ              | string  |              | wird im Konfigurator gesetzt |
 | Seriennummer            | string  |              | wird im Konfigurator gesetzt und darf nicht geändert werden |
 | Modell                  | string  |              | wird im Konfigurator gesetzt |
-| Update-Intervall        | integer | 60           | Intervall der Datenabfrage in Sekunden |
+| Update-Intervall        | integer | 60           | Intervall der Datenabfrage in Minuten |
 |                         |         |              | |
 | Code in Text übersetzen |         |              | Übersetzte Statustexte aus der API ignoreiren und selbst umsetzen |
 |  ... Status             | boolean | false        | |
@@ -260,6 +260,10 @@ Verweise:
 - https://www.miele.com/developer/index.html
 
 ## 7. Versions-Historie
+
+- 2.0.3 @ 20.11.2023 09:23
+  - Fix: README korrigiert
+  - Verbesserung: wenn Superfrost/Schnellkühlen aktiv ist, darf die Zieltemperatur nicht geändert werden
 
 - 2.0.2 @ 16.11.2023 18:29
   - Fix: Reihenfolgeproblem bei der Verarbeitung von Action-Events

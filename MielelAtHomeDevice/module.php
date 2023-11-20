@@ -1088,6 +1088,10 @@ class MieleAtHomeDevice extends IPSModule
             } else {
                 $b = false;
             }
+            // Problem in der API: wenn SUPERCOOLING aktiv ist, darf die Zieltemperatur nicht geändert werden (@alsk1)
+            if ($this->GetValue('State') != self::$STATE_SUPERCOOLING) {
+                $b = false;
+            }
             $this->MaintainAction('Fridge_TargetTemperature', $b);
             $this->SendDebug(__FUNCTION__, 'MaintainAction "Fridge_TargetTemperature": enabled=' . $this->bool2str($b), 0);
         }
@@ -1097,6 +1101,10 @@ class MieleAtHomeDevice extends IPSModule
             if ($zone > 0 && $this->checkAction('SetTargetTemperature_' . $zone, false)) {
                 $b = true;
             } else {
+                $b = false;
+            }
+            // Problem in der API: wenn SUPERFREEZING aktiv ist, darf die Zieltemperatur nicht geändert werden
+            if ($this->GetValue('State') != self::$STATE_SUPERFREEZING) {
                 $b = false;
             }
             $this->MaintainAction('Freezer_TargetTemperature', $b);
