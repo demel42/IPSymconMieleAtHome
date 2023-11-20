@@ -261,7 +261,7 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 2.0.3 @ 20.11.2023 09:23
+- 2.0.3 @ 20.11.2023 10:53
   - Fix: README korrigiert
   - Verbesserung: wenn Superfrost/Schnellkühlen aktiv ist, darf die Zieltemperatur nicht geändert werden
 
