@@ -276,6 +276,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 2.0.5 @ 21.11.2023 14:58
+  - Fix: Variable "PowerSupply" bei Kühlschränken löschen
+  - Fix: die Betriebsmodi sind nun getrennte Variablen
+
 - 2.0.4 @ 20.11.2023 17:29
   - Neu: Unterstützung des Betriebsmodus (Normal, Sabbat, Party, Urlaub) von Kühl- und Gefrierschränken
 

@@ -51,12 +51,6 @@
 			"start": "starten",
 			"stop": "stoppen",
 
-			"__variableprofile__": "MieleAtHome.OperationMode'",
-			"Normal operation mode": "Normaler Betriebsmodus",
-			"Sabbath mode": "Sabbatbetrieb",
-			"Party mode": "Party-Betrieb",
-			"Holiday mode": "Urlaubsmodus",
-
 			"__status__": "",
 			"Instance is inactive (unauthorized)": "Instanz ist inaktiv (Authorisierung fehlerhaft)",
 			"Instance is inactive (server error)": "Instanz ist inaktiv (Serverfehler)",

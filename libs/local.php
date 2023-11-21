@@ -219,14 +219,6 @@ trait MieleAtHomeLocalLib
         $this->CreateVarProfile('MieleAtHome.Supercooling', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations, $reInstall);
 
         $associations = [
-            ['Wert' => self::$OPERATIONMODE_NORMAL, 'Name' => $this->Translate('Normal operation mode'), 'Farbe' => -1],
-            ['Wert' => self::$OPERATIONMODE_SABBATH, 'Name' => $this->Translate('Sabbath mode'), 'Farbe' => -1],
-            ['Wert' => self::$OPERATIONMODE_PARTY, 'Name' => $this->Translate('Party mode'), 'Farbe' => -1],
-            ['Wert' => self::$OPERATIONMODE_HOLIDAY, 'Name' => $this->Translate('Holiday mode'), 'Farbe' => -1],
-        ];
-        $this->CreateVarProfile('MieleAtHome.OperationMode', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations, $reInstall);
-
-        $associations = [
             ['Wert' => 0, 'Name' => '-', 'Farbe' => -1],
             ['Wert' => 0.1, 'Name' => '%.1f kWh', 'Farbe' => -1],
         ];

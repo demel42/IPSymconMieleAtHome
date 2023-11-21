@@ -158,7 +158,6 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['door'] = true;
 
                 $opts['enabled_operationmode'] = true;
-                $opts['enabled_powersupply'] = true;
                 $opts['enabled_supercooling'] = true;
                 $opts['enabled_fridge_temp'] = true;
                 break;
@@ -168,7 +167,6 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['door'] = true;
 
                 $opts['enabled_operationmode'] = true;
-                $opts['enabled_powersupply'] = true;
                 $opts['enabled_superfreezing'] = true;
                 $opts['enabled_freezer_temp'] = true;
                 break;
@@ -180,7 +178,6 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['door'] = true;
 
                 $opts['enabled_operationmode'] = true;
-                $opts['enabled_powersupply'] = true;
                 $opts['enabled_supercooling'] = true;
                 $opts['enabled_superfreezing'] = true;
                 $opts['enabled_fridge_temp'] = true;
@@ -235,6 +232,25 @@ class MieleAtHomeDevice extends IPSModule
             $r[] = $this->Translate('Changing the polling interval to hourly (due to the use of server sent events (SSE))');
         }
 
+        if ($this->version2num($oldInfo) < $this->version2num('2.0.5')) {
+            $deviceId = $this->ReadPropertyInteger('deviceId');
+            $opts = $this->getDeviceOptions($deviceId);
+
+            if ($opts['enabled_powersupply'] == false) {
+                @$varID = $this->GetIDForIdent('PowerSupply');
+                if (@$varID != false) {
+                    $r[] = $this->Translate('Delete variable \'PowerSupply\'');
+                }
+            }
+
+            if ($opts['enabled_operationmode'] == false) {
+                @$varID = $this->GetIDForIdent('OperationMode');
+                if (@$varID != false) {
+                    $r[] = $this->Translate('Delete variable \'OperationMode\'');
+                }
+            }
+        }
+
         return $r;
     }
 
@@ -249,6 +265,29 @@ class MieleAtHomeDevice extends IPSModule
 
         if ($this->version2num($oldInfo) < $this->version2num('2.0')) {
             IPS_SetProperty($this->InstanceID, 'update_interval', 60);
+        }
+
+        if ($this->version2num($oldInfo) < $this->version2num('2.0.5')) {
+            $deviceId = $this->ReadPropertyInteger('deviceId');
+            $opts = $this->getDeviceOptions($deviceId);
+
+            if ($opts['enabled_powersupply'] == false) {
+                @$varID = $this->GetIDForIdent('PowerSupply');
+                if (@$varID != false) {
+                    $this->UnregisterVariable('PowerSupply');
+                }
+            }
+
+            if ($opts['enabled_operationmode'] == false) {
+                @$varID = $this->GetIDForIdent('OperationMode');
+                if (@$varID != false) {
+                    $this->UnregisterVariable('OperationMode');
+                }
+            }
+
+            if (IPS_VariableProfileExists('MieleAtHome.OperationMode')) {
+                IPS_DeleteVariableProfile('MieleAtHome.OperationMode');
+            }
         }
 
         return '';
@@ -347,7 +386,9 @@ class MieleAtHomeDevice extends IPSModule
         $this->MaintainVariable('Core_TargetTemperature', $this->Translate('Target core temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $opts['core_temp']);
         $this->MaintainVariable('Core_Temperature', $this->Translate('Core temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $opts['core_temp']);
 
-        $this->MaintainVariable('OperationMode', $this->Translate('Operation mode'), VARIABLETYPE_INTEGER, 'MieleAtHome.OperationMode', $vpos++, $opts['enabled_operationmode']);
+        $this->MaintainVariable('OperationMode_Sabbath', $this->Translate('Sabbath mode'), VARIABLETYPE_BOOLEAN, '', $vpos++, $opts['enabled_operationmode']);
+        $this->MaintainVariable('OperationMode_Party', $this->Translate('Party mode'), VARIABLETYPE_BOOLEAN, '', $vpos++, $opts['enabled_operationmode']);
+        $this->MaintainVariable('OperationMode_Holiday', $this->Translate('Holiday mode'), VARIABLETYPE_BOOLEAN, '', $vpos++, $opts['enabled_operationmode']);
 
         $vpos = 80;
         $this->MaintainVariable('CurrentWaterConsumption', $this->Translate('Current water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $opts['ecoFeedback_Water']);
@@ -397,9 +438,6 @@ class MieleAtHomeDevice extends IPSModule
         }
         if ($opts['enabled_freezer_temp']) {
             $this->MaintainAction('Freezer_TargetTemperature', true);
-        }
-        if ($opts['enabled_operationmode']) {
-            $this->MaintainAction('OperationMode', true);
         }
 
         $this->MaintainStatus(IS_ACTIVE);
@@ -1121,26 +1159,26 @@ class MieleAtHomeDevice extends IPSModule
         }
 
         if ($opts['enabled_operationmode']) {
-            $b = false;
-            $v = self::$OPERATIONMODE_NORMAL;
-
             $modes = isset($actions['modes']) ? $actions['modes'] : [];
             $this->SendDebug(__FUNCTION__, 'modes=' . print_r($modes, true), 0);
 
-            if ($modes != []) {
-                $b = true;
-                for ($mode = 0; $mode < 4; $mode++) {
-                    if (in_array($mode, $modes) == false) {
-                        $v = $mode;
-                        break;
-                    }
+            $names = [
+                self::$OPERATIONMODE_SABBATH => 'OperationMode_Sabbath',
+                self::$OPERATIONMODE_PARTY   => 'OperationMode_Party',
+                self::$OPERATIONMODE_HOLIDAY => 'OperationMode_Holiday',
+            ];
+            foreach ($names as $mode => $name) {
+                if ($modes != []) {
+                    $b = true;
+                    $v = in_array($mode, $modes) == false;
+                } else {
+                    $b = false;
+                    $v = false;
                 }
+                $this->SetValue($name, $v);
+                $this->MaintainAction($name, $b);
+                $this->SendDebug(__FUNCTION__, 'MaintainAction "' . $name . '": enabled=' . $this->bool2str($b) . ', value=' . $this->GetValueFormatted($name), 0);
             }
-            $this->SendDebug(__FUNCTION__, 'v=' . $v, 0);
-
-            $this->SetValue('OperationMode', $v);
-            $this->MaintainAction('OperationMode', $b);
-            $this->SendDebug(__FUNCTION__, 'MaintainAction "PowerSupply": enabled=' . $this->bool2str($b) . ', value=' . $this->GetValueFormatted('OperationMode'), 0);
         }
     }
 
@@ -1476,12 +1514,18 @@ class MieleAtHomeDevice extends IPSModule
                     }
                 }
                 break;
-            case 'SetOperationMode_0':
-            case 'SetOperationMode_1':
-            case 'SetOperationMode_2':
-            case 'SetOperationMode_3':
-                $mode = preg_replace('/SetOperationMode_/', '', $func);
-                if (in_array($mode, $modes)) {
+            case 'SetOperationMode_Sabbath':
+                if (in_array($mode, self::$OPERATIONMODE_SABBATH, $modes)) {
+                    $enabled = true;
+                }
+                break;
+            case 'SetOperationMode_Party':
+                if (in_array($mode, self::$OPERATIONMODE_PARTY, $modes)) {
+                    $enabled = true;
+                }
+                break;
+            case 'SetOperationMode_Holiday':
+                if (in_array($mode, self::$OPERATIONMODE_HOLIDAY, $modes)) {
                     $enabled = true;
                 }
                 break;
@@ -1884,8 +1928,22 @@ class MieleAtHomeDevice extends IPSModule
                 }
                 $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
-            case 'OperationMode':
-                $r = $this->SetOperationMode($value);
+            case 'SetOperationMode_Sabbath':
+                $r = $this->SetOperationMode($value ? self::$OPERATIONMODE_SABBATH : self::$OPERATIONMODE_NORMAL);
+                if ($r) {
+                    $this->SetValue($ident, $value);
+                }
+                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
+                break;
+            case 'SetOperationMode_Party':
+                $r = $this->SetOperationMode($value ? self::$OPERATIONMODE_PARTY : self::$OPERATIONMODE_NORMAL);
+                if ($r) {
+                    $this->SetValue($ident, $value);
+                }
+                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
+                break;
+            case 'SetOperationMode_Holiday':
+                $r = $this->SetOperationMode($value ? self::$OPERATIONMODE_HOLIDAY : self::$OPERATIONMODE_NORMAL);
                 if ($r) {
                     $this->SetValue($ident, $value);
                 }
