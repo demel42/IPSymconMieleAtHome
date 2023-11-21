@@ -243,7 +243,7 @@ class MieleAtHomeDevice extends IPSModule
                 }
             }
 
-            if ($opts['enabled_operationmode'] == false) {
+            if ($opts['enabled_operationmode']) {
                 @$varID = $this->GetIDForIdent('OperationMode');
                 if (@$varID != false) {
                     $r[] = $this->Translate('Delete variable \'OperationMode\'');
@@ -278,7 +278,7 @@ class MieleAtHomeDevice extends IPSModule
                 }
             }
 
-            if ($opts['enabled_operationmode'] == false) {
+            if ($opts['enabled_operationmode']) {
                 @$varID = $this->GetIDForIdent('OperationMode');
                 if (@$varID != false) {
                     $this->UnregisterVariable('OperationMode');
@@ -438,6 +438,12 @@ class MieleAtHomeDevice extends IPSModule
         }
         if ($opts['enabled_freezer_temp']) {
             $this->MaintainAction('Freezer_TargetTemperature', true);
+        }
+
+        if ($opts['enabled_operationmode']) {
+            $this->MaintainAction('OperationMode_Sabbath', true);
+            $this->MaintainAction('OperationMode_Party', true);
+            $this->MaintainAction('OperationMode_Holiday', true);
         }
 
         $this->MaintainStatus(IS_ACTIVE);
