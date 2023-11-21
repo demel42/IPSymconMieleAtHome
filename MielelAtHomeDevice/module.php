@@ -1520,6 +1520,11 @@ class MieleAtHomeDevice extends IPSModule
                     }
                 }
                 break;
+            case 'SetOperationMode_Normal':
+                if (in_array($mode, self::$OPERATIONMODE_NORMAL, $modes)) {
+                    $enabled = true;
+                }
+                break;
             case 'SetOperationMode_Sabbath':
                 if (in_array($mode, self::$OPERATIONMODE_SABBATH, $modes)) {
                     $enabled = true;
@@ -1773,7 +1778,14 @@ class MieleAtHomeDevice extends IPSModule
 
     public function SetOperationMode(int $mode)
     {
-        if (!$this->checkAction(__FUNCTION__ . '_' . $mode, true)) {
+        $names = [
+            self::$OPERATIONMODE_NORMAL  => 'SetOperationMode_Normal',
+            self::$OPERATIONMODE_SABBATH => 'SetOperationMode_Sabbath',
+            self::$OPERATIONMODE_PARTY   => 'SetOperationMode_Party',
+            self::$OPERATIONMODE_HOLIDAY => 'SetOperationMode_Holiday',
+        ];
+        $b = isset($names[$mode]) ? $this->checkAction($names[$mode], true) : false;
+        if ($b == false) {
             return false;
         }
 
