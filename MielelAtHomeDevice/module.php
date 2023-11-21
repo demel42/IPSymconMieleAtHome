@@ -1934,21 +1934,21 @@ class MieleAtHomeDevice extends IPSModule
                 }
                 $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
-            case 'SetOperationMode_Sabbath':
+            case 'OperationMode_Sabbath':
                 $r = $this->SetOperationMode($value ? self::$OPERATIONMODE_SABBATH : self::$OPERATIONMODE_NORMAL);
                 if ($r) {
                     $this->SetValue($ident, $value);
                 }
                 $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
-            case 'SetOperationMode_Party':
+            case 'OperationMode_Party':
                 $r = $this->SetOperationMode($value ? self::$OPERATIONMODE_PARTY : self::$OPERATIONMODE_NORMAL);
                 if ($r) {
                     $this->SetValue($ident, $value);
                 }
                 $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
-            case 'SetOperationMode_Holiday':
+            case 'OperationMode_Holiday':
                 $r = $this->SetOperationMode($value ? self::$OPERATIONMODE_HOLIDAY : self::$OPERATIONMODE_NORMAL);
                 if ($r) {
                     $this->SetValue($ident, $value);
