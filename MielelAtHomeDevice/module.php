@@ -1521,22 +1521,22 @@ class MieleAtHomeDevice extends IPSModule
                 }
                 break;
             case 'SetOperationMode_Normal':
-                if (in_array($mode, self::$OPERATIONMODE_NORMAL, $modes)) {
+                if (in_array(self::$OPERATIONMODE_NORMAL, $modes)) {
                     $enabled = true;
                 }
                 break;
             case 'SetOperationMode_Sabbath':
-                if (in_array($mode, self::$OPERATIONMODE_SABBATH, $modes)) {
+                if (in_array(self::$OPERATIONMODE_SABBATH, $modes)) {
                     $enabled = true;
                 }
                 break;
             case 'SetOperationMode_Party':
-                if (in_array($mode, self::$OPERATIONMODE_PARTY, $modes)) {
+                if (in_array(self::$OPERATIONMODE_PARTY, $modes)) {
                     $enabled = true;
                 }
                 break;
             case 'SetOperationMode_Holiday':
-                if (in_array($mode, self::$OPERATIONMODE_HOLIDAY, $modes)) {
+                if (in_array(self::$OPERATIONMODE_HOLIDAY, $modes)) {
                     $enabled = true;
                 }
                 break;

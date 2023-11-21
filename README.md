@@ -276,7 +276,7 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 2.0.5 @ 21.11.2023 17:18
+- 2.0.5 @ 21.11.2023 17:33
   - Fix: Variable "PowerSupply" bei Kühlschränken löschen
   - Fix: die Betriebsmodi sind nun getrennte Variablen
 
