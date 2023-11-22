@@ -45,6 +45,8 @@ class MieleAtHomeDevice extends IPSModule
         $this->RegisterPropertyBoolean('map_dryingStep', true);
         $this->RegisterPropertyBoolean('map_ventilationStep', true);
 
+        $this->RegisterPropertyBoolean('enable_operationmode', false);
+
         $this->RegisterAttributeString('UpdateInfo', json_encode([]));
         $this->RegisterAttributeString('ModuleStats', json_encode([]));
 
@@ -88,6 +90,8 @@ class MieleAtHomeDevice extends IPSModule
             'core_temp'             => false,
             'enabled_operationmode' => false,
         ];
+
+        $enable_operationmode = $this->ReadPropertyBoolean('enable_operationmode');
 
         switch ($deviceId) {
             case self::$DEVICE_WASHING_MACHINE:   					// Waschmaschine
@@ -157,7 +161,7 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['fridge_zone'] = 1;
                 $opts['door'] = true;
 
-                $opts['enabled_operationmode'] = true;
+                $opts['enabled_operationmode'] = $enable_operationmode;
                 $opts['enabled_supercooling'] = true;
                 $opts['enabled_fridge_temp'] = true;
                 break;
@@ -166,7 +170,7 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['freezer_zone'] = 1;
                 $opts['door'] = true;
 
-                $opts['enabled_operationmode'] = true;
+                $opts['enabled_operationmode'] = $enable_operationmode;
                 $opts['enabled_superfreezing'] = true;
                 $opts['enabled_freezer_temp'] = true;
                 break;
@@ -177,7 +181,7 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['freezer_zone'] = 2;
                 $opts['door'] = true;
 
-                $opts['enabled_operationmode'] = true;
+                $opts['enabled_operationmode'] = $enable_operationmode;
                 $opts['enabled_supercooling'] = true;
                 $opts['enabled_superfreezing'] = true;
                 $opts['enabled_fridge_temp'] = true;
@@ -206,6 +210,8 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['door'] = true;
 
                 $opts['enabled_powersupply'] = true;
+                break;
+            default:
                 break;
         }
         return $opts;
@@ -242,13 +248,6 @@ class MieleAtHomeDevice extends IPSModule
                     $r[] = $this->Translate('Delete variable \'PowerSupply\'');
                 }
             }
-
-            if ($opts['enabled_operationmode']) {
-                @$varID = $this->GetIDForIdent('OperationMode');
-                if (@$varID != false) {
-                    $r[] = $this->Translate('Delete variable \'OperationMode\'');
-                }
-            }
         }
 
         return $r;
@@ -276,17 +275,6 @@ class MieleAtHomeDevice extends IPSModule
                 if (@$varID != false) {
                     $this->UnregisterVariable('PowerSupply');
                 }
-            }
-
-            if ($opts['enabled_operationmode']) {
-                @$varID = $this->GetIDForIdent('OperationMode');
-                if (@$varID != false) {
-                    $this->UnregisterVariable('OperationMode');
-                }
-            }
-
-            if (IPS_VariableProfileExists('MieleAtHome.OperationMode')) {
-                IPS_DeleteVariableProfile('MieleAtHome.OperationMode');
             }
         }
 
@@ -386,9 +374,7 @@ class MieleAtHomeDevice extends IPSModule
         $this->MaintainVariable('Core_TargetTemperature', $this->Translate('Target core temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $opts['core_temp']);
         $this->MaintainVariable('Core_Temperature', $this->Translate('Core temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $opts['core_temp']);
 
-        $this->MaintainVariable('OperationMode_Sabbath', $this->Translate('Sabbath mode'), VARIABLETYPE_BOOLEAN, '', $vpos++, $opts['enabled_operationmode']);
-        $this->MaintainVariable('OperationMode_Party', $this->Translate('Party mode'), VARIABLETYPE_BOOLEAN, '', $vpos++, $opts['enabled_operationmode']);
-        $this->MaintainVariable('OperationMode_Holiday', $this->Translate('Holiday mode'), VARIABLETYPE_BOOLEAN, '', $vpos++, $opts['enabled_operationmode']);
+        $this->MaintainVariable('OperationMode', $this->Translate('Operation mode'), VARIABLETYPE_INTEGER, 'MieleAtHome.OperationMode', $vpos++, $opts['enabled_operationmode']);
 
         $vpos = 80;
         $this->MaintainVariable('CurrentWaterConsumption', $this->Translate('Current water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $opts['ecoFeedback_Water']);
@@ -439,11 +425,8 @@ class MieleAtHomeDevice extends IPSModule
         if ($opts['enabled_freezer_temp']) {
             $this->MaintainAction('Freezer_TargetTemperature', true);
         }
-
         if ($opts['enabled_operationmode']) {
-            $this->MaintainAction('OperationMode_Sabbath', true);
-            $this->MaintainAction('OperationMode_Party', true);
-            $this->MaintainAction('OperationMode_Holiday', true);
+            $this->MaintainAction('OperationMode', true);
         }
 
         $this->MaintainStatus(IS_ACTIVE);
@@ -498,39 +481,69 @@ class MieleAtHomeDevice extends IPSModule
             'caption' => 'Basic configuration (don\'t change)'
         ];
 
+        $items = [
+            [
+                'type'    => 'Label',
+                'caption' => 'mapping code to text of field ...'
+            ],
+            [
+                'type'    => 'CheckBox',
+                'name'    => 'map_programName',
+                'caption' => ' ... Program name'
+            ],
+            [
+                'type'    => 'CheckBox',
+                'name'    => 'map_programType',
+                'caption' => ' ... Program'
+            ],
+            [
+                'type'    => 'CheckBox',
+                'name'    => 'map_programPhase',
+                'caption' => ' ... Phase'
+            ],
+            [
+                'type'    => 'CheckBox',
+                'name'    => 'map_dryingStep',
+                'caption' => ' ... Drying step'
+            ],
+            [
+                'type'    => 'CheckBox',
+                'name'    => 'map_ventilationStep',
+                'caption' => ' ... Ventilation step'
+            ],
+        ];
+
+        $deviceId = $this->ReadPropertyInteger('deviceId');
+        switch ($deviceId) {
+            case self::$DEVICE_FRIDGE:
+            case self::$DEVICE_FREEZER:
+            case self::$DEVICE_FRIDGE_FREEZER:
+                $items[] = [
+                    'type'    => 'Label',
+                ];
+                $items[] = [
+                    'type'    => 'RowLayout',
+                    'items'   => [
+                        [
+                            'type'    => 'CheckBox',
+                            'name'    => 'enable_operationmode',
+                            'caption' => 'Operation mode'
+                        ],
+                        [
+                            'type'    => 'Label',
+                            'italic'  => true,
+                            'caption' => 'Attention: The API is faulty and possibly dysfunctional at this point'
+                        ],
+                    ],
+                ];
+                break;
+            default:
+                break;
+        }
+
         $formElements[] = [
             'type'    => 'ExpansionPanel',
-            'items'   => [
-                [
-                    'type'    => 'Label',
-                    'caption' => 'mapping code to text of field ...'
-                ],
-                [
-                    'type'    => 'CheckBox',
-                    'name'    => 'map_programName',
-                    'caption' => ' ... Program name'
-                ],
-                [
-                    'type'    => 'CheckBox',
-                    'name'    => 'map_programType',
-                    'caption' => ' ... Program'
-                ],
-                [
-                    'type'    => 'CheckBox',
-                    'name'    => 'map_programPhase',
-                    'caption' => ' ... Phase'
-                ],
-                [
-                    'type'    => 'CheckBox',
-                    'name'    => 'map_dryingStep',
-                    'caption' => ' ... Drying step'
-                ],
-                [
-                    'type'    => 'CheckBox',
-                    'name'    => 'map_ventilationStep',
-                    'caption' => ' ... Ventilation step'
-                ],
-            ],
+            'items'   => $items,
             'caption' => 'Settings'
         ];
 
@@ -1168,23 +1181,25 @@ class MieleAtHomeDevice extends IPSModule
             $modes = isset($actions['modes']) ? $actions['modes'] : [];
             $this->SendDebug(__FUNCTION__, 'modes=' . print_r($modes, true), 0);
 
-            $names = [
-                self::$OPERATIONMODE_SABBATH => 'OperationMode_Sabbath',
-                self::$OPERATIONMODE_PARTY   => 'OperationMode_Party',
-                self::$OPERATIONMODE_HOLIDAY => 'OperationMode_Holiday',
-            ];
-            foreach ($names as $mode => $name) {
-                if ($modes != []) {
-                    $b = true;
-                    $v = in_array($mode, $modes) == false;
-                } else {
-                    $b = false;
-                    $v = false;
+            $b = false;
+            $v = self::$OPERATIONMODE_NORMAL;
+
+            $modes = isset($actions['modes']) ? $actions['modes'] : [];
+            $this->SendDebug(__FUNCTION__, 'modes=' . print_r($modes, true), 0);
+
+            if ($modes != []) {
+                $b = true;
+                for ($mode = 0; $mode < 4; $mode++) {
+                    if (in_array($mode, $modes) == false) {
+                        $v = $mode;
+                        break;
+                    }
                 }
-                $this->SetValue($name, $v);
-                $this->MaintainAction($name, $b);
-                $this->SendDebug(__FUNCTION__, 'MaintainAction "' . $name . '": enabled=' . $this->bool2str($b) . ', value=' . $this->GetValueFormatted($name), 0);
             }
+
+            $this->SetValue('OperationMode', $v);
+            $this->MaintainAction('OperationMode', $b);
+            $this->SendDebug(__FUNCTION__, 'MaintainAction "PowerSupply": enabled=' . $this->bool2str($b) . ', value=' . $this->GetValueFormatted('OperationMode'), 0);
         }
     }
 
@@ -1520,23 +1535,12 @@ class MieleAtHomeDevice extends IPSModule
                     }
                 }
                 break;
-            case 'SetOperationMode_Normal':
-                if (in_array(self::$OPERATIONMODE_NORMAL, $modes)) {
-                    $enabled = true;
-                }
-                break;
-            case 'SetOperationMode_Sabbath':
-                if (in_array(self::$OPERATIONMODE_SABBATH, $modes)) {
-                    $enabled = true;
-                }
-                break;
-            case 'SetOperationMode_Party':
-                if (in_array(self::$OPERATIONMODE_PARTY, $modes)) {
-                    $enabled = true;
-                }
-                break;
-            case 'SetOperationMode_Holiday':
-                if (in_array(self::$OPERATIONMODE_HOLIDAY, $modes)) {
+            case 'SetOperationMode_0':
+            case 'SetOperationMode_1':
+            case 'SetOperationMode_2':
+            case 'SetOperationMode_3':
+                $mode = preg_replace('/SetOperationMode_/', '', $func);
+                if (in_array($mode, $modes)) {
                     $enabled = true;
                 }
                 break;
@@ -1778,14 +1782,7 @@ class MieleAtHomeDevice extends IPSModule
 
     public function SetOperationMode(int $mode)
     {
-        $names = [
-            self::$OPERATIONMODE_NORMAL  => 'SetOperationMode_Normal',
-            self::$OPERATIONMODE_SABBATH => 'SetOperationMode_Sabbath',
-            self::$OPERATIONMODE_PARTY   => 'SetOperationMode_Party',
-            self::$OPERATIONMODE_HOLIDAY => 'SetOperationMode_Holiday',
-        ];
-        $b = isset($names[$mode]) ? $this->checkAction($names[$mode], true) : false;
-        if ($b == false) {
+        if (!$this->checkAction(__FUNCTION__ . '_' . $mode, true)) {
             return false;
         }
 
@@ -1946,22 +1943,8 @@ class MieleAtHomeDevice extends IPSModule
                 }
                 $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
-            case 'OperationMode_Sabbath':
-                $r = $this->SetOperationMode($value ? self::$OPERATIONMODE_SABBATH : self::$OPERATIONMODE_NORMAL);
-                if ($r) {
-                    $this->SetValue($ident, $value);
-                }
-                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
-                break;
-            case 'OperationMode_Party':
-                $r = $this->SetOperationMode($value ? self::$OPERATIONMODE_PARTY : self::$OPERATIONMODE_NORMAL);
-                if ($r) {
-                    $this->SetValue($ident, $value);
-                }
-                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
-                break;
-            case 'OperationMode_Holiday':
-                $r = $this->SetOperationMode($value ? self::$OPERATIONMODE_HOLIDAY : self::$OPERATIONMODE_NORMAL);
+            case 'OperationMode':
+                $r = $this->SetOperationMode($value);
                 if ($r) {
                     $this->SetValue($ident, $value);
                 }

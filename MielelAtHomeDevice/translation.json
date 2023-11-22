@@ -30,6 +30,9 @@
 			" ... Phase": " ... Phase",
 			" ... Drying step": " ... Trockenstufe",
 			" ... Ventilation step": " ... Entlüftungsstufe",
+			"Operation mode": "Betriebsart",
+			"Attention: The API is faulty and possibly dysfunctional at this point":
+				"Achtung! Die API ist an dieser Stelle fehlerhaft und möglicherweise nicht voll funktionsfähig",
 
 			"Communication": "Kommunikation",
 			"Update interval": "Aktualisierungsintervall",
