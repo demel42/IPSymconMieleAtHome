@@ -276,6 +276,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 2.1 @ 10.12.2023 10:43
+  - Neu: ab IPS-Version 7 ist im Konfigurator die Angabe einer Import-Kategorie integriert, daher entfällt die bisher vorhandene separate Einstellmöglichkeit
+
 - 2.0.5 @ 22.11.2023 11:43
   - Fix: Variable "PowerSupply" bei Kühlschränken löschen
 
