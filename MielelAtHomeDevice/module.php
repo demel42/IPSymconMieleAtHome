@@ -334,6 +334,7 @@ class MieleAtHomeDevice extends IPSModule
         $this->MaintainVariable('Failure', $this->Translate('Failure detected'), VARIABLETYPE_BOOLEAN, 'MieleAtHome.YesNo', $vpos++, true);
 
         $this->MaintainVariable('PowerSupply', $this->Translate('Power supply'), VARIABLETYPE_INTEGER, 'MieleAtHome.PowerSupply', $vpos++, $opts['enabled_powersupply']);
+        $this->MaintainVariable('Power', $this->Translate('Power'), VARIABLETYPE_BOOLEAN, '~Switch', $vpos++, $opts['enabled_powersupply']);
 
         $this->MaintainVariable('Action', $this->Translate('Action'), VARIABLETYPE_INTEGER, 'MieleAtHome.Action', $vpos++, $opts['enabled_action']);
         $this->MaintainVariable('Superfreezing', $this->Translate('Superfreezing'), VARIABLETYPE_INTEGER, 'MieleAtHome.Superfreezing', $vpos++, $opts['enabled_superfreezing']);
@@ -418,6 +419,7 @@ class MieleAtHomeDevice extends IPSModule
         }
         if ($opts['enabled_powersupply']) {
             $this->MaintainAction('PowerSupply', true);
+            $this->MaintainAction('Power', true);
         }
         if ($opts['enabled_fridge_temp']) {
             $this->MaintainAction('Fridge_TargetTemperature', true);
@@ -684,6 +686,14 @@ class MieleAtHomeDevice extends IPSModule
                 }
                 $this->SendDebug(__FUNCTION__, $e, 0);
                 $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_NOTIFY);
+            }
+
+            $isPowerChanged = false;
+
+            if ($status == self::$STATE_ON) {
+                $this->SaveValue('Power', true, $isPowerChanged);
+            } else if ($status == self::$STATE_OFF){
+                $this->SaveValue('Power', false, $isPowerChanged);
             }
         } else {
             $status = $this->GetValue('State');
@@ -1144,6 +1154,8 @@ class MieleAtHomeDevice extends IPSModule
             }
             $this->SetValue('PowerSupply', $v);
             $this->MaintainAction('PowerSupply', $b);
+            $this->SetValue('Power', $v == self::$POWER_OFF);
+            $this->MaintainAction('Power', $b);
             $this->SendDebug(__FUNCTION__, 'MaintainAction "PowerSupply": enabled=' . $this->bool2str($b) . ', value=' . $this->GetValueFormatted('PowerSupply'), 0);
         }
 
@@ -1920,6 +1932,14 @@ class MieleAtHomeDevice extends IPSModule
                     default:
                         $r = false;
                         break;
+                }
+                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
+                break;
+            case 'Power':
+                if ($value == true) {
+                    $r = $this->PowerOn();
+                } else {
+                    $r = $this->PowerOff();
                 }
                 $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
