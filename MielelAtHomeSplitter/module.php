@@ -47,12 +47,13 @@ class MieleAtHomeSplitter extends IPSModule
 
         $this->RegisterPropertyInteger('OAuth_Type', self::$CONNECTION_UNDEFINED);
 
+        $this->RegisterPropertyBoolean('collectApiCallStats', true);
+
         $this->RegisterAttributeString('ApiRefreshToken', json_encode([]));
         $this->RegisterAttributeString('ApiAccessToken', json_encode([]));
         $this->RegisterAttributeInteger('ConnectionType', self::$CONNECTION_UNDEFINED);
 
         $this->RegisterAttributeString('UpdateInfo', json_encode([]));
-        $this->RegisterAttributeString('ApiCallStats', json_encode([]));
         $this->RegisterAttributeString('ModuleStats', json_encode([]));
 
         $this->InstallVarProfiles(false);
@@ -186,7 +187,7 @@ class MieleAtHomeSplitter extends IPSModule
         $connection_type = $this->ReadPropertyInteger('OAuth_Type');
 
         $apiLimits = [];
-        $this->ApiCallsSetInfo($apiLimits, '');
+        $this->ApiCallSetInfo($apiLimits, '');
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
@@ -691,6 +692,12 @@ class MieleAtHomeSplitter extends IPSModule
                 break;
         }
 
+        $formElements[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'collectApiCallStats',
+            'caption' => 'Collect data of API calls'
+        ];
+
         return $formElements;
     }
 
@@ -726,19 +733,25 @@ class MieleAtHomeSplitter extends IPSModule
             'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "TestAccess", "");',
         ];
 
+        $items = [
+            $this->GetInstallVarProfilesFormItem(),
+            [
+                'type'    => 'Button',
+                'caption' => 'Clear token',
+                'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "ClearToken", "");',
+            ],
+        ];
+
+        $collectApiCallStats = $this->ReadPropertyBoolean('collectApiCallStats');
+        if ($collectApiCallStats) {
+            $items[] = $this->GetApiCallStatsFormItem();
+        }
+
         $formActions[] = [
             'type'      => 'ExpansionPanel',
             'caption'   => 'Expert area',
             'expanded'  => false,
-            'items'     => [
-                $this->GetInstallVarProfilesFormItem(),
-                [
-                    'type'    => 'Button',
-                    'caption' => 'Clear token',
-                    'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "ClearToken", "");',
-                ],
-                $this->GetApiCallStatsFormItem(),
-            ]
+            'items'     => $items,
         ];
 
         $formActions[] = $this->GetInformationFormAction();
@@ -1090,7 +1103,12 @@ class MieleAtHomeSplitter extends IPSModule
             $this->LogMessage('url=' . $url . ' => statuscode=' . $statuscode . ', err=' . $err, KL_WARNING);
             $this->SendDebug(__FUNCTION__, ' => statuscode=' . $statuscode . ', err=' . $err . ', msg=' . $msg, 0);
         }
-        $this->ApiCallsCollect($url, $err, $statuscode);
+
+        $collectApiCallStats = $this->ReadPropertyBoolean('collectApiCallStats');
+        if ($collectApiCallStats) {
+            $this->ApiCallCollect($url, $err, $statuscode);
+        }
+
         return $statuscode;
     }
 }

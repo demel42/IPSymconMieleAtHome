@@ -276,6 +276,11 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 2.2 @ 27.01.2024 11:20
+   - Neu: Schalter, um Daten zu API-Aufrufen zu sammeln
+     Die API-Aufruf-Daten stehen nun in einem Medienobjekt zur Verfügung
+   - update submodule CommonStubs
+
 - 2.1 @ 10.12.2023 10:43
   - Neu: ab IPS-Version 7 ist im Konfigurator die Angabe einer Import-Kategorie integriert, daher entfällt die bisher vorhandene separate Einstellmöglichkeit
 
