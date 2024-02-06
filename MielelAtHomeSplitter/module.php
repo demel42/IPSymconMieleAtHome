@@ -184,10 +184,15 @@ class MieleAtHomeSplitter extends IPSModule
             return;
         }
 
-        $connection_type = $this->ReadPropertyInteger('OAuth_Type');
+        $vpos = 1000;
+        $collectApiCallStats = $this->ReadPropertyBoolean('collectApiCallStats');
+        $this->MaintainMedia('ApiCallStats', $this->Translate('API call statistics'), MEDIATYPE_DOCUMENT, '.txt', false, $vpos++, $collectApiCallStats);
 
-        $apiLimits = [];
-        $this->ApiCallSetInfo($apiLimits, '');
+        if ($collectApiCallStats) {
+            $apiLimits = [];
+            $apiNotes = '';
+            $this->ApiCallSetInfo($apiLimits, $apiNotes);
+        }
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
@@ -195,6 +200,7 @@ class MieleAtHomeSplitter extends IPSModule
             return;
         }
 
+        $connection_type = $this->ReadPropertyInteger('OAuth_Type');
         if ($this->ReadAttributeInteger('ConnectionType') != $connection_type) {
             $this->ClearToken();
             $this->WriteAttributeInteger('ConnectionType', $connection_type);
