@@ -162,6 +162,7 @@ class MieleAtHomeConfig extends IPSModule
                         ]
                     ]
                 ];
+                $this->SendDebug(__FUNCTION__, 'instanceID=' . $instanceID . ', entry=' . print_r($entry, true), 0);
 
                 $entries[] = $entry;
             }
