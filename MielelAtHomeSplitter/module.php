@@ -562,6 +562,22 @@ class MieleAtHomeSplitter extends IPSModule
             'type'    => 'Select',
             'options' => [
                 [
+                    'caption' => $this->Translate('England'),
+                    'value'   => 'en'
+                ],
+                [
+                    'caption' => $this->Translate('Germany'),
+                    'value'   => 'de'
+                ],
+            ],
+            'name'    => 'language',
+            'caption' => 'Miele@Home Language Settings'
+        ];
+
+        $formElements[] = [
+            'type'    => 'Select',
+            'options' => [
+                [
                     'caption' => 'Please select a connection type',
                     'value'   => self::$CONNECTION_UNDEFINED
                 ],
@@ -621,26 +637,6 @@ class MieleAtHomeSplitter extends IPSModule
                             'type'    => 'PasswordTextBox',
                             'caption' => 'Password'
                         ],
-                        [
-                            'type'    => 'Label',
-                            'caption' => 'Miele@Home Language Settings'
-                        ],
-                        [
-                            'type'    => 'Select',
-                            'options' => [
-                                [
-                                    'caption' => $this->Translate('England'),
-                                    'value'   => 'en'
-                                ],
-                                [
-                                    'caption' => $this->Translate('Germany'),
-                                    'value'   => 'de'
-                                ],
-                            ],
-                            'name'    => 'language',
-                            'caption' => 'Language',
-                        ],
-
                         [
                             'type'    => 'Select',
                             'options' => [
