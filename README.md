@@ -276,8 +276,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 2.3 @ 07.02.2024 16:26
+- 2.3 @ 07.02.2024 17:26
    - Fix: auch bei der Anmeldung via IP-Symcon wird eine Angabe der Sprache benötigt
+   - Fix: Absicherung von Zugriffen auf andere Instanzen in Konfiguratoren
 
 - 2.2 @ 29.01.2024 10:37
    - Änderung: Medien-Objekte haben zur eindeutigen Identifizierung jetzt ebenfalls ein Ident
