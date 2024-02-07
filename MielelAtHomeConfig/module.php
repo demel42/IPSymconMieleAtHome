@@ -199,7 +199,7 @@ class MieleAtHomeConfig extends IPSModule
                 'fabNumber'   => $fabNumber,
             ];
             $entries[] = $entry;
-            $this->SendDebug(__FUNCTION__, 'missing entry=' . print_r($entry, true), 0);
+            $this->SendDebug(__FUNCTION__, 'instanceID=' . $instID . ', missing entry=' . print_r($entry, true), 0);
         }
 
         return $entries;
