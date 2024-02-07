@@ -128,8 +128,7 @@ class MieleAtHomeConfig extends IPSModule
 
                 $instanceID = 0;
                 foreach ($instIDs as $instID) {
-                    @$_fabNumber = IPS_GetProperty($instID, 'fabNumber');
-                    if ($fabNumber == $_fabNumber) {
+                    if (@IPS_GetProperty($instID, 'fabNumber') == $fabNumber) {
                         $this->SendDebug(__FUNCTION__, 'instance found: ' . IPS_GetName($instID) . ' (' . $instID . ')', 0);
                         $instanceID = $instID;
                         break;
