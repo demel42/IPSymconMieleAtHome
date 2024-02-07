@@ -118,9 +118,18 @@ class MieleAtHomeConfig extends IPSModule
             foreach ($devices as $fabNumber => $device) {
                 $this->SendDebug(__FUNCTION__, 'fabNumber=' . $fabNumber . ', device=' . print_r($device, true), 0);
 
+                $deviceId = $device['ident']['type']['value_raw'];
+                $deviceType = $device['ident']['type']['value_localized'];
+                $techType = $device['ident']['deviceIdentLabel']['techType'];
+                $deviceName = $device['ident']['deviceName'];
+                if ($deviceName == '') {
+                    $deviceName = $deviceType;
+                }
+
                 $instanceID = 0;
                 foreach ($instIDs as $instID) {
-                    if ($fabNumber == IPS_GetProperty($instID, 'fabNumber')) {
+                    @$_fabNumber = IPS_GetProperty($instID, 'fabNumber');
+                    if ($fabNumber == $_fabNumber) {
                         $this->SendDebug(__FUNCTION__, 'instance found: ' . IPS_GetName($instID) . ' (' . $instID . ')', 0);
                         $instanceID = $instID;
                         break;
@@ -129,14 +138,6 @@ class MieleAtHomeConfig extends IPSModule
 
                 if ($instanceID && IPS_GetInstance($instanceID)['ConnectionID'] != IPS_GetInstance($this->InstanceID)['ConnectionID']) {
                     continue;
-                }
-
-                $deviceId = $device['ident']['type']['value_raw'];
-                $deviceType = $device['ident']['type']['value_localized'];
-                $techType = $device['ident']['deviceIdentLabel']['techType'];
-                $deviceName = $device['ident']['deviceName'];
-                if ($deviceName == '') {
-                    $deviceName = $deviceType;
                 }
 
                 if ($instanceID) {
@@ -162,9 +163,8 @@ class MieleAtHomeConfig extends IPSModule
                         ]
                     ]
                 ];
-                $this->SendDebug(__FUNCTION__, 'instanceID=' . $instanceID . ', entry=' . print_r($entry, true), 0);
-
                 $entries[] = $entry;
+                $this->SendDebug(__FUNCTION__, 'instanceID=' . $instanceID . ', entry=' . print_r($entry, true), 0);
             }
         }
 
@@ -185,10 +185,10 @@ class MieleAtHomeConfig extends IPSModule
             }
 
             $deviceName = IPS_GetName($instID);
-            $deviceId = IPS_GetProperty($instID, 'deviceId');
-            $deviceType = IPS_GetProperty($instID, 'deviceType');
-            $techType = IPS_GetProperty($instID, 'techType');
-            $fabNumber = IPS_GetProperty($instID, 'fabNumber');
+            @$deviceId = IPS_GetProperty($instID, 'deviceId');
+            @$deviceType = IPS_GetProperty($instID, 'deviceType');
+            @$techType = IPS_GetProperty($instID, 'techType');
+            @$fabNumber = IPS_GetProperty($instID, 'fabNumber');
 
             $entry = [
                 'instanceID'  => $instID,
