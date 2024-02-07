@@ -131,16 +131,13 @@ class MieleAtHomeConfig extends IPSModule
                     if (@IPS_GetProperty($instID, 'fabNumber') == $fabNumber) {
                         $this->SendDebug(__FUNCTION__, 'instance found: ' . IPS_GetName($instID) . ' (' . $instID . ')', 0);
                         $instanceID = $instID;
+						$deviceName = IPS_GetName($instanceID);
                         break;
                     }
                 }
 
                 if ($instanceID && IPS_GetInstance($instanceID)['ConnectionID'] != IPS_GetInstance($this->InstanceID)['ConnectionID']) {
                     continue;
-                }
-
-                if ($instanceID) {
-                    $deviceName = IPS_GetName($instanceID);
                 }
 
                 $entry = [
