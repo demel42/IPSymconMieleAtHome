@@ -127,43 +127,20 @@ class MieleAtHomeConfig extends IPSModule
                     }
                 }
 
-                if ($instanceID == 0) {
-                    if (isset($dataCache['data']['device'][$fabNumber])) {
-                        $device = $dataCache['data']['device'][$fabNumber];
-                        $this->SendDebug(__FUNCTION__, 'device (from cache)=' . print_r($device, true), 0);
-                    } else {
-                        $SendData = [
-                            'DataID'   => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}', // an MieleAtHomeIO
-                            'CallerID' => $this->InstanceID,
-                            'Function' => 'GetDeviceIdent',
-                            'Ident'    => $fabNumber
-                        ];
-                        $device_data = $this->SendDataToParent(json_encode($SendData));
-                        $device = @json_decode($device_data, true);
-                        $this->SendDebug(__FUNCTION__, 'device=' . print_r($device, true), 0);
-                        if (is_array($device)) {
-                            $dataCache['data']['device'][$fabNumber] = $device;
-                            $this->WriteDataCache($dataCache, 0);
-                        }
-                    }
-
-                    $deviceId = $device['type']['value_raw'];
-                    $deviceType = $device['type']['value_localized'];
-                    $techType = $device['deviceIdentLabel']['techType'];
-                    $deviceName = $device['deviceName'];
-                    if ($deviceName == '') {
-                        $deviceName = $deviceType;
-                    }
-                } else {
-                    $deviceId = IPS_GetProperty($instanceID, 'deviceId');
-                    $deviceType = IPS_GetProperty($instanceID, 'deviceType');
-                    $techType = IPS_GetProperty($instanceID, 'techType');
-                    $fabNumber = IPS_GetProperty($instanceID, 'fabNumber');
-                    $deviceName = IPS_GetName($instanceID);
-                }
-
                 if ($instanceID && IPS_GetInstance($instanceID)['ConnectionID'] != IPS_GetInstance($this->InstanceID)['ConnectionID']) {
                     continue;
+                }
+
+                $deviceId = $device['ident']['type']['value_raw'];
+                $deviceType = $device['ident']['type']['value_localized'];
+                $techType = $device['ident']['deviceIdentLabel']['techType'];
+                $deviceName = $device['ident']['deviceName'];
+                if ($deviceName == '') {
+                    $deviceName = $deviceType;
+                }
+
+                if ($instanceID) {
+                    $deviceName = IPS_GetName($instanceID);
                 }
 
                 $entry = [
