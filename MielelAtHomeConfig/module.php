@@ -131,7 +131,7 @@ class MieleAtHomeConfig extends IPSModule
                     if (@IPS_GetProperty($instID, 'fabNumber') == $fabNumber) {
                         $this->SendDebug(__FUNCTION__, 'instance found: ' . IPS_GetName($instID) . ' (' . $instID . ')', 0);
                         $instanceID = $instID;
-						$deviceName = IPS_GetName($instanceID);
+                        $deviceName = IPS_GetName($instanceID);
                         break;
                     }
                 }
@@ -195,7 +195,7 @@ class MieleAtHomeConfig extends IPSModule
                 'fabNumber'   => $fabNumber,
             ];
             $entries[] = $entry;
-            $this->SendDebug(__FUNCTION__, 'instanceID=' . $instID . ', missing entry=' . print_r($entry, true), 0);
+            $this->SendDebug(__FUNCTION__, 'lost: instanceID=' . $instID . ', entry=' . print_r($entry, true), 0);
         }
 
         return $entries;
