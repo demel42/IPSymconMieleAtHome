@@ -502,12 +502,7 @@ class MieleAtHomeDevice extends IPSModule
         $deviceId = $this->ReadPropertyInteger('deviceId');
         $opts = $this->getDeviceOptions($deviceId);
 
-        $items = [
-            [
-                'type'    => 'Label',
-                'caption' => 'mapping code to text of field ...'
-            ],
-        ];
+        $items = [];
 
         if ($opts['program_name']) {
             $items[] = [
@@ -549,7 +544,41 @@ class MieleAtHomeDevice extends IPSModule
             ];
         }
 
+        if ($items != []) {
+            $_items = [
+                [
+                    'type'    => 'Label',
+                    'caption' => 'mapping code to text of field ...'
+                ],
+            ];
+            $items = array_merge($_items, $items);
+        }
+
+        if ($opts['enabled_operationmode']) {
+            $items[] = [
+                'type'    => 'Label',
+            ];
+            $items[] = [
+                'type'    => 'RowLayout',
+                'items'   => [
+                    [
+                        'type'    => 'CheckBox',
+                        'name'    => 'enable_operationmode',
+                        'caption' => 'Operation mode'
+                    ],
+                    [
+                        'type'    => 'Label',
+                        'italic'  => true,
+                        'caption' => 'Attention: The API is faulty and possibly dysfunctional at this point'
+                    ],
+                ],
+            ];
+        }
+
         if ($opts['plate_steps']) {
+            $items[] = [
+                'type'    => 'Label',
+            ];
             $items[] = [
                 'type'    => 'NumberSpinner',
                 'minimum' => 0,
@@ -557,34 +586,6 @@ class MieleAtHomeDevice extends IPSModule
                 'name'    => 'plate_count',
                 'caption' => 'Number of hobs'
             ];
-        }
-
-        $deviceId = $this->ReadPropertyInteger('deviceId');
-        switch ($deviceId) {
-            case self::$DEVICE_FRIDGE:
-            case self::$DEVICE_FREEZER:
-            case self::$DEVICE_FRIDGE_FREEZER:
-                $items[] = [
-                    'type'    => 'Label',
-                ];
-                $items[] = [
-                    'type'    => 'RowLayout',
-                    'items'   => [
-                        [
-                            'type'    => 'CheckBox',
-                            'name'    => 'enable_operationmode',
-                            'caption' => 'Operation mode'
-                        ],
-                        [
-                            'type'    => 'Label',
-                            'italic'  => true,
-                            'caption' => 'Attention: The API is faulty and possibly dysfunctional at this point'
-                        ],
-                    ],
-                ];
-                break;
-            default:
-                break;
         }
 
         $formElements[] = [

@@ -30,10 +30,10 @@
 			" ... Phase": " ... Phase",
 			" ... Drying step": " ... Trockenstufe",
 			" ... Ventilation step": " ... Entlüftungsstufe",
-			" ... Number of hobs": " ... Anzahl der Kochfelder",
 			"Operation mode": "Betriebsart",
 			"Attention: The API is faulty and possibly dysfunctional at this point":
 				"Achtung! Die API ist an dieser Stelle fehlerhaft und möglicherweise nicht voll funktionsfähig",
+			"Number of hobs": "Anzahl der Kochfelder",
 
 			"Communication": "Kommunikation",
 			"Update interval": "Aktualisierungsintervall",
