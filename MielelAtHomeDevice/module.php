@@ -12,6 +12,8 @@ class MieleAtHomeDevice extends IPSModule
     use MieleAtHomeLocalLib;
     use MieleAtHomeImagesLib;
 
+    public static $MAX_PLATES = 10;
+
     public function __construct(string $InstanceID)
     {
         parent::__construct($InstanceID);
@@ -44,6 +46,7 @@ class MieleAtHomeDevice extends IPSModule
         $this->RegisterPropertyBoolean('map_programPhase', false);
         $this->RegisterPropertyBoolean('map_dryingStep', true);
         $this->RegisterPropertyBoolean('map_ventilationStep', true);
+        $this->RegisterPropertyInteger('plate_count', 0);
 
         $this->RegisterPropertyBoolean('enable_operationmode', false);
 
@@ -89,6 +92,7 @@ class MieleAtHomeDevice extends IPSModule
             'enabled_freezer_temp'  => false,
             'core_temp'             => false,
             'enabled_operationmode' => false,
+            'plate_steps'           => false,
         ];
 
         $enable_operationmode = $this->ReadPropertyBoolean('enable_operationmode');
@@ -208,6 +212,11 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['times'] = true;
                 $opts['oven_temp'] = true;
                 $opts['door'] = true;
+
+                $opts['enabled_powersupply'] = true;
+                break;
+            case self::$DEVICE_HOB_INDUCTION: // Induktions-Kochfeld
+                $opts['plate_steps'] = true;
 
                 $opts['enabled_powersupply'] = true;
                 break;
@@ -376,6 +385,15 @@ class MieleAtHomeDevice extends IPSModule
 
         $this->MaintainVariable('OperationMode', $this->Translate('Operation mode'), VARIABLETYPE_INTEGER, 'MieleAtHome.OperationMode', $vpos++, $opts['enabled_operationmode']);
 
+        $vpos = 70;
+        $plate_count = $this->ReadPropertyInteger('plate_count');
+        for ($i = 0; $i < self::$MAX_PLATES; $i++) {
+            $ident = 'Plate' . $i . '_Step';
+            $name = $this->TranslateFormat('Hob {$plate} power level', ['{$plate}' => ($i + 1)]);
+            $use = $opts['plate_steps'] && ($i < $plate_count);
+            $this->MaintainVariable($ident, $name, VARIABLETYPE_INTEGER, 'MieleAtHome.PlateStep', $vpos++, $use);
+        }
+
         $vpos = 80;
         $this->MaintainVariable('CurrentWaterConsumption', $this->Translate('Current water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $opts['ecoFeedback_Water']);
         $this->MaintainVariable('EstimatedWaterConsumption', $this->Translate('Estimated water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $opts['ecoFeedback_Water']);
@@ -481,37 +499,65 @@ class MieleAtHomeDevice extends IPSModule
             'caption' => 'Basic configuration (don\'t change)'
         ];
 
+        $deviceId = $this->ReadPropertyInteger('deviceId');
+        $opts = $this->getDeviceOptions($deviceId);
+
         $items = [
             [
                 'type'    => 'Label',
                 'caption' => 'mapping code to text of field ...'
             ],
-            [
+        ];
+
+        if ($opts['program_name']) {
+            $items[] = [
                 'type'    => 'CheckBox',
                 'name'    => 'map_programName',
                 'caption' => ' ... Program name'
-            ],
-            [
+            ];
+        }
+
+        if ($opts['program_type']) {
+            $items[] = [
                 'type'    => 'CheckBox',
                 'name'    => 'map_programType',
                 'caption' => ' ... Program'
-            ],
-            [
+            ];
+        }
+
+        if ($opts['program_phase']) {
+            $items[] = [
                 'type'    => 'CheckBox',
                 'name'    => 'map_programPhase',
                 'caption' => ' ... Phase'
-            ],
-            [
+            ];
+        }
+
+        if ($opts['drying_step']) {
+            $items[] = [
                 'type'    => 'CheckBox',
                 'name'    => 'map_dryingStep',
                 'caption' => ' ... Drying step'
-            ],
-            [
+            ];
+        }
+
+        if ($opts['ventilation_step']) {
+            $items[] = [
                 'type'    => 'CheckBox',
                 'name'    => 'map_ventilationStep',
                 'caption' => ' ... Ventilation step'
-            ],
-        ];
+            ];
+        }
+
+        if ($opts['plate_steps']) {
+            $items[] = [
+                'type'    => 'NumberSpinner',
+                'minimum' => 0,
+                'maximum' => self::$MAX_PLATES,
+                'name'    => 'plate_count',
+                'caption' => 'Number of hobs'
+            ];
+        }
 
         $deviceId = $this->ReadPropertyInteger('deviceId');
         switch ($deviceId) {
@@ -1037,6 +1083,19 @@ class MieleAtHomeDevice extends IPSModule
             if ($fnd) {
                 $this->SendDebug(__FUNCTION__, 'set "BatteryLevel" to ' . $batteryLevel, 0);
                 $this->SaveValue('BatteryLevel', (int) $batteryLevel, $is_changed);
+            }
+        }
+
+        if ($opts['plate_steps']) {
+            $plate_count = $this->ReadPropertyInteger('plate_count');
+            for ($i = 0; $i < self::$MAX_PLATES && $i < $plate_count; $i++) {
+                $plateStep = (int) $this->GetArrayElem($jdata, 'plateStep.' . $i . '.value_localized', 0, $fnd);
+                if ($fnd == false) {
+                    $plateStep = 0;
+                }
+                $ident = 'Plate' . $i . '_Step';
+                $this->SendDebug(__FUNCTION__, 'set "' . $ident . '" to ' . $plateStep, 0);
+                $this->SaveValue($ident, $plateStep, $is_changed);
             }
         }
 

@@ -230,6 +230,7 @@ Bisher unterstützte Gerätetypen
 | 13             | Backofen mit Mikrowelle |
 | 21             | Kühl/Gefrier-Kombination |
 | 25             | Wärmeschublade |
+| 27             | Induktions-Kochfeld |
 | 31             | Dampfgarer mit Backofen-Funktion |
 | 45             | Dampfgarer mit Mikrowelle |
 
@@ -245,6 +246,7 @@ MieleAtHome.BatteryLevel,
 MieleAtHome.Duration,
 MieleAtHome.Light,
 MieleAtHome.OperationMode,
+MieleAtHome.PlateStep
 MieleAtHome.PowerSupply,
 MieleAtHome.SpinningSpeed,
 MieleAtHome.Status,
@@ -275,6 +277,9 @@ Verweise:
 - https://www.miele.com/developer/index.html
 
 ## 7. Versions-Historie
+
+- 2.4 @ 09.02.2024 11:00
+   - Neu: Unterstützung von Induktionskochfeldern
 
 - 2.3 @ 07.02.2024 17:26
    - Fix: auch bei der Anmeldung via IP-Symcon wird eine Angabe der Sprache benötigt

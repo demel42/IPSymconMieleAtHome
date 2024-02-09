@@ -57,6 +57,9 @@
 			"Party mode": "Party-Betrieb",
 			"Holiday mode": "Urlaubsmodus",
 
+			"__variableprofile__": "MieleAtHome.PlateStep",
+			"off": "aus",
+
 			"__status__": "",
 			"Instance is inactive (unauthorized)": "Instanz ist inaktiv (Authorisierung fehlerhaft)",
 			"Instance is inactive (server error)": "Instanz ist inaktiv (Serverfehler)",

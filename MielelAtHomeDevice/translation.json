@@ -30,6 +30,7 @@
 			" ... Phase": " ... Phase",
 			" ... Drying step": " ... Trockenstufe",
 			" ... Ventilation step": " ... Entlüftungsstufe",
+			" ... Number of hobs": " ... Anzahl der Kochfelder",
 			"Operation mode": "Betriebsart",
 			"Attention: The API is faulty and possibly dysfunctional at this point":
 				"Achtung! Die API ist an dieser Stelle fehlerhaft und möglicherweise nicht voll funktionsfähig",
@@ -81,6 +82,7 @@
 			"Sabbath mode": "Sabbat Modus",
 			"Party mode": "Party Modus",
 			"Holiday mode": "Urlaubs Modus",
+			"Hob {$plate} power level": "Leistungsstufe von Kochfeld {$plate}",
 
 			"__actions__": "",
 			"Update data": "Daten aktualisieren",

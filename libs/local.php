@@ -227,6 +227,12 @@ trait MieleAtHomeLocalLib
         $this->CreateVarProfile('MieleAtHome.OperationMode', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations, $reInstall);
 
         $associations = [
+            ['Wert' => 0, 'Name' => $this->Translate('off'), 'Farbe' => -1],
+            ['Wert' => 1, 'Name' => '%d', 'Farbe' => -1],
+        ];
+        $this->CreateVarProfile('MieleAtHome.PlateStep', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations, $reInstall);
+
+        $associations = [
             ['Wert' => 0, 'Name' => '-', 'Farbe' => -1],
             ['Wert' => 0.1, 'Name' => '%.1f kWh', 'Farbe' => -1],
         ];
