@@ -471,7 +471,6 @@ class MieleAtHomeSplitter extends IPSModule
         $this->SendDebug(__FUNCTION__, 'token: statuscode=' . $statuscode . ', cdata=' . print_r($cdata, true) . ', msg=' . $msg, 0);
         if ($statuscode != 0) {
             $this->MaintainStatus($statuscode);
-            IPS_SemaphoreLeave($this->SemaphoreID);
             return false;
         }
 
@@ -531,8 +530,8 @@ class MieleAtHomeSplitter extends IPSModule
             $this->SetRefreshToken($refresh_token);
         }
 
-        IPS_SemaphoreLeave($this->SemaphoreID);
         $this->MaintainStatus(IS_ACTIVE);
+        IPS_SemaphoreLeave($this->SemaphoreID);
         return $access_token;
     }
 
@@ -968,10 +967,12 @@ class MieleAtHomeSplitter extends IPSModule
         $this->SendDebug(__FUNCTION__, 'statuscode=' . $statuscode . ', data=' . print_r($data, true), 0);
         if ($statuscode != 0) {
             $this->MaintainStatus($statuscode);
+            IPS_SemaphoreLeave($this->SemaphoreID);
             return false;
         }
 
         $this->MaintainStatus(IS_ACTIVE);
+        IPS_SemaphoreLeave($this->SemaphoreID);
         return $statuscode ? false : true;
     }
 

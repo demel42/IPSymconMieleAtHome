@@ -278,6 +278,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 2.4.2 @ 24.02.2024 13:16
+   - Fix: weiteres Sempahore-Problem
+
 - 2.4.1 @ 24.02.2024 08:56
    - Fix: Problem (mit einem Semaphore) bei der Anmeldung mit dem Entwicklerschlüssel
    - update submodule CommonStubs
