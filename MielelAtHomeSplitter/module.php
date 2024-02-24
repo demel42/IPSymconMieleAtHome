@@ -968,12 +968,10 @@ class MieleAtHomeSplitter extends IPSModule
         $this->SendDebug(__FUNCTION__, 'statuscode=' . $statuscode . ', data=' . print_r($data, true), 0);
         if ($statuscode != 0) {
             $this->MaintainStatus($statuscode);
-            IPS_SemaphoreLeave($this->SemaphoreID);
             return false;
         }
 
         $this->MaintainStatus(IS_ACTIVE);
-        IPS_SemaphoreLeave($this->SemaphoreID);
         return $statuscode ? false : true;
     }
 

@@ -278,6 +278,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 2.4.1 @ 24.02.2024 08:56
+   - Fix: Problem (mit einem Semaphore) bei dem Abruf des AccessToken
+   - update submodule CommonStubs
+
 - 2.4 @ 09.02.2024 11:00
    - Neu: Unterstützung von Induktionskochfeldern
 
