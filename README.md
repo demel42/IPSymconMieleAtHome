@@ -279,7 +279,7 @@ Verweise:
 ## 7. Versions-Historie
 
 - 2.4.1 @ 24.02.2024 08:56
-   - Fix: Problem (mit einem Semaphore) bei dem Abruf des AccessToken
+   - Fix: Problem (mit einem Semaphore) bei der Anmeldung mit dem Entwicklerschlüssel
    - update submodule CommonStubs
 
 - 2.4 @ 09.02.2024 11:00
