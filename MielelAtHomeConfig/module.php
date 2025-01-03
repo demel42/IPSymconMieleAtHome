@@ -16,7 +16,7 @@ class MieleAtHomeConfig extends IPSModule
     {
         parent::__construct($InstanceID);
 
-        $this->CommonContruct(__DIR__);
+        $this->CommonConstruct(__DIR__);
     }
 
     public function __destruct()
@@ -219,12 +219,13 @@ class MieleAtHomeConfig extends IPSModule
 
         $entries = $this->getConfiguratorValues();
         $formElements[] = [
-            'name'     => 'MieleatHomeConfiguration',
-            'type'     => 'Configurator',
-            'rowCount' => count($entries),
-            'add'      => false,
-            'delete'   => false,
-            'sort'     => [
+            'name'        => 'devices',
+            'caption'     => 'Devices',
+            'type'        => 'Configurator',
+            'rowCount'    => count($entries),
+            'add'         => false,
+            'delete'      => false,
+            'sort'        => [
                 'column'    => 'name',
                 'direction' => 'ascending'
             ],
