@@ -280,7 +280,7 @@ Verweise:
 
 - 2.5 @ 03.01.2025 14:17
  - Fix: potentielles Problem im Konfigurator
- - Verbesserung: Erkennung der Inaktivität des Parent (WebSocket-IO) verbessert
+ - Verbesserung: Erkennung der Inaktivität des Parent (SSE-IO) verbessert
  - interne Änderung
  - update submodule CommonStubs
 
