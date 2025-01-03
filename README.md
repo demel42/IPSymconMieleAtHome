@@ -278,6 +278,12 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 2.5 @ 03.01.2025 14:17
+ - Fix: potentielles Problem im Konfigurator
+ - Verbesserung: Erkennung der Inaktivität des Parent (WebSocket-IO) verbessert
+ - interne Änderung
+ - update submodule CommonStubs
+
 - 2.4.2 @ 24.02.2024 13:16
    - Fix: weiteres Sempahore-Problem
 

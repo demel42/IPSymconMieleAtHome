@@ -6,7 +6,9 @@
 			"__elements__": "",
 			"category for Miele@Home devices to be created": "Kategorie für anzulegende Miele@Home Geräte",
 
-            "device name": "Gerätename",
+			"Devices": "Geräte",
+
+			"device name": "Gerätename",
 			"Model": "Modell",
 			"Label": "Bezeichnung",
 			"Fabrication number": "Seriennummer",
