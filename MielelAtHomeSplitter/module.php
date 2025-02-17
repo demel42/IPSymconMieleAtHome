@@ -371,71 +371,98 @@ class MieleAtHomeSplitter extends IPSModule
         $this->SendDebug(__FUNCTION__, 'url=' . $url, 0);
         $this->SendDebug(__FUNCTION__, '    content=' . print_r($content, true), 0);
 
-        $statuscode = 0;
-        $err = '';
-        $jdata = false;
+        $headerfields = [
+            'Content-Type' => 'application/x-www-form-urlencoded',
+        ];
 
         $time_start = microtime(true);
-        $options = [
-            'http' => [
-                'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
-                'method'  => 'POST',
-                'content' => http_build_query($content)
-            ]
+        $curl_opts = [
+            CURLOPT_URL            => $url,
+            CURLOPT_HTTPHEADER     => $this->build_header($headerfields),
+            CURLOPT_CUSTOMREQUEST  => 'POST',
+            CURLOPT_POSTFIELDS     => http_build_query($content),
+            CURLOPT_HEADER         => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 60,
         ];
-        $context = stream_context_create($options);
-        $cdata = @file_get_contents($url, false, $context);
-        $duration = round(microtime(true) - $time_start, 2);
-        $httpcode = 0;
-        if ($cdata == false) {
-            $this->LogMessage('file_get_contents() failed: url=' . $url . ', context=' . print_r($context, true), KL_WARNING);
-            $this->SendDebug(__FUNCTION__, 'file_get_contents() failed: url=' . $url . ', context=' . print_r($context, true), 0);
-        } elseif (isset($http_response_header[0]) && preg_match('/HTTP\/[0-9\.]+\s+([0-9]*)/', $http_response_header[0], $r)) {
-            $httpcode = $r[1];
-        } else {
-            $this->LogMessage('missing http_response_header, cdata=' . $cdata, KL_WARNING);
-            $this->SendDebug(__FUNCTION__, 'missing http_response_header, cdata=' . $cdata, 0);
-        }
-        $this->SendDebug(__FUNCTION__, ' => httpcode=' . $httpcode . ', duration=' . $duration . 's', 0);
-        $this->SendDebug(__FUNCTION__, '    cdata=' . $cdata, 0);
 
-        if ($httpcode && $httpcode != 200) {
+        $statuscode = 0;
+        $err = '';
+        $jbody = false;
+
+        $retries = 0;
+        do {
+            $ch = curl_init();
+            curl_setopt_array($ch, $curl_opts);
+            $response = curl_exec($ch);
+            $cerrno = curl_errno($ch);
+            $cerror = $cerrno ? curl_error($ch) : '';
+            $curl_info = curl_getinfo($ch);
+            curl_close($ch);
+            $httpcode = $curl_info['http_code'];
+            if ($cerrno) {
+                $this->SendDebug(__FUNCTION__, ' => retry=' . $retries . ', got curl-errno ' . $cerrno . ' (' . $cerror . ')', 0);
+                IPS_Sleep(1000);
+            }
+        } while ($cerrno && $retries++ < 2);
+
+        $duration = round(microtime(true) - $time_start, 2);
+
+        if ($cerrno) {
+            $statuscode = self::$IS_SERVERERROR;
+            $err = 'got curl-errno ' . $cerrno . ' (' . $cerror . ')';
+        } else {
+            $header_size = $curl_info['header_size'];
+            $head = substr($response, 0, $header_size);
+            $body = substr($response, $header_size);
+
+            $this->SendDebug(__FUNCTION__, ' => head=' . $head, 0);
+            if ($body == '' || ctype_print($body)) {
+                $this->SendDebug(__FUNCTION__, ' => body=' . $body, 0);
+            } else {
+                $this->SendDebug(__FUNCTION__, ' => body potentially contains binary data, size=' . strlen($body), 0);
+            }
+        }
+        if ($statuscode == 0) {
             if ($httpcode == 401) {
                 $statuscode = self::$IS_UNAUTHORIZED;
                 $err = 'got http-code ' . $httpcode . ' (unauthorized)';
             } elseif ($httpcode == 403) {
                 $statuscode = self::$IS_FORBIDDEN;
                 $err = 'got http-code ' . $httpcode . ' (forbidden)';
-            } elseif ($httpcode == 409) {
-                $data = $cdata;
             } elseif ($httpcode >= 500 && $httpcode <= 599) {
                 $statuscode = self::$IS_SERVERERROR;
                 $err = 'got http-code ' . $httpcode . ' (server error)';
-            } else {
+            } elseif ($httpcode != 200) {
                 $statuscode = self::$IS_HTTPERROR;
                 $err = 'got http-code ' . $httpcode;
             }
-        } elseif ($cdata == '') {
-            $statuscode = self::$IS_NODATA;
-            $err = 'no data';
-        } else {
-            $jdata = json_decode($cdata, true);
-            if ($jdata == '') {
-                $statuscode = self::$IS_INVALIDDATA;
-                $err = 'malformed response';
+        }
+        if ($statuscode == 0) {
+            if ($body == '') {
+                $statuscode = self::$IS_NODATA;
+                $err = 'no data';
             } else {
-                if (!isset($jdata['token_type']) || $jdata['token_type'] != 'Bearer') {
+                $jbody = json_decode($body, true);
+                if ($jbody == '') {
                     $statuscode = self::$IS_INVALIDDATA;
                     $err = 'malformed response';
+                } else {
+                    if (!isset($jbody['token_type']) || $jbody['token_type'] != 'Bearer') {
+                        $statuscode = self::$IS_INVALIDDATA;
+                        $err = 'malformed response';
+                    }
                 }
             }
         }
+
         if ($statuscode) {
+            $this->LogMessage('url=' . $url . ' => statuscode=' . $statuscode . ', err=' . $err, KL_WARNING);
             $this->SendDebug(__FUNCTION__, '    statuscode=' . $statuscode . ', err=' . $err, 0);
             $this->MaintainStatus($statuscode);
             return false;
         }
-        return $jdata;
+        return $jbody;
     }
 
     private function DeveloperApiAccessToken()
@@ -1058,7 +1085,7 @@ class MieleAtHomeSplitter extends IPSModule
         }
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
         $cdata = curl_exec($ch);
         $cerrno = curl_errno($ch);
         $cerror = $cerrno ? curl_error($ch) : '';
@@ -1111,5 +1138,25 @@ class MieleAtHomeSplitter extends IPSModule
         }
 
         return $statuscode;
+    }
+
+    private function build_url($url, $params)
+    {
+        $n = 0;
+        if (is_array($params)) {
+            foreach ($params as $param => $value) {
+                $url .= ($n++ ? '&' : '?') . $param . '=' . rawurlencode(strval($value));
+            }
+        }
+        return $url;
+    }
+
+    private function build_header($headerfields)
+    {
+        $header = [];
+        foreach ($headerfields as $key => $value) {
+            $header[] = $key . ': ' . $value;
+        }
+        return $header;
     }
 }

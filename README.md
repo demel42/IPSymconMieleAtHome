@@ -278,31 +278,35 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 2.6 @ 16.02.2025 18:31
+  - Verbesserung: mehr Debug in dem Abruf eines Token und mehrfache Versuche
+  - Verbesserung: HTTP-Timeout von 30 auf 60 Sekunden erhöht
+
 - 2.5 @ 03.01.2025 14:17
- - Fix: potentielles Problem im Konfigurator
- - Verbesserung: Erkennung der Inaktivität des Parent (SSE-IO) verbessert
- - interne Änderung
- - update submodule CommonStubs
+  - Fix: potentielles Problem im Konfigurator
+  - Verbesserung: Erkennung der Inaktivität des Parent (SSE-IO) verbessert
+  - interne Änderung
+  - update submodule CommonStubs
 
 - 2.4.2 @ 24.02.2024 13:16
-   - Fix: weiteres Sempahore-Problem
+  - Fix: weiteres Sempahore-Problem
 
 - 2.4.1 @ 24.02.2024 08:56
-   - Fix: Problem (mit einem Semaphore) bei der Anmeldung mit dem Entwicklerschlüssel
-   - update submodule CommonStubs
+  - Fix: Problem (mit einem Semaphore) bei der Anmeldung mit dem Entwicklerschlüssel
+  - update submodule CommonStubs
 
 - 2.4 @ 09.02.2024 11:00
-   - Neu: Unterstützung von Induktionskochfeldern
+  - Neu: Unterstützung von Induktionskochfeldern
 
 - 2.3 @ 07.02.2024 17:26
-   - Fix: auch bei der Anmeldung via IP-Symcon wird eine Angabe der Sprache benötigt
-   - Fix: Absicherung von Zugriffen auf andere Instanzen in Konfiguratoren
+  - Fix: auch bei der Anmeldung via IP-Symcon wird eine Angabe der Sprache benötigt
+  - Fix: Absicherung von Zugriffen auf andere Instanzen in Konfiguratoren
 
 - 2.2 @ 29.01.2024 10:37
-   - Änderung: Medien-Objekte haben zur eindeutigen Identifizierung jetzt ebenfalls ein Ident
-   - Neu: Schalter, um Daten zu API-Aufrufen zu sammeln
-     Die API-Aufruf-Daten stehen nun in einem Medienobjekt zur Verfügung
-   - update submodule CommonStubs
+  - Änderung: Medien-Objekte haben zur eindeutigen Identifizierung jetzt ebenfalls ein Ident
+  - Neu: Schalter, um Daten zu API-Aufrufen zu sammeln
+    Die API-Aufruf-Daten stehen nun in einem Medienobjekt zur Verfügung
+  - update submodule CommonStubs
 
 - 2.1 @ 10.12.2023 10:43
   - Neu: ab IPS-Version 7 ist im Konfigurator die Angabe einer Import-Kategorie integriert, daher entfällt die bisher vorhandene separate Einstellmöglichkeit
