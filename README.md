@@ -278,10 +278,13 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 2.6 @ 09.03.2025 10:58
-  - Verbesserung: mehr Debug in dem Abruf eines Token
+- 2.6.1 @ 09.03.2025 10:58
   - Verbesserung: da es häufiger zu Timeouts auf Seite des Mieleservers kommt, wird nun ein aufgrund Nichterreichbarkeit des Servers fehlgeschlagener HTTP-Aufruf bis zu 2 mal wiederholt.
     In dem Zug wurde der Timeout der HTTP-Aufrufe auf 15s gesetzt, da - wenn es eine Antwort gibt, die normalerweise weniger als 5s dauert.
+
+- 2.6 @ 16.02.2025 18:31
+  - Verbesserung: mehr Debug in dem Abruf eines Token und mehrfache Versuche
+  - Verbesserung: HTTP-Timeout von 30 auf 60 Sekunden erhöht
 
 - 2.5 @ 03.01.2025 14:17
   - Fix: potentielles Problem im Konfigurator
