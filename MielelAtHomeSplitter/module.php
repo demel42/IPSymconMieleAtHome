@@ -14,7 +14,10 @@ class MieleAtHomeSplitter extends IPSModule
 
     private $oauthIdentifer = 'miele_at_home';
 
-    private static $semaphoreTM = 5 * 1000;
+    private static $curl_exec_timeout = 15;
+    private static $curl_exec_attempts = 3;
+
+    private static $semaphoreTM = 50 * 1000; // $curl_exec_timeout * $curl_exec_attempts
 
     private $SemaphoreID;
 
@@ -257,7 +260,7 @@ class MieleAtHomeSplitter extends IPSModule
         if ($jtoken != false) {
             $refresh_token = isset($jtoken['refresh_token']) ? $jtoken['refresh_token'] : '';
             if ($refresh_token != '') {
-                $this->SendDebug(__FUNCTION__, 'old refresh_token', 0);
+                $this->SendDebug(__FUNCTION__, 'use old refresh_token', 0);
             }
         } else {
             $this->SendDebug(__FUNCTION__, 'no saved refresh_token', 0);
@@ -276,7 +279,7 @@ class MieleAtHomeSplitter extends IPSModule
         if ($refresh_token == '') {
             $this->SendDebug(__FUNCTION__, 'clear refresh_token', 0);
         } else {
-            $this->SendDebug(__FUNCTION__, 'new refresh_token', 0);
+            $this->SendDebug(__FUNCTION__, 'set new refresh_token', 0);
         }
     }
 
@@ -291,7 +294,7 @@ class MieleAtHomeSplitter extends IPSModule
                 $access_token = '';
             }
             if ($access_token != '') {
-                $this->SendDebug(__FUNCTION__, 'old access_token, valid until ' . date('d.m.y H:i:s', $expiration), 0);
+                $this->SendDebug(__FUNCTION__, 'use old access_token, valid until ' . date('d.m.y H:i:s', $expiration), 0);
             }
         } else {
             $this->SendDebug(__FUNCTION__, 'no saved access_token', 0);
@@ -317,7 +320,7 @@ class MieleAtHomeSplitter extends IPSModule
         if ($access_token == '') {
             $this->SendDebug(__FUNCTION__, 'clear access_token', 0);
         } else {
-            $this->SendDebug(__FUNCTION__, 'new access_token, valid until ' . date('d.m.y H:i:s', $expiration), 0);
+            $this->SendDebug(__FUNCTION__, 'set new access_token, valid until ' . date('d.m.y H:i:s', $expiration), 0);
         }
         $this->UpdateConfigurationForParent();
         if ($expiration) {
@@ -335,7 +338,8 @@ class MieleAtHomeSplitter extends IPSModule
     protected function ProcessOAuthData()
     {
         if (!isset($_GET['code'])) {
-            $this->SendDebug(__FUNCTION__, 'code missing, _GET=' . print_r($_GET, true), 0);
+            $this->SendDebug(__FUNCTION__, '"code" missing, _GET=' . print_r($_GET, true), 0);
+            $this->SendDebug(__FUNCTION__, 'clear refresh- & access-token', 0);
             $this->SetRefreshToken('');
             $this->SetAccessToken('');
             $this->MaintainStatus(self::$IS_NOLOGIN);
@@ -348,7 +352,7 @@ class MieleAtHomeSplitter extends IPSModule
         $jdata = $this->Call4ApiToken(['code' => $code]);
         $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
         if ($jdata == false) {
-            $this->SendDebug(__FUNCTION__, 'got no token', 0);
+            $this->SendDebug(__FUNCTION__, 'got no token, clear refresh- & access-token', 0);
             $this->SetRefreshToken('');
             $this->SetAccessToken('');
             return false;
@@ -356,8 +360,10 @@ class MieleAtHomeSplitter extends IPSModule
 
         $access_token = $jdata['access_token'];
         $expiration = time() + $jdata['expires_in'];
+        $this->SendDebug(__FUNCTION__, 'set access_token=' . $access_token . ', expiration=' . $expiration, 0);
         $this->SetAccessToken($access_token, $expiration);
         $refresh_token = $jdata['refresh_token'];
+        $this->SendDebug(__FUNCTION__, 'set refresh_token=' . $refresh_token, 0);
         $this->SetRefreshToken($refresh_token);
 
         if ($this->GetStatus() == self::$IS_NOLOGIN) {
@@ -383,30 +389,34 @@ class MieleAtHomeSplitter extends IPSModule
             CURLOPT_POSTFIELDS     => http_build_query($content),
             CURLOPT_HEADER         => true,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT        => 60,
+            CURLOPT_TIMEOUT        => self::$curl_exec_timeout,
         ];
+
+        $ch = curl_init();
+        curl_setopt_array($ch, $curl_opts);
 
         $statuscode = 0;
         $err = '';
         $jbody = false;
 
-        $retries = 0;
+        $attempt = 1;
         do {
-            $ch = curl_init();
-            curl_setopt_array($ch, $curl_opts);
             $response = curl_exec($ch);
             $cerrno = curl_errno($ch);
             $cerror = $cerrno ? curl_error($ch) : '';
-            $curl_info = curl_getinfo($ch);
-            curl_close($ch);
-            $httpcode = $curl_info['http_code'];
             if ($cerrno) {
-                $this->SendDebug(__FUNCTION__, ' => retry=' . $retries . ', got curl-errno ' . $cerrno . ' (' . $cerror . ')', 0);
+                $this->SendDebug(__FUNCTION__, ' => attempt=' . $attempt . ', got curl-errno ' . $cerrno . ' (' . $cerror . ')', 0);
                 IPS_Sleep(1000);
             }
-        } while ($cerrno && $retries++ < 2);
+        } while ($cerrno && $attempt++ <= self::$curl_exec_attempts);
+
+        $curl_info = curl_getinfo($ch);
+        curl_close($ch);
+
+        $httpcode = $curl_info['http_code'];
 
         $duration = round(microtime(true) - $time_start, 2);
+        $this->SendDebug(__FUNCTION__, ' => errno=' . $cerrno . ', httpcode=' . $httpcode . ', duration=' . $duration . 's, attempt(s)=' . $attempt, 0);
 
         if ($cerrno) {
             $statuscode = self::$IS_SERVERERROR;
@@ -527,7 +537,7 @@ class MieleAtHomeSplitter extends IPSModule
             case self::$CONNECTION_OAUTH:
                 $refresh_token = $this->GetRefreshToken();
                 if ($refresh_token == '') {
-                    $this->SendDebug(__FUNCTION__, 'has no refresh_token', 0);
+                    $this->SendDebug(__FUNCTION__, 'has no refresh_token, clear access-token', 0);
                     $this->SetAccessToken('');
                     $this->MaintainStatus(self::$IS_NOLOGIN);
                     IPS_SemaphoreLeave($this->SemaphoreID);
@@ -543,17 +553,20 @@ class MieleAtHomeSplitter extends IPSModule
                 break;
         }
         if ($jdata == false) {
-            $this->SendDebug(__FUNCTION__, 'got no access_token', 0);
+            $this->SendDebug(__FUNCTION__, 'got no access_token, clear access-token', 0);
             $this->SetAccessToken('');
             IPS_SemaphoreLeave($this->SemaphoreID);
             return false;
         }
 
+        $this->SendDebug(__FUNCTION__, 'token jdata=' . print_r($jdata, true), 0);
         $access_token = $jdata['access_token'];
         $expiration = time() + $jdata['expires_in'];
+        $this->SendDebug(__FUNCTION__, 'set access_token=' . $access_token . ', expiration=' . $expiration, 0);
         $this->SetAccessToken($access_token, $expiration);
         if (isset($jdata['refresh_token'])) {
             $refresh_token = $jdata['refresh_token'];
+            $this->SendDebug(__FUNCTION__, 'set refresh_token=' . $refresh_token, 0);
             $this->SetRefreshToken($refresh_token);
         }
 
@@ -869,6 +882,7 @@ class MieleAtHomeSplitter extends IPSModule
             return false;
         }
 
+        $this->SendDebug(__FUNCTION__, 'clear refresh- & access-token', 0);
         $this->SetRefreshToken('');
         $this->SetAccessToken('');
 
@@ -1045,17 +1059,11 @@ class MieleAtHomeSplitter extends IPSModule
 
     private function do_HttpRequest($func, $params, $header, $postdata, $mode, &$data, &$msg)
     {
-        $url = 'https://api.mcs3.miele.com' . $func;
-
-        if ($params != '') {
-            $n = 0;
-            foreach ($params as $param => $value) {
-                $url .= ($n++ ? '&' : '?') . $param . '=' . rawurlencode($value);
-            }
-        }
+        $url = $this->build_url('https://api.mcs3.miele.com' . $func, $params);
 
         $this->SendDebug(__FUNCTION__, 'http-' . $mode . ': url=' . $url, 0);
         $this->SendDebug(__FUNCTION__, '    header=' . print_r($header, true), 0);
+
         if ($postdata != '') {
             if (is_array($postdata)) {
                 $postdata = http_build_query($postdata);
@@ -1063,44 +1071,59 @@ class MieleAtHomeSplitter extends IPSModule
             $this->SendDebug(__FUNCTION__, '    postdata=' . $postdata, 0);
         }
 
-        $time_start = microtime(true);
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        $curl_opts = [
+            CURLOPT_URL            => $url,
+            CURLOPT_HTTPHEADER     => $header,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => self::$curl_exec_timeout,
+        ];
         switch ($mode) {
             case 'GET':
                 break;
             case 'POST':
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
+                $curl_opts[CURLOPT_POST] = true;
+                $curl_opts[CURLOPT_POSTFIELDS] = $postdata;
                 break;
             case 'PUT':
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $mode);
+                $curl_opts[CURLOPT_POSTFIELDS] = $postdata;
+                $curl_opts[CURLOPT_CUSTOMREQUEST] = $mode;
                 break;
             case 'DELETE':
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $mode);
+                $curl_opts[CURLOPT_CUSTOMREQUEST] = $mode;
                 break;
         }
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-        $cdata = curl_exec($ch);
-        $cerrno = curl_errno($ch);
-        $cerror = $cerrno ? curl_error($ch) : '';
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $redirect_url = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
-        curl_close($ch);
 
-        $duration = round(microtime(true) - $time_start, 2);
-        $this->SendDebug(__FUNCTION__, ' => errno=' . $cerrno . ', httpcode=' . $httpcode . ', duration=' . $duration . 's', 0);
-        $this->SendDebug(__FUNCTION__, ' => cdata=' . $cdata, 0);
+        $time_start = microtime(true);
 
         $statuscode = 0;
         $err = '';
         $msg = '';
         $data = '';
+
+        $ch = curl_init();
+        curl_setopt_array($ch, $curl_opts);
+
+        $attempt = 1;
+        do {
+            $cdata = curl_exec($ch);
+            $cerrno = curl_errno($ch);
+            $cerror = $cerrno ? curl_error($ch) : '';
+            if ($cerrno) {
+                $this->SendDebug(__FUNCTION__, ' => attempt=' . $attempt . ', got curl-errno ' . $cerrno . ' (' . $cerror . ')', 0);
+                IPS_Sleep(1000);
+            }
+        } while ($cerrno && $attempt++ <= self::$curl_exec_attempts);
+
+        $curl_info = curl_getinfo($ch);
+        curl_close($ch);
+
+        $httpcode = $curl_info['http_code'];
+        $redirect_url = $curl_info['redirect_url'];
+
+        $duration = round(microtime(true) - $time_start, 2);
+        $this->SendDebug(__FUNCTION__, ' => errno=' . $cerrno . ', httpcode=' . $httpcode . ', duration=' . $duration . 's, attempt(s)=' . $attempt, 0);
+        $this->SendDebug(__FUNCTION__, ' => cdata=' . $cdata, 0);
 
         if ($cdata != '') {
             $jdata = json_decode($cdata, true);
