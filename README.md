@@ -181,6 +181,11 @@ Anmerkung: es ist unklar, bei welchen Gerätetypen es funktioniert, das Geräte 
 | Client-Secret           | string  |              | Miele@Home API-Zugangsdaten: Client-Secret |
 | VG-Selector             | string  |              | Bedenutung unklar, muss anscheinend auf dem Wert des Landes stehen, wo das Gerät gekauft/betrieben wird |
 | Sprache                 | string  |              | Sprache von Text-Ausgaben der API |
+|                         |         |              | |
+| Timeout eines Abrufs    | integer | 15           | Timeout eines HTTP-Aufrufs in Sekunden |
+| Anzahl der Versuche     | integer | 3            | Anzahl der Versuche nach Kommunikationsfehler |
+
+Achtung: die maximale Wartezeit in Sekunden berechnet sich wie folgt: (*Timeout* * *Anzahl*) + 5. Solange ist der Thread der Instanz maximal blockiert!
 
 #### Schaltflächen
 
@@ -277,6 +282,10 @@ Verweise:
 - https://www.miele.com/developer/index.html
 
 ## 7. Versions-Historie
+
+- 2.6.2 @ 23.03.2025 07:25
+  - Verbesserung zu 2.6.1: der Timeout des Abrufs und die Anzahl der Versuche kann nun eingestellt werden.
+    Achtung: Hinweis zu diesen Einstellungen im READDME beachten
 
 - 2.6.1 @ 09.03.2025 10:58
   - Verbesserung: da es häufiger zu Timeouts auf Seite des Mieleservers kommt, wird nun ein aufgrund Nichterreichbarkeit des Servers fehlgeschlagener HTTP-Aufruf bis zu 2 mal wiederholt.

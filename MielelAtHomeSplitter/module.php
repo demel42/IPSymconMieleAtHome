@@ -14,12 +14,8 @@ class MieleAtHomeSplitter extends IPSModule
 
     private $oauthIdentifer = 'miele_at_home';
 
-    private static $curl_exec_timeout = 15;
-    private static $curl_exec_attempts = 3;
-
-    private static $semaphoreTM = 50 * 1000; // $curl_exec_timeout * $curl_exec_attempts
-
     private $SemaphoreID;
+    private $SemaphoreTM;
 
     public function __construct(string $InstanceID)
     {
@@ -51,6 +47,9 @@ class MieleAtHomeSplitter extends IPSModule
         $this->RegisterPropertyInteger('OAuth_Type', self::$CONNECTION_UNDEFINED);
 
         $this->RegisterPropertyBoolean('collectApiCallStats', true);
+
+        $this->RegisterPropertyInteger('curl_exec_timeout', 15);
+        $this->RegisterPropertyInteger('curl_exec_attempts', 3);
 
         $this->RegisterAttributeString('ApiRefreshToken', json_encode([]));
         $this->RegisterAttributeString('ApiAccessToken', json_encode([]));
@@ -208,6 +207,10 @@ class MieleAtHomeSplitter extends IPSModule
             $this->ClearToken();
             $this->WriteAttributeInteger('ConnectionType', $connection_type);
         }
+
+        $curl_exec_timeout = $this->ReadPropertyInteger('curl_exec_timeout');
+        $curl_exec_attempts = $this->ReadPropertyInteger('curl_exec_attempts');
+        $this->SemaphoreTM = (($curl_exec_timeout * $curl_exec_attempts) + 5) * 1000;
 
         $this->MaintainStatus(IS_ACTIVE);
 
@@ -373,6 +376,9 @@ class MieleAtHomeSplitter extends IPSModule
 
     protected function Call4ApiToken($content)
     {
+        $curl_exec_timeout = $this->ReadPropertyInteger('curl_exec_timeout');
+        $curl_exec_attempts = $this->ReadPropertyInteger('curl_exec_attempts');
+
         $url = 'https://oauth.ipmagic.de/access_token/' . $this->oauthIdentifer;
         $this->SendDebug(__FUNCTION__, 'url=' . $url, 0);
         $this->SendDebug(__FUNCTION__, '    content=' . print_r($content, true), 0);
@@ -389,7 +395,7 @@ class MieleAtHomeSplitter extends IPSModule
             CURLOPT_POSTFIELDS     => http_build_query($content),
             CURLOPT_HEADER         => true,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT        => self::$curl_exec_timeout,
+            CURLOPT_TIMEOUT        => $curl_exec_timeout,
         ];
 
         $ch = curl_init();
@@ -408,7 +414,7 @@ class MieleAtHomeSplitter extends IPSModule
                 $this->SendDebug(__FUNCTION__, ' => attempt=' . $attempt . ', got curl-errno ' . $cerrno . ' (' . $cerror . ')', 0);
                 IPS_Sleep(1000);
             }
-        } while ($cerrno && $attempt++ <= self::$curl_exec_attempts);
+        } while ($cerrno && $attempt++ <= $curl_exec_attempts);
 
         $curl_info = curl_getinfo($ch);
         curl_close($ch);
@@ -416,7 +422,7 @@ class MieleAtHomeSplitter extends IPSModule
         $httpcode = $curl_info['http_code'];
 
         $duration = round(microtime(true) - $time_start, 2);
-        $this->SendDebug(__FUNCTION__, ' => errno=' . $cerrno . ', httpcode=' . $httpcode . ', duration=' . $duration . 's, attempt(s)=' . $attempt, 0);
+        $this->SendDebug(__FUNCTION__, ' => errno=' . $cerrno . ', httpcode=' . $httpcode . ', duration=' . $duration . 's, attempts=' . $attempt, 0);
 
         if ($cerrno) {
             $statuscode = self::$IS_SERVERERROR;
@@ -519,7 +525,7 @@ class MieleAtHomeSplitter extends IPSModule
 
     private function GetApiAccessToken($renew = false)
     {
-        if (IPS_SemaphoreEnter($this->SemaphoreID, self::$semaphoreTM) == false) {
+        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->SemaphoreTM) == false) {
             $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
             return false;
         }
@@ -734,6 +740,30 @@ class MieleAtHomeSplitter extends IPSModule
         }
 
         $formElements[] = [
+            'type'    => 'ExpansionPanel',
+            'items'   => [
+                [
+                    'type'    => 'Label',
+                    'caption' => 'Behavior of HTTP requests at the technical level'
+                ],
+                [
+                    'type'    => 'NumberSpinner',
+                    'minimum' => 0,
+                    'suffix'  => 'Seconds',
+                    'name'    => 'curl_exec_timeout',
+                    'caption' => 'Timeout of an HTTP call'
+                ],
+                [
+                    'type'    => 'NumberSpinner',
+                    'minimum' => 0,
+                    'name'    => 'curl_exec_attempts',
+                    'caption' => 'Number of attempts after communication failure'
+                ],
+            ],
+            'caption' => 'Communication'
+        ];
+
+        $formElements[] = [
             'type'    => 'CheckBox',
             'name'    => 'collectApiCallStats',
             'caption' => 'Collect data of API calls'
@@ -877,7 +907,7 @@ class MieleAtHomeSplitter extends IPSModule
 
     private function ClearToken()
     {
-        if (IPS_SemaphoreEnter($this->SemaphoreID, self::$semaphoreTM) == false) {
+        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->SemaphoreTM) == false) {
             $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
             return false;
         }
@@ -987,7 +1017,7 @@ class MieleAtHomeSplitter extends IPSModule
             return false;
         }
 
-        if (IPS_SemaphoreEnter($this->SemaphoreID, self::$semaphoreTM) == false) {
+        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->SemaphoreTM) == false) {
             $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
             return;
         }
@@ -1024,7 +1054,7 @@ class MieleAtHomeSplitter extends IPSModule
             return false;
         }
 
-        if (IPS_SemaphoreEnter($this->SemaphoreID, self::$semaphoreTM) == false) {
+        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->SemaphoreTM) == false) {
             $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
             return;
         }
@@ -1059,6 +1089,9 @@ class MieleAtHomeSplitter extends IPSModule
 
     private function do_HttpRequest($func, $params, $header, $postdata, $mode, &$data, &$msg)
     {
+        $curl_exec_timeout = $this->ReadPropertyInteger('curl_exec_timeout');
+        $curl_exec_attempts = $this->ReadPropertyInteger('curl_exec_attempts');
+
         $url = $this->build_url('https://api.mcs3.miele.com' . $func, $params);
 
         $this->SendDebug(__FUNCTION__, 'http-' . $mode . ': url=' . $url, 0);
@@ -1076,7 +1109,7 @@ class MieleAtHomeSplitter extends IPSModule
             CURLOPT_HTTPHEADER     => $header,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT        => self::$curl_exec_timeout,
+            CURLOPT_TIMEOUT        => $curl_exec_timeout,
         ];
         switch ($mode) {
             case 'GET':
@@ -1113,7 +1146,7 @@ class MieleAtHomeSplitter extends IPSModule
                 $this->SendDebug(__FUNCTION__, ' => attempt=' . $attempt . ', got curl-errno ' . $cerrno . ' (' . $cerror . ')', 0);
                 IPS_Sleep(1000);
             }
-        } while ($cerrno && $attempt++ <= self::$curl_exec_attempts);
+        } while ($cerrno && $attempt++ <= $curl_exec_attempts);
 
         $curl_info = curl_getinfo($ch);
         curl_close($ch);
@@ -1122,7 +1155,7 @@ class MieleAtHomeSplitter extends IPSModule
         $redirect_url = $curl_info['redirect_url'];
 
         $duration = round(microtime(true) - $time_start, 2);
-        $this->SendDebug(__FUNCTION__, ' => errno=' . $cerrno . ', httpcode=' . $httpcode . ', duration=' . $duration . 's, attempt(s)=' . $attempt, 0);
+        $this->SendDebug(__FUNCTION__, ' => errno=' . $cerrno . ', httpcode=' . $httpcode . ', duration=' . $duration . 's, attempts=' . $attempt, 0);
         $this->SendDebug(__FUNCTION__, ' => cdata=' . $cdata, 0);
 
         if ($cdata != '') {

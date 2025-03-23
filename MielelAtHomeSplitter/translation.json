@@ -56,6 +56,12 @@
 			"Netherlands": "Niederlande",
 			"Switzerland": "Schweiz",
 
+			"Communication": "Kommunikation",
+			"Behavior of HTTP requests at the technical level": "Verhalten von HTTP-Anfragen auf technischer Ebene",
+			"Timeout of an HTTP call": "Timeout eines HTTP-Aufrufs",
+			"Seconds": "Sekunden",
+			"Number of attempts after communication failure": "Anzahl der Versuche nach Kommunikationsfehler",
+
 			"Collect data of API calls": "Daten von API-Aufrufen sammeln",
 
 			"__media__": "",
