@@ -285,7 +285,7 @@ Verweise:
 
 - 2.6.2 @ 23.03.2025 07:25
   - Verbesserung zu 2.6.1: der Timeout des Abrufs und die Anzahl der Versuche kann nun eingestellt werden.
-    Achtung: Hinweis zu diesen Einstellungen im READDME beachten
+    Achtung: Hinweis zu diesen Einstellungen im README.md beachten
 
 - 2.6.1 @ 09.03.2025 10:58
   - Verbesserung: da es häufiger zu Timeouts auf Seite des Mieleservers kommt, wird nun ein aufgrund Nichterreichbarkeit des Servers fehlgeschlagener HTTP-Aufruf bis zu 2 mal wiederholt.
