@@ -61,6 +61,7 @@
 			"Timeout of an HTTP call": "Timeout eines HTTP-Aufrufs",
 			"Seconds": "Sekunden",
 			"Number of attempts after communication failure": "Anzahl der Versuche nach Kommunikationsfehler",
+			"Delay between attempts": "Verzögerung zwischen den Versuchen",
 
 			"Collect data of API calls": "Daten von API-Aufrufen sammeln",
 

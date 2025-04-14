@@ -50,6 +50,7 @@ class MieleAtHomeSplitter extends IPSModule
 
         $this->RegisterPropertyInteger('curl_exec_timeout', 15);
         $this->RegisterPropertyInteger('curl_exec_attempts', 3);
+        $this->RegisterPropertyFloat('curl_exec_delay', 1);
 
         $this->RegisterAttributeString('ApiRefreshToken', json_encode([]));
         $this->RegisterAttributeString('ApiAccessToken', json_encode([]));
@@ -210,7 +211,8 @@ class MieleAtHomeSplitter extends IPSModule
 
         $curl_exec_timeout = $this->ReadPropertyInteger('curl_exec_timeout');
         $curl_exec_attempts = $this->ReadPropertyInteger('curl_exec_attempts');
-        $this->SemaphoreTM = (($curl_exec_timeout * $curl_exec_attempts) + 5) * 1000;
+        $curl_exec_delay = $this->ReadPropertyFloat('curl_exec_delay');
+        $this->SemaphoreTM = ((($curl_exec_timeout + ceil($curl_exec_delay)) * $curl_exec_attempts) + 1) * 1000;
 
         $this->MaintainStatus(IS_ACTIVE);
 
@@ -378,6 +380,7 @@ class MieleAtHomeSplitter extends IPSModule
     {
         $curl_exec_timeout = $this->ReadPropertyInteger('curl_exec_timeout');
         $curl_exec_attempts = $this->ReadPropertyInteger('curl_exec_attempts');
+        $curl_exec_delay = $this->ReadPropertyFloat('curl_exec_delay');
 
         $url = 'https://oauth.ipmagic.de/access_token/' . $this->oauthIdentifer;
         $this->SendDebug(__FUNCTION__, 'url=' . $url, 0);
@@ -412,7 +415,7 @@ class MieleAtHomeSplitter extends IPSModule
             $cerror = $cerrno ? curl_error($ch) : '';
             if ($cerrno) {
                 $this->SendDebug(__FUNCTION__, ' => attempt=' . $attempt . ', got curl-errno ' . $cerrno . ' (' . $cerror . ')', 0);
-                IPS_Sleep(1000);
+                IPS_Sleep((int) floor($curl_exec_delay * 1000));
             }
         } while ($cerrno && $attempt++ <= $curl_exec_attempts);
 
@@ -759,6 +762,15 @@ class MieleAtHomeSplitter extends IPSModule
                     'name'    => 'curl_exec_attempts',
                     'caption' => 'Number of attempts after communication failure'
                 ],
+                [
+                    'type'     => 'NumberSpinner',
+                    'minimum'  => 0.1,
+                    'maximum'  => 60,
+                    'digits'   => 1,
+                    'suffix'   => 'Seconds',
+                    'name'     => 'curl_exec_delay',
+                    'caption'  => 'Delay between attempts'
+                ],
             ],
             'caption' => 'Communication'
         ];
@@ -991,11 +1003,23 @@ class MieleAtHomeSplitter extends IPSModule
                     $msg = '';
                     $r = $this->do_ApiCall('/v1/devices/' . $ident . '/actions', $ret, $msg);
                     break;
+                case 'GetDevicePrograms':
+                    $ident = $jdata['Ident'];
+                    $msg = '';
+                    $r = $this->do_ApiCall('/v1/devices/' . $ident . '/programs', $ret, $msg);
+                    break;
                 case 'Action':
                     $ident = $jdata['Ident'];
                     $action = $jdata['Action'];
                     $msg = '';
                     $r = $this->do_ActionCall('/v1/devices/' . $ident . '/actions', $action, $ret, $msg);
+                    $ret = json_encode(['Status' => $r, 'Message'=> $msg]);
+                    break;
+                case 'Program':
+                    $ident = $jdata['Ident'];
+                    $program = $jdata['Program'];
+                    $msg = '';
+                    $r = $this->do_ProgramCall('/v1/devices/' . $ident . '/programs', $program, $ret, $msg);
                     $ret = json_encode(['Status' => $r, 'Message'=> $msg]);
                     break;
                 default:
@@ -1087,10 +1111,51 @@ class MieleAtHomeSplitter extends IPSModule
         return $statuscode ? false : true;
     }
 
+    private function do_ProgramCall($func, $opts, &$data, &$msg)
+    {
+        $access_token = $this->GetApiAccessToken();
+        if ($access_token == false) {
+            return false;
+        }
+
+        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->SemaphoreTM) == false) {
+            $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
+            return;
+        }
+
+        $language = $this->ReadPropertyString('language');
+
+        $params = [
+            'language' => $language,
+        ];
+
+        $header = [
+            'Accept: */*',
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $access_token,
+        ];
+
+        $postdata = $opts != '' ? json_encode($opts) : '';
+
+        $msg = '';
+        $statuscode = $this->do_HttpRequest($func, $params, $header, $postdata, 'PUT', $data, $msg);
+        $this->SendDebug(__FUNCTION__, 'statuscode=' . $statuscode . ', data=' . print_r($data, true), 0);
+        if ($statuscode != 0) {
+            $this->MaintainStatus($statuscode);
+            IPS_SemaphoreLeave($this->SemaphoreID);
+            return false;
+        }
+
+        $this->MaintainStatus(IS_ACTIVE);
+        IPS_SemaphoreLeave($this->SemaphoreID);
+        return $statuscode ? false : true;
+    }
+
     private function do_HttpRequest($func, $params, $header, $postdata, $mode, &$data, &$msg)
     {
         $curl_exec_timeout = $this->ReadPropertyInteger('curl_exec_timeout');
         $curl_exec_attempts = $this->ReadPropertyInteger('curl_exec_attempts');
+        $curl_exec_delay = $this->ReadPropertyFloat('curl_exec_delay');
 
         $url = $this->build_url('https://api.mcs3.miele.com' . $func, $params);
 
@@ -1144,7 +1209,7 @@ class MieleAtHomeSplitter extends IPSModule
             $cerror = $cerrno ? curl_error($ch) : '';
             if ($cerrno) {
                 $this->SendDebug(__FUNCTION__, ' => attempt=' . $attempt . ', got curl-errno ' . $cerrno . ' (' . $cerror . ')', 0);
-                IPS_Sleep(1000);
+                IPS_Sleep((int) floor($curl_exec_delay * 1000));
             }
         } while ($cerrno && $attempt++ <= $curl_exec_attempts);
 
@@ -1172,6 +1237,13 @@ class MieleAtHomeSplitter extends IPSModule
             $data = $cdata;
         } elseif ($httpcode == 302) {
             $data = $redirect_url;
+        } elseif ($httpcode == 400) {
+            if (preg_match('# is not in the correct state#', $msg, $r)) {
+                $this->SendDebug(__FUNCTION__, 'ignore http-code ' . $httpcode . ' (bad request)', 0);
+            } else {
+                $statuscode = self::$IS_HTTPERROR;
+                $err = 'got http-code ' . $httpcode . ' (bad request)';
+            }
         } elseif ($httpcode == 401) {
             $statuscode = self::$IS_UNAUTHORIZED;
             $err = 'got http-code ' . $httpcode . ' (unauthorized)';

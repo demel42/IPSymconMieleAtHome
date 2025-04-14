@@ -160,7 +160,12 @@ Anmerkung: es ist unklar, bei welchen Gerätetypen es funktioniert, das Geräte 
 
 `boolean MieleAtHome_PowerOff(integer $InstanzID)`<br>
 
-`boolean MieleAtHome_SetStarttime(integer $InstanzID, int $hour, int $min)`<br>
+`boolean MieleAtHome_SetStarttime(integer $InstanzID, int $hour, int $minute)`<br>
+*hour* und *minute* sind relative Angabe zu dem jetzigen Zeitpunkt
+
+`boolean MieleAtHome_StartProgram(integer $InstanzID, int $programId)`<br>
+*programId* ist die interne Kennung eines Geräteprogramms, das Variablenprofile *MieleAtHome.Programs_<InstanzID>* wird gefüllt, sobald das Gerät die Funktion aktiviert.
+Auf dem Gerät muss *mobiler Start* aktiviert sein und es muss eingeschaltet worden sein - nach dem Einschalten ein paar Sekunden warten.
 
 ## 5. Konfiguration
 
@@ -168,24 +173,25 @@ Anmerkung: es ist unklar, bei welchen Gerätetypen es funktioniert, das Geräte 
 
 #### Variablen
 
-| Eigenschaft             | Typ     | Standardwert | Beschreibung |
-| :---------------------- | :------ | :----------- | :----------- |
-| Instanz deaktivieren    | boolean | false        | Instanz temporär deaktivieren |
-|                         |         |              | |
-| Verbindugstyp           | integer | 0            | Auswahl der Art der Verbindung (**OAuth** oder **Developer**) |
-|                         |         |              | |
-| - nur bei _Developer_ - |         |              | |
-| Benutzer (EMail)        | string  |              | Miele@Home-Konto: Benutzerkennung |
-| Passwort                | string  |              | Miele@Home-Konto: Passwort |
-| Client-ID               | string  |              | Miele@Home API-Zugangsdaten: Client-ID |
-| Client-Secret           | string  |              | Miele@Home API-Zugangsdaten: Client-Secret |
-| VG-Selector             | string  |              | Bedenutung unklar, muss anscheinend auf dem Wert des Landes stehen, wo das Gerät gekauft/betrieben wird |
-| Sprache                 | string  |              | Sprache von Text-Ausgaben der API |
-|                         |         |              | |
-| Timeout eines Abrufs    | integer | 15           | Timeout eines HTTP-Aufrufs in Sekunden |
-| Anzahl der Versuche     | integer | 3            | Anzahl der Versuche nach Kommunikationsfehler |
+| Eigenschaft                    | Typ     | Standardwert | Beschreibung |
+| :----------------------------- | :------ | :----------- | :----------- |
+| Instanz deaktivieren           | boolean | false        | Instanz temporär deaktivieren |
+|                                |         |              | |
+| Verbindugstyp                  | integer | 0            | Auswahl der Art der Verbindung (**OAuth** oder **Developer**) |
+|                                |         |              | |
+| - nur bei _Developer_ -        |         |              | |
+| Benutzer (EMail)               | string  |              | Miele@Home-Konto: Benutzerkennung |
+| Passwort                       | string  |              | Miele@Home-Konto: Passwort |
+| Client-ID                      | string  |              | Miele@Home API-Zugangsdaten: Client-ID |
+| Client-Secret                  | string  |              | Miele@Home API-Zugangsdaten: Client-Secret |
+| VG-Selector                    | string  |              | Bedenutung unklar, muss anscheinend auf dem Wert des Landes stehen, wo das Gerät gekauft/betrieben wird |
+| Sprache                        | string  |              | Sprache von Text-Ausgaben der API |
+|                                |         |              | |
+| Timeout eines Abrufs           | integer | 15           | Timeout eines HTTP-Aufrufs in Sekunden |
+| Anzahl der Versuche            | integer | 3            | Anzahl der Versuche nach Kommunikationsfehler |
+| Verzögerung zwischen Versuchen | float   | 1            | Verzögerung zwischen den Versuchen in Sekunden |
 
-Achtung: die maximale Wartezeit in Sekunden berechnet sich wie folgt: (*Timeout* * *Anzahl*) + 5. Solange ist der Thread der Instanz maximal blockiert!
+Achtung: die maximale Wartezeit in Sekunden berechnet sich wie folgt: ((*Timeout* + *Verzögerung*) * *Anzahl*) + 1. Solange ist der Thread der Instanz maximal blockiert!
 
 #### Schaltflächen
 
@@ -252,6 +258,7 @@ MieleAtHome.Duration,
 MieleAtHome.Light,
 MieleAtHome.OperationMode,
 MieleAtHome.PlateStep
+MieleAtHome.Programs_<InstanzID>,
 MieleAtHome.PowerSupply,
 MieleAtHome.SpinningSpeed,
 MieleAtHome.Status,
@@ -282,6 +289,10 @@ Verweise:
 - https://www.miele.com/developer/index.html
 
 ## 7. Versions-Historie
+
+- 2.7 @ 14.04.2025 17:41
+  - Neu: Funktion "Programm starten" implementiert, es wird ein Instanz-spzifische Variablenprofil "MieleAtHome.Programs_<InstanzID>" angelegt und gefüllt (sobald das Gerät die Möglichkeit aktiviert)
+  - Verbesserung zu 2.6.2: die Verzögerung zwischen den Versuchen kann ebenfalls konfiguriert werden
 
 - 2.6.2 @ 23.03.2025 07:25
   - Verbesserung zu 2.6.1: der Timeout des Abrufs und die Anzahl der Versuche kann nun eingestellt werden.

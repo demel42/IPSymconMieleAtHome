@@ -14,11 +14,15 @@ class MieleAtHomeDevice extends IPSModule
 
     public static $MAX_PLATES = 10;
 
+    private $VarProf_Programs;
+
     public function __construct(string $InstanceID)
     {
         parent::__construct($InstanceID);
 
         $this->CommonConstruct(__DIR__);
+
+        $this->VarProf_Programs = 'MieleAtHome.Programs_' . $this->InstanceID;
     }
 
     public function __destruct()
@@ -55,11 +59,28 @@ class MieleAtHomeDevice extends IPSModule
 
         $this->InstallVarProfiles(false);
 
+        $this->CreateVarProfile($this->VarProf_Programs, VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', [['Wert' => 0, 'Name' => '-']], false);
+
         $this->ConnectParent('{996743FB-1712-47A3-9174-858A08A13523}');
 
         $this->RegisterTimer('UpdateData', 0, 'IPS_RequestAction(' . $this->InstanceID . ', "UpdateData", "");');
 
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
+    }
+
+    public function Destroy()
+    {
+        if (IPS_InstanceExists($this->InstanceID) == false) {
+            $idents = [
+                $this->VarProf_Programs,
+            ];
+            foreach ($idents as $ident) {
+                if (IPS_VariableProfileExists($ident)) {
+                    IPS_DeleteVariableProfile($ident);
+                }
+            }
+        }
+        parent::Destroy();
     }
 
     private function getDeviceOptions($deviceId)
@@ -93,12 +114,13 @@ class MieleAtHomeDevice extends IPSModule
             'core_temp'             => false,
             'enabled_operationmode' => false,
             'plate_steps'           => false,
+            'enabled_programs'      => false,
         ];
 
         $enable_operationmode = $this->ReadPropertyBoolean('enable_operationmode');
 
         switch ($deviceId) {
-            case self::$DEVICE_WASHING_MACHINE:   					// Waschmaschine
+            case self::$DEVICE_WASHING_MACHINE:   					// 1: Waschmaschine
                 $opts['program_name'] = true;
                 $opts['program_type'] = true;
                 $opts['program_phase'] = true;
@@ -112,8 +134,9 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['enabled_powersupply'] = true;
                 $opts['enabled_action'] = true;
                 $opts['enabled_starttime'] = true;
+                $opts['enabled_programs'] = true;
                 break;
-            case self::$DEVICE_TUMBLE_DRYER:      					// Trockner
+            case self::$DEVICE_TUMBLE_DRYER:      					// 2: Trockner
                 $opts['program_name'] = true;
                 $opts['program_type'] = true;
                 $opts['program_phase'] = true;
@@ -126,7 +149,7 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['enabled_action'] = true;
                 $opts['enabled_starttime'] = true;
                 break;
-            case self::$DEVICE_DISHWASHER:         					// Geschirrspüler
+            case self::$DEVICE_DISHWASHER:         					// 7: Geschirrspüler
                 $opts['program_name'] = true;
                 $opts['program_type'] = true;
                 $opts['program_phase'] = true;
@@ -138,8 +161,11 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['enabled_powersupply'] = true;
                 $opts['enabled_action'] = true;
                 $opts['enabled_starttime'] = true;
+                $opts['enabled_programs'] = true;
                 break;
-            case self::$DEVICE_OVEN:               					// Backofen
+            case self::$DEVICE_DISHWASHER_SEMIPROF:					// 8: semiprofessioneller Geschirrspüler
+                break;
+            case self::$DEVICE_OVEN:               					// 12: Backofen
                 $opts['program_name'] = true;
                 $opts['program_type'] = true;
                 $opts['program_phase'] = true;
@@ -149,8 +175,9 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['door'] = true;
 
                 $opts['enabled_powersupply'] = true;
+                $opts['enabled_programs'] = true;
                 break;
-            case self::$DEVICE_OVEN_MICROWAVE:     					// Backofen mit Mikrowelle
+            case self::$DEVICE_OVEN_MICROWAVE:     					// 13: Backofen mit Mikrowelle
                 $opts['program_name'] = true;
                 $opts['program_type'] = true;
                 $opts['program_phase'] = true;
@@ -159,8 +186,19 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['door'] = true;
 
                 $opts['enabled_powersupply'] = true;
+                $opts['enabled_programs'] = true;
                 break;
-            case self::$DEVICE_FRIDGE:								// Kühlschrank
+            case self::$DEVICE_HOB_HIGHLIGHT:						// 14:
+                break;
+            case self::$DEVICE_STEAM_OVEN:							// 15: Dampfgarer
+                break;
+            case self::$DEVICE_MICROWAVE:							// 16: Mikrowelle
+                break;
+            case self::$DEVICE_COFFEE_SYSTEM:						// 17: Kaffeemaschine
+                break;
+            case self::$DEVICE_HOOD:								// 18: Dunstabzugshaube
+                break;
+            case self::$DEVICE_FRIDGE:								// 19: Kühlschrank
                 $opts['fridge_temp'] = true;
                 $opts['fridge_zone'] = 1;
                 $opts['door'] = true;
@@ -169,7 +207,7 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['enabled_supercooling'] = true;
                 $opts['enabled_fridge_temp'] = true;
                 break;
-            case self::$DEVICE_FREEZER:								// Gefrierschrank
+            case self::$DEVICE_FREEZER:								// 20: Gefrierschrank
                 $opts['freezer_temp'] = true;
                 $opts['freezer_zone'] = 1;
                 $opts['door'] = true;
@@ -178,7 +216,7 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['enabled_superfreezing'] = true;
                 $opts['enabled_freezer_temp'] = true;
                 break;
-            case self::$DEVICE_FRIDGE_FREEZER:						// Kühl-/Gefrierkombination
+            case self::$DEVICE_FRIDGE_FREEZER:						// 21: Kühl-/Gefrierkombination
                 $opts['fridge_temp'] = true;
                 $opts['fridge_zone'] = 1;
                 $opts['freezer_temp'] = true;
@@ -191,10 +229,23 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['enabled_fridge_temp'] = true;
                 $opts['enabled_freezer_temp'] = true;
                 break;
-            case self::$DEVICE_DISH_WARMER:							// Wärmeschublade
-                $opts['program_name'] = true;
+            case self::$DEVICE_VACUUM_CLEANER:						// 23: Staubsauger
                 break;
-            case self::$DEVICE_STEAM_OVEN_COMBINATION: 				// Dampfgarer mit Backofen-Funktion
+            case self::$DEVICE_WASHER_DRYER:						// 24: Waschmaschine-Trockner-Kombination
+                break;
+            case self::$DEVICE_DISH_WARMER:							// 25: Wärmeschublade
+                $opts['program_name'] = true;
+
+                $opts['enabled_programs'] = true;
+                break;
+            case self::$DEVICE_HOB_INDUCTION:						// 27: Induktions-Kochfeld
+                $opts['plate_steps'] = true;
+
+                $opts['enabled_powersupply'] = true;
+                break;
+            case self::$DEVICE_HOB_GAS:								// 28: Gas-Kochfeld
+                break;
+            case self::$DEVICE_STEAM_OVEN_COMBINATION: 				// 31: Dampfgarer mit Backofen-Funktion
                 $opts['program_name'] = true;
                 $opts['program_type'] = true;
                 $opts['program_phase'] = true;
@@ -204,8 +255,25 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['door'] = true;
 
                 $opts['enabled_powersupply'] = true;
+                $opts['enabled_programs'] = true;
                 break;
-            case self::$DEVICE_STEAM_OVEN_MICROWAVE_COMBINATION:	// Dampfgarer mit Mikrowelle
+            case self::$DEVICE_WINE_CABINET:						// 32: Wein-Lager
+                break;
+            case self::$DEVICE_WINE_CONDITIONING_UNIT:				// 33: Wein-Klimatisierungs-Einheit
+                break;
+            case self::$DEVICE_WINE_STORAGE_CONDITIONING_UNIT:		// 34: Wein-Lager und Klimatisierungs-Einheit
+                break;
+            case self::$DEVICE_DOUBLE_OVEN:							// 39: Doppelter Ofen
+                break;
+            case self::$DEVICE_DOUBLE_STEAM_OVEN:					// 40: Doppelter Dampfgarer
+                break;
+            case self::$DEVICE_DOUBLE_STEAM_OVEN_COMBINATION:		// 41: Doppelter Dampfgarer mit Backofen-Funktion
+                break;
+            case self::$DEVICE_DOUBLE_MICROWAVE:					// 42: Doppelte Mikrowelle
+                break;
+            case self::$DEVICE_DOUBLE_MICROWAVE_OVEN:				// 43: Doppelter Mikrowelle mit Backofen-Funktion
+                break;
+            case self::$DEVICE_STEAM_OVEN_MICROWAVE_COMBINATION:	// 45: Dampfgarer mit Mikrowelle
                 $opts['program_name'] = true;
                 $opts['program_type'] = true;
                 $opts['program_phase'] = true;
@@ -214,11 +282,13 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['door'] = true;
 
                 $opts['enabled_powersupply'] = true;
+                $opts['enabled_programs'] = true;
                 break;
-            case self::$DEVICE_HOB_INDUCTION: // Induktions-Kochfeld
-                $opts['plate_steps'] = true;
-
-                $opts['enabled_powersupply'] = true;
+            case self::$DEVICE_VACUUM_DRAWER:						// 48: Vakuumierschublade
+                break;
+            case self::$DEVICE_DIALOGOVEN:							// 67: Dialogofen
+                break;
+            case self::$DEVICE_WINE_CABINET_FREEZER_COMBINATION:	// 68: Wein-Lager mit Gefrierschrank
                 break;
             default:
                 break;
@@ -384,6 +454,8 @@ class MieleAtHomeDevice extends IPSModule
         $this->MaintainVariable('Core_Temperature', $this->Translate('Core temperature'), VARIABLETYPE_INTEGER, 'MieleAtHome.Temperature', $vpos++, $opts['core_temp']);
 
         $this->MaintainVariable('OperationMode', $this->Translate('Operation mode'), VARIABLETYPE_INTEGER, 'MieleAtHome.OperationMode', $vpos++, $opts['enabled_operationmode']);
+
+        $this->MaintainVariable('StartProgram', $this->Translate('Start program'), VARIABLETYPE_INTEGER, $this->VarProf_Programs, $vpos++, $opts['enabled_programs']);
 
         $vpos = 70;
         $plate_count = $this->ReadPropertyInteger('plate_count');
@@ -747,6 +819,9 @@ class MieleAtHomeDevice extends IPSModule
             $this->SendDebug(__FUNCTION__, 'set "Info" to ' . $this->bool2str($signalInfo), 0);
             $this->SaveValue('Info', $signalInfo, $is_changed);
         }
+
+        $remoteEnable = (array) $this->GetArrayElem($jdata, 'remoteEnable', [], $fnd);
+        $this->setRemoteEnable($remoteEnable);
 
         $base_ts = strtotime(date('d.m.Y H:i:00', $now));
 
@@ -1261,6 +1336,19 @@ class MieleAtHomeDevice extends IPSModule
             $this->MaintainAction('OperationMode', $b);
             $this->SendDebug(__FUNCTION__, 'MaintainAction "PowerSupply": enabled=' . $this->bool2str($b) . ', value=' . $this->GetValueFormatted('OperationMode'), 0);
         }
+
+        if ($opts['enabled_programs']) {
+            if ($this->checkAction('StartProgram', false)) {
+                $remoteEnable = $this->getRemoteEnable();
+                $this->SendDebug(__FUNCTION__, 'remoteEnable=' . print_r($remoteEnable, true), 0);
+                $b = $remoteEnable['mobileStart'];
+            } else {
+                $b = false;
+            }
+
+            $this->MaintainAction('StartProgram', $b);
+            $this->SendDebug(__FUNCTION__, 'MaintainAction "StartProgram": enabled=' . $this->bool2str($b), 0);
+        }
     }
 
     private function UpdateData()
@@ -1295,6 +1383,56 @@ class MieleAtHomeDevice extends IPSModule
 
         $actions = $this->queryEnabledActions();
         $this->DecodeActions('Update', $actions);
+
+        $programs = $this->queryPrograms();
+        if ($programs !== false) {
+            $this->SendDebug(__FUNCTION__, 'programs=' . print_r($programs, true), 0);
+            $this->SetupPrograms($programs);
+        }
+    }
+
+    private function UpdateVarProfileAssociations(string $ident, $associations = null)
+    {
+        $varProfile = IPS_GetVariableProfile($ident);
+        $old_associations = $varProfile['Associations'];
+        foreach ($old_associations as $old_a) {
+            $fnd = false;
+            foreach ($associations as $a) {
+                if ($old_a['Value'] == $a['Value']) {
+                    $fnd = true;
+                    break;
+                }
+            }
+            if ($fnd == false) {
+                $associations[] = [
+                    'Value' => $old_a['Value'],
+                    'Name'  => '',
+                ];
+            }
+        }
+        foreach ($associations as $a) {
+            IPS_SetVariableProfileAssociation($ident, $a['Value'], $a['Name'], '', -1);
+        }
+    }
+
+    private function SetupPrograms($programs)
+    {
+        $associations = [
+            [
+                'Value' => 0,
+                'Name'  => '-'
+            ],
+        ];
+        foreach ($programs as $program) {
+            if ($program['programId'] == 0) {
+                continue;
+            }
+            $associations[] = [
+                'Value' => $program['programId'],
+                'Name'  => $program['program'],
+            ];
+        }
+        $this->UpdateVarProfileAssociations($this->VarProf_Programs, $associations);
     }
 
     private function programId2text($model, $id)
@@ -1509,6 +1647,9 @@ class MieleAtHomeDevice extends IPSModule
     {
         $enabled = false;
 
+        $deviceId = $this->ReadPropertyInteger('deviceId');
+        $opts = $this->getDeviceOptions($deviceId);
+
         $actions = $this->getEnabledActions();
         $processAction = isset($actions['processAction']) ? $actions['processAction'] : [];
         $light = isset($actions['light']) ? $actions['light'] : [];
@@ -1602,6 +1743,14 @@ class MieleAtHomeDevice extends IPSModule
                 $mode = preg_replace('/SetOperationMode_/', '', $func);
                 if (in_array($mode, $modes)) {
                     $enabled = true;
+                }
+                break;
+            case 'StartProgram':
+                if ($opts['enabled_programs']) {
+                    $remoteEnable = $this->getRemoteEnable();
+                    if ($remoteEnable['mobileStart']) {
+                        $enabled = true;
+                    }
                 }
                 break;
             default:
@@ -2010,6 +2159,13 @@ class MieleAtHomeDevice extends IPSModule
                 }
                 $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
+            case 'StartProgram':
+                $r = $this->StartProgram($value);
+                if ($r) {
+                    $this->SetValue($ident, $value);
+                }
+                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
+                break;
             default:
                 $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);
                 break;
@@ -2052,5 +2208,107 @@ class MieleAtHomeDevice extends IPSModule
         $data = $this->SendDataToParent(json_encode($SendData));
         $actions = @json_decode((string) $data, true);
         return $actions;
+    }
+
+    private function queryPrograms()
+    {
+        if ($this->HasActiveParent() == false) {
+            $this->SendDebug(__FUNCTION__, 'has no active parent/gateway', 0);
+            $log_no_parent = $this->ReadPropertyBoolean('log_no_parent');
+            if ($log_no_parent) {
+                $this->LogMessage($this->Translate('Instance has no active gateway'), KL_WARNING);
+            }
+            return false;
+        }
+
+        $deviceId = $this->ReadPropertyInteger('deviceId');
+        $opts = $this->getDeviceOptions($deviceId);
+        if ($opts['enabled_programs'] == false) {
+            return false;
+        }
+
+        if ($this->GetValue('State') == self::$STATE_OFF) {
+            return false;
+        }
+
+        $fabNumber = $this->ReadPropertyString('fabNumber');
+        $SendData = [
+            'DataID'   => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}',
+            'CallerID' => $this->InstanceID,
+            'Function' => 'GetDevicePrograms',
+            'Ident'    => $fabNumber
+        ];
+        $data = $this->SendDataToParent(json_encode($SendData));
+        if ($data == '') {
+            return false;
+        }
+        $programs = @json_decode((string) $data, true);
+        return $programs;
+    }
+
+    public function StartProgram(int $programId)
+    {
+        if (!$this->checkAction(__FUNCTION__, true)) {
+            return false;
+        }
+
+        $s = $this->CheckVarProfile4Value($this->VarProf_Programs, $programId);
+        if ($s === false) {
+            $this->SendDebug(__FUNCTION__, 'invalid programId ' . $programId, 0);
+            return false;
+        }
+        $this->SendDebug(__FUNCTION__, 'start program ' . $programId . '(' . $s . ')', 0);
+
+        $program = [
+            'programId' => $programId,
+        ];
+
+        return $this->CallProgram(__FUNCTION__, $program);
+    }
+
+    private function CallProgram($func, $program)
+    {
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
+            return false;
+        }
+        if ($this->HasActiveParent() == false) {
+            $this->SendDebug(__FUNCTION__, 'has no active parent/gateway', 0);
+            $log_no_parent = $this->ReadPropertyBoolean('log_no_parent');
+            if ($log_no_parent) {
+                $this->LogMessage($this->Translate('Instance has no active gateway'), KL_WARNING);
+            }
+            return false;
+        }
+
+        $this->SendDebug(__FUNCTION__, 'func=' . $func . ', program=' . print_r($program, true), 0);
+
+        $fabNumber = $this->ReadPropertyString('fabNumber');
+
+        $SendData = [
+            'DataID'    => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}',
+            'CallerID'  => $this->InstanceID,
+            'Function'  => 'Program',
+            'Ident'     => $fabNumber,
+            'Program'   => $program
+        ];
+        $data = $this->SendDataToParent(json_encode($SendData));
+
+        $this->SendDebug(__FUNCTION__, 'data=' . $data, 0);
+        $jdata = json_decode($data, true);
+
+        return $jdata['Status'];
+    }
+
+    private function setRemoteEnable($remoteEnable)
+    {
+        $this->SetBuffer('RemoteEnable', json_encode($remoteEnable));
+    }
+
+    private function getRemoteEnable()
+    {
+        $data = $this->GetBuffer('RemoteEnable');
+        $remoteEnable = @json_decode((string) $data, true);
+        return $remoteEnable;
     }
 }
