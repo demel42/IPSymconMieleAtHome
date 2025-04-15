@@ -192,7 +192,7 @@ Auf dem Gerät muss *mobiler Start* aktiviert sein und es muss eingeschaltet wor
 | Anzahl der Versuche            | integer | 3            | - Anzahl der Versuche nach Kommunikationsfehler |
 | Verzögerung zwischen Versuchen | float   | 1            | - Verzögerung zwischen den Versuchen in Sekunden |
 
-[_1_]: als Kommunikationsfehler werden die Abrufe definiert, bei der es keine qualifizierte Reaktion der Gegenseite gibt (also einen HTTP-Code)
+[_1_]: als Kommunikationsfehler werden die Abrufe definiert, bei der es keine qualifizierte Reaktion der Gegenseite gibt (also einen HTTP-Code).<br>
 Achtung: die maximale Wartezeit in Sekunden berechnet sich wie folgt: ((*Timeout* + *Verzögerung*) * *Anzahl*) + 1 => solange ist der Thread der Instanz maximal blockiert!
 
 #### Schaltflächen
