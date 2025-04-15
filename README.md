@@ -187,11 +187,13 @@ Auf dem Gerät muss *mobiler Start* aktiviert sein und es muss eingeschaltet wor
 | VG-Selector                    | string  |              | Bedenutung unklar, muss anscheinend auf dem Wert des Landes stehen, wo das Gerät gekauft/betrieben wird |
 | Sprache                        | string  |              | Sprache von Text-Ausgaben der API |
 |                                |         |              | |
-| Timeout eines Abrufs           | integer | 15           | Timeout eines HTTP-Aufrufs in Sekunden |
-| Anzahl der Versuche            | integer | 3            | Anzahl der Versuche nach Kommunikationsfehler |
-| Verzögerung zwischen Versuchen | float   | 1            | Verzögerung zwischen den Versuchen in Sekunden |
+|                                |         |              | Behandlung von Kommunikationsfehlern [1] |
+| Timeout eines Abrufs           | integer | 15           | - Timeout eines HTTP-Aufrufs in Sekunden |
+| Anzahl der Versuche            | integer | 3            | - Anzahl der Versuche nach Kommunikationsfehler |
+| Verzögerung zwischen Versuchen | float   | 1            | - Verzögerung zwischen den Versuchen in Sekunden |
 
-Achtung: die maximale Wartezeit in Sekunden berechnet sich wie folgt: ((*Timeout* + *Verzögerung*) * *Anzahl*) + 1. Solange ist der Thread der Instanz maximal blockiert!
+[_1_]: als Kommunikationsfehler werden die Abrufe definiert, bei der es keine qualifizierte Reaktion der Gegenseite gibt (also einen HTTP-Code)
+Achtung: die maximale Wartezeit in Sekunden berechnet sich wie folgt: ((*Timeout* + *Verzögerung*) * *Anzahl*) + 1 => solange ist der Thread der Instanz maximal blockiert!
 
 #### Schaltflächen
 
