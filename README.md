@@ -294,7 +294,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 2.7 @ 14.04.2025 17:41
+- 2.7.1 @ 17.06.2025 11:56
+  - Fix: selten auftretender Fehler (Undefined array key "mobileStart") korrigiert
+
+- 2.7 @ 16.04.2025 19:49
   - Neu: Funktion "Programm starten" implementiert, es wird ein Instanz-spzifische Variablenprofil "MieleAtHome.Programs_<InstanzID>" angelegt und gefüllt (sobald das Gerät die Möglichkeit aktiviert)
   - Verbesserung zu 2.6.2: die Verzögerung zwischen den Versuchen kann ebenfalls konfiguriert werden
 

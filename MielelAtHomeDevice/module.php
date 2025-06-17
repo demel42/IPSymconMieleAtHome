@@ -1340,8 +1340,7 @@ class MieleAtHomeDevice extends IPSModule
         if ($opts['enabled_programs']) {
             if ($this->checkAction('StartProgram', false)) {
                 $remoteEnable = $this->getRemoteEnable();
-                $this->SendDebug(__FUNCTION__, 'remoteEnable=' . print_r($remoteEnable, true), 0);
-                $b = $remoteEnable['mobileStart'];
+                $b = isset($remoteEnable['mobileStart']) && $remoteEnable['mobileStart'];
             } else {
                 $b = false;
             }
@@ -1748,7 +1747,7 @@ class MieleAtHomeDevice extends IPSModule
             case 'StartProgram':
                 if ($opts['enabled_programs']) {
                     $remoteEnable = $this->getRemoteEnable();
-                    if ($remoteEnable['mobileStart']) {
+                    if (isset($remoteEnable['mobileStart']) && $remoteEnable['mobileStart']) {
                         $enabled = true;
                     }
                 }
