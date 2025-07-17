@@ -294,10 +294,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 2.7.2 @ 17.06.2025 11:56
+- 2.7.2 @ 17.07.2025 11:03
   - Fix: Debug-Meldung bzgl. Token-Gültigkeit verbessert
 
-- 2.7.1 @ 17.07.2025 11:03
+- 2.7.1 @ 17.06.2025 11:56
   - Fix: selten auftretender Fehler (Undefined array key "mobileStart") korrigiert
 
 - 2.7 @ 16.04.2025 19:49
