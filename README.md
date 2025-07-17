@@ -294,9 +294,11 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 2.7.2 @ 17.06.2025 11:56
+  - Fix: Debug-Meldung bzgl. Token-Gültigkeit verbessert
+
 - 2.7.1 @ 17.07.2025 11:03
   - Fix: selten auftretender Fehler (Undefined array key "mobileStart") korrigiert
-  - Fix: Debug-Meldung bzgl. Token-Gültigkeit verbessert
 
 - 2.7 @ 16.04.2025 19:49
   - Neu: Funktion "Programm starten" implementiert, es wird ein Instanz-spzifische Variablenprofil "MieleAtHome.Programs_<InstanzID>" angelegt und gefüllt (sobald das Gerät die Möglichkeit aktiviert)
