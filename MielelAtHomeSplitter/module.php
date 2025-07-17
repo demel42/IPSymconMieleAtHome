@@ -284,7 +284,7 @@ class MieleAtHomeSplitter extends IPSModule
         if ($refresh_token == '') {
             $this->SendDebug(__FUNCTION__, 'clear refresh_token', 0);
         } else {
-            $this->SendDebug(__FUNCTION__, 'set new refresh_token', 0);
+            $this->SendDebug(__FUNCTION__, 'set new refresh_token='.$refresh_token, 0);
         }
     }
 
@@ -325,7 +325,7 @@ class MieleAtHomeSplitter extends IPSModule
         if ($access_token == '') {
             $this->SendDebug(__FUNCTION__, 'clear access_token', 0);
         } else {
-            $this->SendDebug(__FUNCTION__, 'set new access_token, valid until ' . date('d.m.y H:i:s', $expiration), 0);
+            $this->SendDebug(__FUNCTION__, 'set new access_token=' . $access_token . ', valid until ' . date('d.m.y H:i:s', $expiration), 0);
         }
         $this->UpdateConfigurationForParent();
         if ($expiration) {
@@ -365,10 +365,8 @@ class MieleAtHomeSplitter extends IPSModule
 
         $access_token = $jdata['access_token'];
         $expiration = time() + $jdata['expires_in'];
-        $this->SendDebug(__FUNCTION__, 'set access_token=' . $access_token . ', expiration=' . $expiration, 0);
         $this->SetAccessToken($access_token, $expiration);
         $refresh_token = $jdata['refresh_token'];
-        $this->SendDebug(__FUNCTION__, 'set refresh_token=' . $refresh_token, 0);
         $this->SetRefreshToken($refresh_token);
 
         if ($this->GetStatus() == self::$IS_NOLOGIN) {
@@ -571,11 +569,9 @@ class MieleAtHomeSplitter extends IPSModule
         $this->SendDebug(__FUNCTION__, 'token jdata=' . print_r($jdata, true), 0);
         $access_token = $jdata['access_token'];
         $expiration = time() + $jdata['expires_in'];
-        $this->SendDebug(__FUNCTION__, 'set access_token=' . $access_token . ', expiration=' . $expiration, 0);
         $this->SetAccessToken($access_token, $expiration);
         if (isset($jdata['refresh_token'])) {
             $refresh_token = $jdata['refresh_token'];
-            $this->SendDebug(__FUNCTION__, 'set refresh_token=' . $refresh_token, 0);
             $this->SetRefreshToken($refresh_token);
         }
 
