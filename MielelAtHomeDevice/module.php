@@ -329,6 +329,10 @@ class MieleAtHomeDevice extends IPSModule
             }
         }
 
+        if ($this->version2num($oldInfo) < $this->version2num('2.8')) {
+            $r[] = $this->Translate('Adjust variableprofile \'MieleAtHome.WorkProgress\'');
+        }
+
         return $r;
     }
 
@@ -355,6 +359,13 @@ class MieleAtHomeDevice extends IPSModule
                     $this->UnregisterVariable('PowerSupply');
                 }
             }
+        }
+
+        if ($this->version2num($oldInfo) < $this->version2num('2.8')) {
+            if (IPS_VariableProfileExists('MieleAtHome.WorkProgress')) {
+                IPS_DeleteVariableProfile('MieleAtHome.WorkProgress');
+            }
+            $this->InstallVarProfiles(false);
         }
 
         return '';

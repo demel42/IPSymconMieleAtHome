@@ -294,6 +294,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 2.8 @ 28.07.2025 10:25
+  - Fix: Variablenprofil "MieleAtHome.WorkProgress" korrigiert
+
 - 2.7.2 @ 17.07.2025 11:03
   - Fix: Debug-Meldung bzgl. Token-Gültigkeit verbessert
 

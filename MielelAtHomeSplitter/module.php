@@ -284,7 +284,7 @@ class MieleAtHomeSplitter extends IPSModule
         if ($refresh_token == '') {
             $this->SendDebug(__FUNCTION__, 'clear refresh_token', 0);
         } else {
-            $this->SendDebug(__FUNCTION__, 'set new refresh_token='.$refresh_token, 0);
+            $this->SendDebug(__FUNCTION__, 'set new refresh_token=' . $refresh_token, 0);
         }
     }
 

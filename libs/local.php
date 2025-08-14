@@ -156,7 +156,7 @@ trait MieleAtHomeLocalLib
             ['Wert' => 0, 'Name' => '-', 'Farbe' => -1],
             ['Wert' => 1, 'Name' => '%d %%', 'Farbe' => -1],
         ];
-        $this->CreateVarProfile('MieleAtHome.WorkProgress', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations, $reInstall);
+        $this->CreateVarProfile('MieleAtHome.WorkProgress', VARIABLETYPE_INTEGER, '', 0, 100, 1, 0, '', $associations, $reInstall);
 
         $associations = [
             ['Wert' => self::$STATE_UNKNOWN, 'Name' => $this->Translate('Unknown'), 'Farbe' => -1],
