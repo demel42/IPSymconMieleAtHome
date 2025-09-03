@@ -294,6 +294,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 2.9 @ 03.09.2025 16:59
+  - Fix: verbessertes Semaphore-Handling
+
 - 2.8 @ 28.07.2025 10:25
   - Fix: Variablenprofil "MieleAtHome.WorkProgress" korrigiert
 

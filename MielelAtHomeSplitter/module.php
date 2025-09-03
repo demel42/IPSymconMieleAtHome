@@ -15,7 +15,17 @@ class MieleAtHomeSplitter extends IPSModule
     private $oauthIdentifer = 'miele_at_home';
 
     private $SemaphoreID;
-    private $SemaphoreTM;
+
+    private function GetSemaphoreTM()
+    {
+        $curl_exec_timeout = $this->ReadPropertyInteger('curl_exec_timeout');
+        $curl_exec_attempts = $this->ReadPropertyInteger('curl_exec_attempts');
+        $curl_exec_delay = $this->ReadPropertyFloat('curl_exec_delay');
+        $semaphoreTM = ((($curl_exec_timeout + ceil($curl_exec_delay)) * $curl_exec_attempts) + 1) * 1000;
+
+        //$this->SendDebug(__FUNCTION__, 'semaphoreTM='.$semaphoreTM, 0);
+        return $semaphoreTM;
+    }
 
     public function __construct(string $InstanceID)
     {
@@ -208,11 +218,6 @@ class MieleAtHomeSplitter extends IPSModule
             $this->ClearToken();
             $this->WriteAttributeInteger('ConnectionType', $connection_type);
         }
-
-        $curl_exec_timeout = $this->ReadPropertyInteger('curl_exec_timeout');
-        $curl_exec_attempts = $this->ReadPropertyInteger('curl_exec_attempts');
-        $curl_exec_delay = $this->ReadPropertyFloat('curl_exec_delay');
-        $this->SemaphoreTM = ((($curl_exec_timeout + ceil($curl_exec_delay)) * $curl_exec_attempts) + 1) * 1000;
 
         $this->MaintainStatus(IS_ACTIVE);
 
@@ -526,7 +531,7 @@ class MieleAtHomeSplitter extends IPSModule
 
     private function GetApiAccessToken($renew = false)
     {
-        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->SemaphoreTM) == false) {
+        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->GetSemaphoreTM()) == false) {
             $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
             return false;
         }
@@ -915,7 +920,7 @@ class MieleAtHomeSplitter extends IPSModule
 
     private function ClearToken()
     {
-        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->SemaphoreTM) == false) {
+        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->GetSemaphoreTM()) == false) {
             $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
             return false;
         }
@@ -1037,7 +1042,7 @@ class MieleAtHomeSplitter extends IPSModule
             return false;
         }
 
-        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->SemaphoreTM) == false) {
+        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->GetSemaphoreTM()) == false) {
             $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
             return;
         }
@@ -1074,7 +1079,7 @@ class MieleAtHomeSplitter extends IPSModule
             return false;
         }
 
-        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->SemaphoreTM) == false) {
+        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->GetSemaphoreTM()) == false) {
             $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
             return;
         }
@@ -1114,7 +1119,7 @@ class MieleAtHomeSplitter extends IPSModule
             return false;
         }
 
-        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->SemaphoreTM) == false) {
+        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->GetSemaphoreTM()) == false) {
             $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
             return;
         }
