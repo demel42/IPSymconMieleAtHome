@@ -294,8 +294,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 2.9 @ 03.09.2025 16:59
+- 2.9 @ 17.11.2025 08:55
   - Fix: verbessertes Semaphore-Handling
+  - Verbesserung: wenn der Splitter deaktiviert ist, löste die IO-Instanz (SSE-Client) bisher ein Token-Refresh aus; das wird nun unterbunden
+  - update submodule CommonStubs
 
 - 2.8 @ 28.07.2025 10:25
   - Fix: Variablenprofil "MieleAtHome.WorkProgress" korrigiert

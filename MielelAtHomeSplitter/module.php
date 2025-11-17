@@ -87,12 +87,18 @@ class MieleAtHomeSplitter extends IPSModule
             if ($oauth_type == self::$CONNECTION_OAUTH) {
                 $this->RegisterOAuth($this->oauthIdentifer);
             }
-            $this->SetRefreshTimer();
+            $module_disable = $this->ReadPropertyBoolean('module_disable');
+            if ($module_disable == false) {
+                $this->SetRefreshTimer();
+            }
         }
         if (IPS_GetKernelRunlevel() == KR_READY && $message == IM_CHANGESTATUS && $senderID == $this->GetConnectionID()) {
             $this->SendDebug(__FUNCTION__, 'timestamp=' . $timestamp . ', senderID=' . $senderID . ', message=' . $message . ', data=' . print_r($data, true), 0);
             if ($data[0] == IS_ACTIVE && $data[1] != IS_ACTIVE) {
-                $this->MaintainTimer('RenewTimer', 60 * 1000);
+                $module_disable = $this->ReadPropertyBoolean('module_disable');
+                if ($module_disable == false) {
+                    $this->MaintainTimer('RenewTimer', 60 * 1000);
+                }
             }
         }
     }
