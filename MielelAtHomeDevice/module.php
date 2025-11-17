@@ -1805,7 +1805,11 @@ class MieleAtHomeDevice extends IPSModule
         $this->SendDebug(__FUNCTION__, 'data=' . $data, 0);
         $jdata = json_decode($data, true);
 
-        return $jdata['Status'];
+        $st = $jdata['Status'];
+        if (isset($jdata['Message']) && $jdata['Message'] != '') {
+            $st = false;
+        }
+        return $st;
     }
 
     public function Start()
@@ -2307,7 +2311,11 @@ class MieleAtHomeDevice extends IPSModule
         $this->SendDebug(__FUNCTION__, 'data=' . $data, 0);
         $jdata = json_decode($data, true);
 
-        return $jdata['Status'];
+        $st = $jdata['Status'];
+        if (isset($jdata['Message']) && $jdata['Message'] != '') {
+            $st = false;
+        }
+        return $st;
     }
 
     private function setRemoteEnable($remoteEnable)

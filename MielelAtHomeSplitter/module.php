@@ -1254,7 +1254,14 @@ class MieleAtHomeSplitter extends IPSModule
         } elseif ($httpcode == 401) {
             $statuscode = self::$IS_UNAUTHORIZED;
             $err = 'got http-code ' . $httpcode . ' (unauthorized)';
-        } elseif ($httpcode >= 500 && $httpcode <= 599) {
+        } elseif ($httpcode == 500) {
+            if (preg_match('#^GENERIC_TECHNICAL_ERROR \(#', $msg, $r)) {
+                $this->SendDebug(__FUNCTION__, 'ignore http-code ' . $httpcode . ' (server error)', 0);
+            } else {
+                $statuscode = self::$IS_HTTPERROR;
+                $err = 'got http-code ' . $httpcode . ' (server error)';
+            }
+        } elseif ($httpcode > 500 && $httpcode <= 599) {
             $statuscode = self::$IS_SERVERERROR;
             $err = 'got http-code ' . $httpcode . ' (server error)';
         } else {

@@ -294,9 +294,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 2.9 @ 17.11.2025 08:55
+- 2.9 @ 17.11.2025 17:18
   - Fix: verbessertes Semaphore-Handling
   - Verbesserung: wenn der Splitter deaktiviert ist, löste die IO-Instanz (SSE-Client) bisher ein Token-Refresh aus; das wird nun unterbunden
+  - Verbesserung: Ignorieren des HTTP-Error 500 mit der Message "GENERIC_TECHNICAL_ERROR"
   - update submodule CommonStubs
 
 - 2.8 @ 28.07.2025 10:25
