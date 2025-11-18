@@ -1245,7 +1245,11 @@ class MieleAtHomeSplitter extends IPSModule
         } elseif ($httpcode == 302) {
             $data = $redirect_url;
         } elseif ($httpcode == 400) {
-            if (preg_match('# is not in the correct state#', $msg, $r)) {
+            $patternV = [
+                ' is not in the correct state',
+                ' can\'t be powered on from its current state',
+            ];
+            if (preg_match('#' . implode('|', $patternV) . '#', $msg, $r)) {
                 $this->SendDebug(__FUNCTION__, 'ignore http-code ' . $httpcode . ' (bad request)', 0);
             } else {
                 $statuscode = self::$IS_HTTPERROR;
