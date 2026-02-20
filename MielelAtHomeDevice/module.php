@@ -195,8 +195,17 @@ class MieleAtHomeDevice extends IPSModule
             case self::$DEVICE_MICROWAVE:							// 16: Mikrowelle
                 break;
             case self::$DEVICE_COFFEE_SYSTEM:						// 17: Kaffeemaschine
+                $opts['program_name'] = true;
+                $opts['program_phase'] = true;
+
+                $opts['enabled_light'] = true;
+                $opts['enabled_powersupply'] = true;
                 break;
             case self::$DEVICE_HOOD:								// 18: Dunstabzugshaube
+                $opts['ventilation_step'] = true;
+
+                $opts['enabled_light'] = true;
+                $opts['enabled_powersupply'] = true;
                 break;
             case self::$DEVICE_FRIDGE:								// 19: Kühlschrank
                 $opts['fridge_temp'] = true;
@@ -807,7 +816,7 @@ class MieleAtHomeDevice extends IPSModule
             $this->SendDebug(__FUNCTION__, 'set "State" to ' . $status, 0);
             $this->SaveValue('State', $status, $is_changed);
             if ($status == self::$STATE_UNKNOWN) {
-                $e = 'unknown value ' . $value_raw;
+                $e = 'unknown state ' . $value_raw;
                 $value_localized = $this->GetArrayElem($jdata, 'status.value_localized', '');
                 if ($value_localized != '') {
                     $e .= ' (' . $value_localized . ')';
@@ -1459,7 +1468,7 @@ class MieleAtHomeDevice extends IPSModule
             $txt = $this->Translate($id2txt[0][$id]);
         } else {
             $txt = $this->Translate('unknown value') . ' ' . $id;
-            $e = 'unknown value ' . $id;
+            $e = 'unknown programId ' . $id;
             $this->SendDebug(__FUNCTION__, $e, 0);
             $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_NOTIFY);
         }
@@ -1492,7 +1501,7 @@ class MieleAtHomeDevice extends IPSModule
             $txt = $this->Translate($type2txt[0][$type]);
         } else {
             $txt = $this->Translate('unknown value') . ' ' . $type;
-            $e = 'unknown value ' . $type;
+            $e = 'unknown programType ' . $type;
             $this->SendDebug(__FUNCTION__, $e, 0);
             $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_NOTIFY);
         }
@@ -1592,7 +1601,7 @@ class MieleAtHomeDevice extends IPSModule
             $txt = $this->Translate($phase2txt[0][$phase]);
         } else {
             $txt = $this->Translate('unknown value') . ' ' . $phase;
-            $e = 'unknown value ' . $phase;
+            $e = 'unknown programPhase ' . $phase;
             $this->SendDebug(__FUNCTION__, $e, 0);
             $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_NOTIFY);
         }
@@ -1621,7 +1630,7 @@ class MieleAtHomeDevice extends IPSModule
             $txt = $this->Translate($step2txt[0][$step]);
         } else {
             $txt = $this->Translate('unknown value') . ' ' . $step;
-            $e = 'unknown value ' . $step;
+            $e = 'unknown dryingStep ' . $step;
             $this->SendDebug(__FUNCTION__, $e, 0);
             $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_NOTIFY);
         }
@@ -1646,7 +1655,7 @@ class MieleAtHomeDevice extends IPSModule
             $txt = $this->Translate($step2txt[0][$step]);
         } else {
             $txt = $this->Translate('unknown value') . ' ' . $step;
-            $e = 'unknown value ' . $step;
+            $e = 'unknown ventilationStep ' . $step;
             $this->SendDebug(__FUNCTION__, $e, 0);
             $this->LogMessage(__FUNCTION__ . ': ' . $e, KL_NOTIFY);
         }

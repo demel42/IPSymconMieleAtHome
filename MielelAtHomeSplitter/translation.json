@@ -57,6 +57,7 @@
 			"Switzerland": "Schweiz",
 
 			"Communication": "Kommunikation",
+			"Use Event API (uses an SSO client instance)": "Event-API benutzen (verwendet eine SSO-Client-Instanz)",
 			"Behavior of HTTP requests at the technical level": "Verhalten von HTTP-Anfragen auf technischer Ebene",
 			"Timeout of an HTTP call": "Timeout eines HTTP-Aufrufs",
 			"Seconds": "Sekunden",

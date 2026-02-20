@@ -294,6 +294,11 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 2.10 @ 20.02.2026 17:04
+  - Verbesserung: Option, um den SSE-Client zu deaktivieren; in dem Fall sollte das Intervall der aktiven Abrufe entsprechend verkürzt werden.
+  - Erweiterung: Implementierung von Gerätetyp 17(Kaffeemaschine) und 18(Dunstabzugshaube)
+  - update submodule CommonStubs
+
 - 2.9 @ 18.11.2025 08:58
   - Fix: verbessertes Semaphore-Handling
   - Verbesserung: wenn der Splitter deaktiviert ist, löste die IO-Instanz (SSE-Client) bisher ein Token-Refresh aus; das wird nun unterbunden

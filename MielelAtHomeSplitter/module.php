@@ -56,11 +56,13 @@ class MieleAtHomeSplitter extends IPSModule
 
         $this->RegisterPropertyInteger('OAuth_Type', self::$CONNECTION_UNDEFINED);
 
-        $this->RegisterPropertyBoolean('collectApiCallStats', true);
+        $this->RegisterPropertyBoolean('use_event_api', true);
 
         $this->RegisterPropertyInteger('curl_exec_timeout', 15);
         $this->RegisterPropertyInteger('curl_exec_attempts', 3);
         $this->RegisterPropertyFloat('curl_exec_delay', 1);
+
+        $this->RegisterPropertyBoolean('collectApiCallStats', true);
 
         $this->RegisterAttributeString('ApiRefreshToken', json_encode([]));
         $this->RegisterAttributeString('ApiAccessToken', json_encode([]));
@@ -74,8 +76,6 @@ class MieleAtHomeSplitter extends IPSModule
         $this->RegisterTimer('RenewTimer', 0, 'IPS_RequestAction(' . $this->InstanceID . ', "RenewToken", "");');
 
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
-
-        $this->RequireParent('{2FADB4B7-FDAB-3C64-3E2C-068A4809849A}');
     }
 
     public function MessageSink($timestamp, $senderID, $message, $data)
@@ -92,12 +92,16 @@ class MieleAtHomeSplitter extends IPSModule
                 $this->SetRefreshTimer();
             }
         }
-        if (IPS_GetKernelRunlevel() == KR_READY && $message == IM_CHANGESTATUS && $senderID == $this->GetConnectionID()) {
-            $this->SendDebug(__FUNCTION__, 'timestamp=' . $timestamp . ', senderID=' . $senderID . ', message=' . $message . ', data=' . print_r($data, true), 0);
-            if ($data[0] == IS_ACTIVE && $data[1] != IS_ACTIVE) {
-                $module_disable = $this->ReadPropertyBoolean('module_disable');
-                if ($module_disable == false) {
-                    $this->MaintainTimer('RenewTimer', 60 * 1000);
+
+        $use_event_api = $this->ReadPropertyBoolean('use_event_api');
+        if ($use_event_api) {
+            if (IPS_GetKernelRunlevel() == KR_READY && $message == IM_CHANGESTATUS && $senderID == $this->GetConnectionID()) {
+                $this->SendDebug(__FUNCTION__, 'timestamp=' . $timestamp . ', senderID=' . $senderID . ', message=' . $message . ', data=' . print_r($data, true), 0);
+                if ($data[0] == IS_ACTIVE && $data[1] != IS_ACTIVE) {
+                    $module_disable = $this->ReadPropertyBoolean('module_disable');
+                    if ($module_disable == false) {
+                        $this->MaintainTimer('RenewTimer', 60 * 1000);
+                    }
                 }
             }
         }
@@ -124,17 +128,17 @@ class MieleAtHomeSplitter extends IPSModule
         }
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
-        $active = $module_disable != true && $access_token != [];
+        $use_event_api = $this->ReadPropertyBoolean('use_event_api');
+        $active = $module_disable != true && $use_event_api && $access_token != [];
 
-        $r = IPS_GetConfiguration($this->GetConnectionID());
         $j = [
             'Active'     => $active,
-            'Headers'    => json_encode($headers),
+            'Headers'    => json_encode($headers, JSON_UNESCAPED_SLASHES),
             'URL'        => 'https://api.mcs3.miele.com/v1/devices/all/events',
             'VerifyHost' => true,
             'VerifyPeer' => true,
         ];
-        $d = json_encode($j);
+        $d = json_encode($j, JSON_UNESCAPED_SLASHES);
         $this->SendDebug(__FUNCTION__, $d, 0);
         return $d;
     }
@@ -143,10 +147,21 @@ class MieleAtHomeSplitter extends IPSModule
     // Rücksprache mit NT per Mail am 07.11.2023
     private function UpdateConfigurationForParent()
     {
-        $this->SendDebug(__FUNCTION__, '', 0);
-        $d = $this->GetConfigurationForParent();
-        IPS_SetConfiguration($this->GetConnectionID(), $d);
-        IPS_ApplyChanges($this->GetConnectionID());
+        $cID = $this->GetConnectionID();
+        if (IPS_InstanceExists($cID) == false) {
+            $this->SendDebug(__FUNCTION__, 'no parent', 0);
+            return;
+        }
+
+        $old_cfg = IPS_GetConfiguration($cID);
+        $new_cfg = $this->GetConfigurationForParent();
+        if ($old_cfg != $new_cfg) {
+            $this->SendDebug(__FUNCTION__, 'configuration of ' . $cID . '(' . IPS_GetName($cID) . ') changed', 0);
+            IPS_SetConfiguration($cID, $new_cfg);
+            IPS_ApplyChanges($cID);
+        } else {
+            $this->SendDebug(__FUNCTION__, 'configuration of ' . $cID . '(' . IPS_GetName($cID) . ') is unchanged', 0);
+        }
     }
 
     private function CheckModuleConfiguration()
@@ -186,19 +201,28 @@ class MieleAtHomeSplitter extends IPSModule
 
         $this->MaintainReferences();
 
-        $this->UnregisterMessage($this->GetConnectionID(), IM_CHANGESTATUS);
+        foreach ($this->GetMessageList() as $senderID => $messages) {
+            foreach ($messages as $message) {
+                if ($message == IM_CHANGESTATUS) {
+                    $this->UnregisterMessage($senderID, $message);
+                }
+            }
+        }
 
         if ($this->CheckPrerequisites() != false) {
+            $this->MaintainTimer('RenewTimer', 0);
             $this->MaintainStatus(self::$IS_INVALIDPREREQUISITES);
             return;
         }
 
         if ($this->CheckUpdate() != false) {
+            $this->MaintainTimer('RenewTimer', 0);
             $this->MaintainStatus(self::$IS_UPDATEUNCOMPLETED);
             return;
         }
 
         if ($this->CheckConfiguration() != false) {
+            $this->MaintainTimer('RenewTimer', 0);
             $this->MaintainStatus(self::$IS_INVALIDCONFIG);
             return;
         }
@@ -213,8 +237,20 @@ class MieleAtHomeSplitter extends IPSModule
             $this->ApiCallSetInfo($apiLimits, $apiNotes);
         }
 
+        $use_event_api = $this->ReadPropertyBoolean('use_event_api');
+        if ($use_event_api) {
+            // $this->RequireParent('{2FADB4B7-FDAB-3C64-3E2C-068A4809849A}');
+            $this->ConnectParent('{2FADB4B7-FDAB-3C64-3E2C-068A4809849A}');
+        } else {
+            $cID = $this->GetConnectionID();
+            if ($this->IsValidID($cID)) {
+                IPS_DisconnectInstance($this->InstanceID);
+            }
+        }
+
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
+            $this->MaintainTimer('RenewTimer', 0);
             $this->MaintainStatus(IS_INACTIVE);
             return;
         }
@@ -227,7 +263,9 @@ class MieleAtHomeSplitter extends IPSModule
 
         $this->MaintainStatus(IS_ACTIVE);
 
-        $this->RegisterMessage($this->GetConnectionID(), IM_CHANGESTATUS);
+        if ($use_event_api) {
+            $this->RegisterMessage($this->GetConnectionID(), IM_CHANGESTATUS);
+        }
 
         $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
         if ($oauth_type == self::$CONNECTION_OAUTH) {
@@ -463,7 +501,7 @@ class MieleAtHomeSplitter extends IPSModule
                 $err = 'got http-code ' . $httpcode . ' (server error)';
             } elseif ($httpcode != 200) {
                 $statuscode = self::$IS_HTTPERROR;
-                $err = 'got http-code ' . $httpcode;
+                $err = 'got http-code ' . $httpcode . ' (' . $this->HttpCode2Text($httpcode) . ')';
             }
         }
         if ($statuscode == 0) {
@@ -752,6 +790,11 @@ class MieleAtHomeSplitter extends IPSModule
         $formElements[] = [
             'type'    => 'ExpansionPanel',
             'items'   => [
+                [
+                    'type'    => 'CheckBox',
+                    'name'    => 'use_event_api',
+                    'caption' => 'Use Event API (uses an SSO client instance)'
+                ],
                 [
                     'type'    => 'Label',
                     'caption' => 'Behavior of HTTP requests at the technical level'
@@ -1270,7 +1313,7 @@ class MieleAtHomeSplitter extends IPSModule
             $err = 'got http-code ' . $httpcode . ' (server error)';
         } else {
             $statuscode = self::$IS_HTTPERROR;
-            $err = 'got http-code ' . $httpcode;
+            $err = 'got http-code ' . $httpcode . ' (' . $this->HttpCode2Text($httpcode) . ')';
         }
 
         if ($statuscode) {
