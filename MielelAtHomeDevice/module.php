@@ -86,35 +86,46 @@ class MieleAtHomeDevice extends IPSModule
     private function getDeviceOptions($deviceId)
     {
         $opts = [
-            'program_name'          => false,
-            'program_type'          => false,
-            'program_phase'         => false,
-            'times'                 => false,
-            'wash_temp'             => false,
-            'spinning_speed'        => false,
-            'drying_step'           => false,
-            'ventilation_step'      => false,
-            'oven_temp'             => false,
-            'fridge_temp'           => false,
-            'freezer_temp'          => false,
-            'door'                  => false,
-            'ecoFeedback_Water'     => false,
-            'ecoFeedback_Energy'    => false,
-            'batteryLevel'          => false,
-            'fridge_zone'           => 0,
-            'freezer_zone'          => 0,
-            'enabled_action'        => false,
-            'enabled_starttime'     => false,
-            'enabled_superfreezing' => false,
-            'enabled_supercooling'  => false,
-            'enabled_light'         => false,
-            'enabled_powersupply'   => false,
-            'enabled_fridge_temp'   => false,
-            'enabled_freezer_temp'  => false,
-            'core_temp'             => false,
-            'enabled_operationmode' => false,
-            'plate_steps'           => false,
-            'enabled_programs'      => false,
+            'program_name'                  => false,
+            'program_type'                  => false,
+            'program_phase'                 => false,
+            'times'                         => false,
+            'wash_temp'                     => false,
+            'spinning_speed'                => false,
+            'drying_step'                   => false,
+            'ventilation_step'              => false,
+            'oven_temp'                     => false,
+            'fridge_temp'                   => false,
+            'freezer_temp'                  => false,
+            'door'                          => false,
+            'ecoFeedback_Water'             => false,
+            'ecoFeedback_Energy'            => false,
+            'batteryLevel'                  => false,
+            'fridge_zone'                   => 0,
+            'freezer_zone'                  => 0,
+            'enabled_action'                => false,
+            'enabled_starttime'             => false,
+            'enabled_superfreezing'         => false,
+            'enabled_supercooling'          => false,
+            'enabled_light'                 => false,
+            'enabled_powersupply'           => false,
+            'enabled_fridge_temp'           => false,
+            'enabled_freezer_temp'          => false,
+            'core_temp'                     => false,
+            'enabled_operationmode'         => false,
+            'plate_steps'                   => false,
+            'enabled_programs'              => false,
+            'enable_fillingLevels'          => false,
+            'twinDosContainer1FillingLevel' => false,
+            'twinDosContainer2FillingLevel' => false,
+            'powerDiscFillingLevel'         => false,
+            'saltFillingLevel'              => false,
+            'rinseAidFillingLevel'          => false,
+            'coalFilterSaturation'          => false,
+            'fatFilterSaturation'           => false,
+            'descalingCounter'              => false,
+            'degreasingCounter'             => false,
+            'milkCleaningCounter'           => false,
         ];
 
         $enable_operationmode = $this->ReadPropertyBoolean('enable_operationmode');
@@ -135,6 +146,10 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['enabled_action'] = true;
                 $opts['enabled_starttime'] = true;
                 $opts['enabled_programs'] = true;
+
+                $opts['enable_fillingLevels'] = true;
+                $opts['twinDosContainer1FillingLevel'] = true;
+                $opts['twinDosContainer2FillingLevel'] = true;
                 break;
             case self::$DEVICE_TUMBLE_DRYER:      					// 2: Trockner
                 $opts['program_name'] = true;
@@ -162,6 +177,11 @@ class MieleAtHomeDevice extends IPSModule
                 $opts['enabled_action'] = true;
                 $opts['enabled_starttime'] = true;
                 $opts['enabled_programs'] = true;
+
+                $opts['enable_fillingLevels'] = true;
+                $opts['powerDiscFillingLevel'] = true;
+                $opts['saltFillingLevel'] = true;
+                $opts['rinseAidFillingLevel'] = true;
                 break;
             case self::$DEVICE_DISHWASHER_SEMIPROF:					// 8: semiprofessioneller Geschirrspüler
                 break;
@@ -200,12 +220,21 @@ class MieleAtHomeDevice extends IPSModule
 
                 $opts['enabled_light'] = true;
                 $opts['enabled_powersupply'] = true;
+
+                $opts['enable_fillingLevels'] = true;
+                $opts['descalingCounter'] = true;
+                $opts['degreasingCounter'] = true;
+                $opts['milkCleaningCounter'] = true;
                 break;
             case self::$DEVICE_HOOD:								// 18: Dunstabzugshaube
                 $opts['ventilation_step'] = true;
 
                 $opts['enabled_light'] = true;
                 $opts['enabled_powersupply'] = true;
+
+                $opts['enable_fillingLevels'] = true;
+                $opts['coalFilterSaturation'] = true;
+                $opts['fatFilterSaturation'] = true;
                 break;
             case self::$DEVICE_FRIDGE:								// 19: Kühlschrank
                 $opts['fridge_temp'] = true;
@@ -477,7 +506,7 @@ class MieleAtHomeDevice extends IPSModule
 
         $this->MaintainVariable('StartProgram', $this->Translate('Start program'), VARIABLETYPE_INTEGER, $this->VarProf_Programs, $vpos++, $opts['enabled_programs']);
 
-        $vpos = 70;
+        $vpos = 60;
         $plate_count = $this->ReadPropertyInteger('plate_count');
         for ($i = 0; $i < self::$MAX_PLATES; $i++) {
             $ident = 'Plate' . $i . '_Step';
@@ -486,7 +515,19 @@ class MieleAtHomeDevice extends IPSModule
             $this->MaintainVariable($ident, $name, VARIABLETYPE_INTEGER, 'MieleAtHome.PlateStep', $vpos++, $use);
         }
 
-        $vpos = 80;
+        $vpos = 70;
+        $this->MaintainVariable('TwinDosContainer1FillingLevel', $this->Translate('Fill level TwinDos container 1'), VARIABLETYPE_INTEGER, '', $vpos++, $opts['twinDosContainer1FillingLevel']);
+        $this->MaintainVariable('TwinDosContainer2FillingLevel', $this->Translate('Fill level TwinDos container 2'), VARIABLETYPE_INTEGER, '', $vpos++, $opts['twinDosContainer2FillingLevel']);
+        $this->MaintainVariable('PowerDiscFillingLevel', $this->Translate('Fill level PowerDisc'), VARIABLETYPE_INTEGER, '', $vpos++, $opts['powerDiscFillingLevel']);
+        $this->MaintainVariable('SaltFillingLevel', $this->Translate('Fill level salt'), VARIABLETYPE_INTEGER, '', $vpos++, $opts['saltFillingLevel']);
+        $this->MaintainVariable('RinseAidFillingLevel', $this->Translate('Fill level rinse aid'), VARIABLETYPE_INTEGER, '', $vpos++, $opts['rinseAidFillingLevel']);
+        $this->MaintainVariable('CoalFilterSaturation', $this->Translate('Coal filter saturation'), VARIABLETYPE_INTEGER, '', $vpos++, $opts['coalFilterSaturation']);
+        $this->MaintainVariable('FatFilterSaturation', $this->Translate('Fat filter saturation'), VARIABLETYPE_INTEGER, '', $vpos++, $opts['fatFilterSaturation']);
+        $this->MaintainVariable('DescalingCounter', $this->Translate('Descaling counter'), VARIABLETYPE_INTEGER, '', $vpos++, $opts['descalingCounter']);
+        $this->MaintainVariable('DegreasingCounter', $this->Translate('Degreasing counter'), VARIABLETYPE_INTEGER, '', $vpos++, $opts['degreasingCounter']);
+        $this->MaintainVariable('milkCleaningCounter', $this->Translate('Milk cleaning counter'), VARIABLETYPE_INTEGER, '', $vpos++, $opts['milkCleaningCounter']);
+
+        $vpos = 90;
         $this->MaintainVariable('CurrentWaterConsumption', $this->Translate('Current water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $opts['ecoFeedback_Water']);
         $this->MaintainVariable('EstimatedWaterConsumption', $this->Translate('Estimated water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $opts['ecoFeedback_Water']);
         $this->MaintainVariable('LastWaterConsumption', $this->Translate('Last water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $opts['ecoFeedback_Water']);
@@ -494,10 +535,10 @@ class MieleAtHomeDevice extends IPSModule
         $this->MaintainVariable('EstimatedEnergyConsumption', $this->Translate('Estimated energy consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Energy', $vpos++, $opts['ecoFeedback_Energy']);
         $this->MaintainVariable('LastEnergyConsumption', $this->Translate('Last energy consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Energy', $vpos++, $opts['ecoFeedback_Energy']);
 
-        $vpos = 90;
+        $vpos = 100;
         $this->MaintainVariable('BatteryLevel', $this->Translate('Battery level'), VARIABLETYPE_INTEGER, 'MieleAtHome.BatteryLevel', $vpos++, $opts['batteryLevel']);
 
-        $vpos = 100;
+        $vpos = 150;
         $this->MaintainVariable('LastChange', $this->Translate('last change'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
 
         $techType = $this->ReadPropertyString('techType');
@@ -778,9 +819,10 @@ class MieleAtHomeDevice extends IPSModule
             $this->SendDebug(__FUNCTION__, 'event=' . $event . '=' . print_r($jdata[$fabNumber], true), 0);
             if ($event == 'devices' && isset($jdata[$fabNumber]['state'])) {
                 $this->DecodeDevice('Event', $jdata[$fabNumber]['state']);
-            }
-            if ($event == 'actions') {
+            } elseif ($event == 'actions') {
                 $this->DecodeActions('Event', $jdata[$fabNumber]);
+            } else {
+                $this->SendDebug(__FUNCTION__, 'unevaluated event=' . $event, 0);
             }
         }
     }
@@ -1200,6 +1242,97 @@ class MieleAtHomeDevice extends IPSModule
         }
     }
 
+    private function DecodeFillingLevels($source, $fillingLevels)
+    {
+        $this->SendDebug(__FUNCTION__, 'source=' . $source . ', fillingLevels=' . print_r($fillingLevels, true), 0);
+
+        $deviceId = $this->ReadPropertyInteger('deviceId');
+        $opts = $this->getDeviceOptions($deviceId);
+
+        $is_changed = false;
+        $fnd = false;
+
+        if ($opts['twinDosContainer1FillingLevel']) {
+            $twinDosContainer1FillingLevel = $this->GetArrayElem($fillingLevels, 'twinDosContainer1FillingLevel', 0, $fnd);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "TwinDosContainer1FillingLevel" to ' . $twinDosContainer1FillingLevel, 0);
+                $this->SaveValue('TwinDosContainer1FillingLevel', (int) $twinDosContainer1FillingLevel, $is_changed);
+            }
+        }
+
+        if ($opts['twinDosContainer2FillingLevel']) {
+            $twinDosContainer2FillingLevel = $this->GetArrayElem($fillingLevels, 'twinDosContainer2FillingLevel', 0, $fnd);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "TwinDosContainer2FillingLevel" to ' . $twinDosContainer2FillingLevel, 0);
+                $this->SaveValue('TwinDosContainer2FillingLevel', (int) $twinDosContainer2FillingLevel, $is_changed);
+            }
+        }
+
+        if ($opts['powerDiscFillingLevel']) {
+            $powerDiscFillingLevel = $this->GetArrayElem($fillingLevels, 'powerDiscFillingLevel', 0, $fnd);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "PowerDiscFillingLevel" to ' . $powerDiscFillingLevel, 0);
+                $this->SaveValue('PowerDiscFillingLevel', (int) $powerDiscFillingLevel, $is_changed);
+            }
+        }
+
+        if ($opts['saltFillingLevel']) {
+            $saltFillingLevel = $this->GetArrayElem($fillingLevels, 'saltFillingLevel', 0, $fnd);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "SaltFillingLevel" to ' . $saltFillingLevel, 0);
+                $this->SaveValue('SaltFillingLevel', (int) $saltFillingLevel, $is_changed);
+            }
+        }
+
+        if ($opts['rinseAidFillingLevel']) {
+            $rinseAidFillingLevel = $this->GetArrayElem($fillingLevels, 'rinseAidFillingLevel', 0, $fnd);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "RinseAidFillingLevel" to ' . $rinseAidFillingLevel, 0);
+                $this->SaveValue('RinseAidFillingLevel', (int) $rinseAidFillingLevel, $is_changed);
+            }
+        }
+
+        if ($opts['coalFilterSaturation']) {
+            $coalFilterSaturation = $this->GetArrayElem($fillingLevels, 'coalFilterSaturation', 0, $fnd);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "CoalFilterSaturation" to ' . $coalFilterSaturation, 0);
+                $this->SaveValue('CoalFilterSaturation', (int) $coalFilterSaturation, $is_changed);
+            }
+        }
+
+        if ($opts['fatFilterSaturation']) {
+            $fatFilterSaturation = $this->GetArrayElem($fillingLevels, 'fatFilterSaturation', 0, $fnd);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "FatFilterSaturation" to ' . $fatFilterSaturation, 0);
+                $this->SaveValue('FatFilterSaturation', (int) $fatFilterSaturation, $is_changed);
+            }
+        }
+
+        if ($opts['descalingCounter']) {
+            $descalingCounter = $this->GetArrayElem($fillingLevels, 'descalingCounter', 0, $fnd);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "DescalingCounter" to ' . $descalingCounter, 0);
+                $this->SaveValue('DescalingCounter', (int) $descalingCounter, $is_changed);
+            }
+        }
+
+        if ($opts['degreasingCounter']) {
+            $degreasingCounter = $this->GetArrayElem($fillingLevels, 'degreasingCounter', 0, $fnd);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "DegreasingCounter" to ' . $degreasingCounter, 0);
+                $this->SaveValue('DegreasingCounter', (int) $degreasingCounter, $is_changed);
+            }
+        }
+
+        if ($opts['milkCleaningCounter']) {
+            $milkCleaningCounter = $this->GetArrayElem($fillingLevels, 'milkCleaningCounter', 0, $fnd);
+            if ($fnd) {
+                $this->SendDebug(__FUNCTION__, 'set "MilkCleaningCounter" to ' . $milkCleaningCounter, 0);
+                $this->SaveValue('MilkCleaningCounter', (int) $milkCleaningCounter, $is_changed);
+            }
+        }
+    }
+
     private function DecodeActions($source, $actions)
     {
         $this->SendDebug(__FUNCTION__, 'source=' . $source . ', actions=' . print_r($actions, true), 0);
@@ -1389,6 +1522,8 @@ class MieleAtHomeDevice extends IPSModule
         $this->SetUpdateInterval();
 
         $fabNumber = $this->ReadPropertyString('fabNumber');
+        $deviceId = $this->ReadPropertyInteger('deviceId');
+        $opts = $this->getDeviceOptions($deviceId);
 
         $SendData = [
             'DataID'   => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}',
@@ -1399,6 +1534,11 @@ class MieleAtHomeDevice extends IPSModule
         $data = $this->SendDataToParent(json_encode($SendData));
         $jdata = @json_decode((string) $data, true);
         $this->DecodeDevice('Update', $jdata);
+
+        if ($opts['enable_fillingLevels']) {
+            $fillingLevels = $this->queryFillingLevels();
+            $this->DecodeFillingLevels('Update', $fillingLevels);
+        }
 
         $actions = $this->queryEnabledActions();
         $this->DecodeActions('Update', $actions);
@@ -2208,6 +2348,29 @@ class MieleAtHomeDevice extends IPSModule
         $data = $this->GetBuffer('EnabledActions');
         $actions = @json_decode((string) $data, true);
         return $actions;
+    }
+
+    private function queryFillingLevels()
+    {
+        if ($this->HasActiveParent() == false) {
+            $this->SendDebug(__FUNCTION__, 'has no active parent/gateway', 0);
+            $log_no_parent = $this->ReadPropertyBoolean('log_no_parent');
+            if ($log_no_parent) {
+                $this->LogMessage($this->Translate('Instance has no active gateway'), KL_WARNING);
+            }
+            return false;
+        }
+
+        $fabNumber = $this->ReadPropertyString('fabNumber');
+        $SendData = [
+            'DataID'   => '{AE164AF6-A49F-41BD-94F3-B4829AAA0B55}',
+            'CallerID' => $this->InstanceID,
+            'Function' => 'GetDeviceFillingLevels',
+            'Ident'    => $fabNumber
+        ];
+        $data = $this->SendDataToParent(json_encode($SendData));
+        $fillingLevels = @json_decode((string) $data, true);
+        return $fillingLevels;
     }
 
     private function queryEnabledActions()

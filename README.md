@@ -243,6 +243,10 @@ Bisher unterstützte Gerätetypen
 | 7              | Geschirrspüler |
 | 12             | Backofen |
 | 13             | Backofen mit Mikrowelle |
+| 17             | Kaffeemaschine |
+| 18             | Dunstabzugshaube |
+| 19             | Kühlschrank |
+| 20             | Gefrierschrank |
 | 21             | Kühl/Gefrier-Kombination |
 | 25             | Wärmeschublade |
 | 27             | Induktions-Kochfeld |
@@ -294,9 +298,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 2.10 @ 20.02.2026 17:04
+- 2.10 @ 24.02.2026 11:19
   - Verbesserung: Option, um den SSE-Client zu deaktivieren; in dem Fall sollte das Intervall der aktiven Abrufe entsprechend verkürzt werden.
   - Erweiterung: Implementierung von Gerätetyp 17(Kaffeemaschine) und 18(Dunstabzugshaube)
+  - Erweiterung: Implementierung des Abrufs der Füllstände/Zähler
   - update submodule CommonStubs
 
 - 2.9 @ 18.11.2025 08:58

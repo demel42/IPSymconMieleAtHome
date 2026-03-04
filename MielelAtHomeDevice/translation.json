@@ -86,6 +86,17 @@
 			"Holiday mode": "Urlaubs Modus",
 			"Hob {$plate} power level": "Leistungsstufe von Kochfeld {$plate}",
 
+			"Fill level TwinDos container 1": "Füllstand TwinDos-Behälter 1",
+			"Fill level TwinDos container 2": "Füllstand TwinDos-Behälter 2",
+			"Fill level PowerDisc": "Füllstand PowerDisc",
+			"Fill level salt": "Füllstand Salz",
+			"Fill level rinse aid": "Füllstand Klarspüler",
+			"Coal filter saturation": "Kohlefilter-Sättigung",
+			"Fat filter saturation": "Fettfilter-Sättigung",
+			"Descaling counter": "Entkalkungszähler",
+			"Degreasing counter": "Entfettungszähler",
+			"Milk cleaning counter": "Milchreinigungszähler",
+
 			"__actions__": "",
 			"Update data": "Daten aktualisieren",
 

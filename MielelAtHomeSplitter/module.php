@@ -1048,6 +1048,11 @@ class MieleAtHomeSplitter extends IPSModule
                     $msg = '';
                     $r = $this->do_ApiCall('/v1/devices/' . $ident . '/state', $ret, $msg);
                     break;
+                case 'GetDeviceFillingLevels':
+                    $ident = $jdata['Ident'];
+                    $msg = '';
+                    $r = $this->do_ApiCall('/v1/devices/' . $ident . '/fillingLevels', $ret, $msg);
+                    break;
                 case 'GetDeviceActions':
                     $ident = $jdata['Ident'];
                     $msg = '';
