@@ -371,6 +371,18 @@ class MieleAtHomeDevice extends IPSModule
             $r[] = $this->Translate('Adjust variableprofile \'MieleAtHome.WorkProgress\'');
         }
 
+        if ($this->version2num($oldInfo) < $this->version2num('2.10.1')) {
+            @$varID = $this->GetIDForIdent('EstimatedWaterConsumption');
+            if (@$varID != false) {
+                $r[] = $this->Translate('Delete variable \'EstimatedWaterConsumption\'');
+            }
+
+            @$varID = $this->GetIDForIdent('EstimatedEnergyConsumption');
+            if (@$varID != false) {
+                $r[] = $this->Translate('Delete variable \'EstimatedEnergyConsumption\'');
+            }
+        }
+
         return $r;
     }
 
@@ -404,6 +416,18 @@ class MieleAtHomeDevice extends IPSModule
                 IPS_DeleteVariableProfile('MieleAtHome.WorkProgress');
             }
             $this->InstallVarProfiles(false);
+        }
+
+        if ($this->version2num($oldInfo) < $this->version2num('2.10.1')) {
+            @$varID = $this->GetIDForIdent('EstimatedWaterConsumption');
+            if (@$varID != false) {
+                $this->UnregisterVariable('EstimatedWaterConsumption');
+            }
+
+            @$varID = $this->GetIDForIdent('EstimatedEnergyConsumption');
+            if (@$varID != false) {
+                $this->UnregisterVariable('EstimatedEnergyConsumption');
+            }
         }
 
         return '';
@@ -529,11 +553,14 @@ class MieleAtHomeDevice extends IPSModule
 
         $vpos = 90;
         $this->MaintainVariable('CurrentWaterConsumption', $this->Translate('Current water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $opts['ecoFeedback_Water']);
-        $this->MaintainVariable('EstimatedWaterConsumption', $this->Translate('Estimated water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $opts['ecoFeedback_Water']);
         $this->MaintainVariable('LastWaterConsumption', $this->Translate('Last water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $opts['ecoFeedback_Water']);
         $this->MaintainVariable('CurrentEnergyConsumption', $this->Translate('Current energy consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Energy', $vpos++, $opts['ecoFeedback_Energy']);
-        $this->MaintainVariable('EstimatedEnergyConsumption', $this->Translate('Estimated energy consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Energy', $vpos++, $opts['ecoFeedback_Energy']);
         $this->MaintainVariable('LastEnergyConsumption', $this->Translate('Last energy consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Energy', $vpos++, $opts['ecoFeedback_Energy']);
+
+        /*
+        $this->MaintainVariable('EstimatedWaterConsumption', $this->Translate('Estimated water consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Water', $vpos++, $opts['ecoFeedback_Water']);
+        $this->MaintainVariable('EstimatedEnergyConsumption', $this->Translate('Estimated energy consumption'), VARIABLETYPE_FLOAT, 'MieleAtHome.Energy', $vpos++, $opts['ecoFeedback_Energy']);
+         */
 
         $vpos = 100;
         $this->MaintainVariable('BatteryLevel', $this->Translate('Battery level'), VARIABLETYPE_INTEGER, 'MieleAtHome.BatteryLevel', $vpos++, $opts['batteryLevel']);
@@ -1170,9 +1197,7 @@ class MieleAtHomeDevice extends IPSModule
                 }
                 if ($ecoFeedback != false) {
                     $currentWaterConsumption = $this->GetArrayElem($ecoFeedback, 'currentWaterConsumption.value', 0);
-                    $waterforecast = $this->GetArrayElem($ecoFeedback, 'waterforecast', 0);
-                    $estimatedWaterConsumption = $currentWaterConsumption * (float) $waterforecast * 100;
-                    $this->SendDebug(__FUNCTION__, 'WaterConsumption: current=' . $currentWaterConsumption . ', forecast=' . $waterforecast . ', estimated=' . $estimatedWaterConsumption, 0);
+                    $this->SendDebug(__FUNCTION__, 'WaterConsumption: current=' . $currentWaterConsumption, 0);
                 } else {
                     $currentWaterConsumption = $this->GetValue('CurrentWaterConsumption');
                     if ($currentWaterConsumption > 0) {
@@ -1180,12 +1205,9 @@ class MieleAtHomeDevice extends IPSModule
                         $this->SaveValue('LastWaterConsumption', $currentWaterConsumption, $is_changed);
                     }
                     $currentWaterConsumption = 0;
-                    $estimatedWaterConsumption = 0;
                 }
                 $this->SendDebug(__FUNCTION__, 'set "CurrentWaterConsumption" to ' . $currentWaterConsumption, 0);
                 $this->SaveValue('CurrentWaterConsumption', $currentWaterConsumption, $is_changed);
-                $this->SendDebug(__FUNCTION__, 'set "EstimatedWaterConsumption" to ' . $estimatedWaterConsumption, 0);
-                $this->SaveValue('EstimatedWaterConsumption', $estimatedWaterConsumption, $is_changed);
             }
         }
 
@@ -1197,9 +1219,7 @@ class MieleAtHomeDevice extends IPSModule
                 }
                 if ($ecoFeedback != false) {
                     $currentEnergyConsumption = $this->GetArrayElem($ecoFeedback, 'currentEnergyConsumption.value', 0);
-                    $energyforecast = $this->GetArrayElem($ecoFeedback, 'energyforecast', 0);
-                    $estimatedEnergyConsumption = $currentEnergyConsumption * (float) $energyforecast * 100;
-                    $this->SendDebug(__FUNCTION__, 'EnergyConsumption: current=' . $currentEnergyConsumption . ', forecast=' . $energyforecast . ', estimated=' . $estimatedEnergyConsumption, 0);
+                    $this->SendDebug(__FUNCTION__, 'EnergyConsumption: current=' . $currentEnergyConsumption, 0);
                 } else {
                     $currentEnergyConsumption = $this->GetValue('CurrentEnergyConsumption');
                     if ($currentEnergyConsumption > 0) {
@@ -1207,12 +1227,9 @@ class MieleAtHomeDevice extends IPSModule
                         $this->SaveValue('LastEnergyConsumption', $currentEnergyConsumption, $is_changed);
                     }
                     $currentEnergyConsumption = 0;
-                    $estimatedEnergyConsumption = 0;
                 }
                 $this->SendDebug(__FUNCTION__, 'set "CurrentEnergyConsumption" to ' . $currentEnergyConsumption, 0);
                 $this->SaveValue('CurrentEnergyConsumption', $currentEnergyConsumption, $is_changed);
-                $this->SendDebug(__FUNCTION__, 'set "EstimatedEnergyConsumption" to ' . $estimatedEnergyConsumption, 0);
-                $this->SaveValue('EstimatedEnergyConsumption', $estimatedEnergyConsumption, $is_changed);
             }
         }
 

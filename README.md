@@ -298,6 +298,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 2.10.1 @ 07.03.2026 11:10
+  - Änderung: Variablen "angenommener Wasserverbrauch" und "angenommener Energieverbrauch" gelöscht, da die Bedeutung der API-Werte unklar ist.
+
 - 2.10 @ 24.02.2026 11:19
   - Verbesserung: Option, um den SSE-Client zu deaktivieren; in dem Fall sollte das Intervall der aktiven Abrufe entsprechend verkürzt werden.
   - Erweiterung: Implementierung von Gerätetyp 17(Kaffeemaschine) und 18(Dunstabzugshaube)

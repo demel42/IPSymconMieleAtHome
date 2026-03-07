@@ -10,6 +10,8 @@
 			"Delete variable 'PowerSupply'": "Variable 'PowerSupply' löschen",
 			"Delete variable 'OperationMode'": "Variable 'OperationMode' löschen",
 			"Adjust variableprofile 'MieleAtHome.WorkProgress'": "Variablenprofil 'MieleAtHome.WorkProgress' anpassen",
+			"Delete variable 'EstimatedWaterConsumption'": "Variable 'EstimatedWaterConsumption' löschen",
+			"Delete variable 'EstimatedEnergyConsumption'": "Variable 'EstimatedEnergyConsumption' löschen",
 
 			"__function__": "CheckConfiguration",
 			"Device id must be specified": "Geräete-Typ-ID muss angegeben sein",
@@ -54,8 +56,6 @@
 			"Drying step": "Trockenstufe",
 			"Elapsed time": "verstrichene Zeit",
 			"End at": "Ende um",
-			"Estimated energy consumption": "angenommener Energieverbrauch",
-			"Estimated water consumption": "angenommener Wasserverbrauch",
 			"Failure detected": "Fehler erkannt",
 			"Freezer: target temperature": "Gefrierschrank: Soll-Temperatur",
 			"Freezer: temperature": "Gefrierschrank: Temperatur",
