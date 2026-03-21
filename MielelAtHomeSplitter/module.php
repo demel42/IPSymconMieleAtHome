@@ -239,11 +239,10 @@ class MieleAtHomeSplitter extends IPSModule
 
         $use_event_api = $this->ReadPropertyBoolean('use_event_api');
         if ($use_event_api) {
-            // $this->RequireParent('{2FADB4B7-FDAB-3C64-3E2C-068A4809849A}');
             $this->ConnectParent('{2FADB4B7-FDAB-3C64-3E2C-068A4809849A}');
         } else {
             $cID = $this->GetConnectionID();
-            if ($this->IsValidID($cID)) {
+            if (IPS_InstanceExists($cID)) {
                 IPS_DisconnectInstance($this->InstanceID);
             }
         }
@@ -264,7 +263,10 @@ class MieleAtHomeSplitter extends IPSModule
         $this->MaintainStatus(IS_ACTIVE);
 
         if ($use_event_api) {
-            $this->RegisterMessage($this->GetConnectionID(), IM_CHANGESTATUS);
+            $cID = $this->GetConnectionID();
+            if (IPS_InstanceExists($cID)) {
+                $this->RegisterMessage($cID, IM_CHANGESTATUS);
+            }
         }
 
         $oauth_type = $this->ReadPropertyInteger('OAuth_Type');
