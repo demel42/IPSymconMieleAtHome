@@ -298,8 +298,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
-- 2.11 @ 21.03.2026 10:33
+- 2.11 @ 27.03.2026 14:34
   - Fix: Anpassung für IPS 9: Reihenfolge der Anlage von Parents hat sich geändert
+  - update submodule CommonStubs
 
 - 2.10.1 @ 20.03.2026 07:35
   - Änderung: Variablen "angenommener Wasserverbrauch" und "angenommener Energieverbrauch" gelöscht, da die Bedeutung der API-Werte unklar ist.
