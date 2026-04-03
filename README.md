@@ -298,6 +298,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 2.11.1 @ 02.04.2026 11:22
+  - Anpassung: Bezeichnung der Programmphasen ergänzt und überarbeitet
+
 - 2.11 @ 27.03.2026 14:34
   - Fix: Anpassung für IPS 9: Reihenfolge der Anlage von Parents hat sich geändert
   - update submodule CommonStubs

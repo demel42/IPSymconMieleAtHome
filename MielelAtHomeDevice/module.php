@@ -1668,94 +1668,97 @@ class MieleAtHomeDevice extends IPSModule
     private function programPhase2text($model, $phase)
     {
         $phase2txt = [
-            0 => [
-                0 => 'Ready',
-            ],
-            self::$DEVICE_WASHING_MACHINE => [
-                256 => 'Not running',
-                257 => 'Pre-wash',
-                258 => 'Soak',
-                259 => 'Pre-wash',
-                260 => 'Main wash',
-                261 => 'Rinse',
-                262 => 'Rinse hold',
-                263 => 'Main wash',
-                264 => 'Cooling down',
-                265 => 'Drain',
-                266 => 'Spin',
-                267 => 'Anti-crease',
-                268 => 'Finished',
-                269 => 'Venting',
-                270 => 'Starch stop',
-                271 => 'Freshen-up + moisten',
-                272 => 'Steam smoothing',
-                279 => 'Hygiene',
-                280 => 'Drying',
-                285 => 'Disinfection',
-                295 => 'Steam smoothing',
-            ],
-
-            self::$DEVICE_TUMBLE_DRYER => [
-                512 => 'Not running',
-                513 => 'Program running',
-                514 => 'Drying',
-                515 => 'Machine iron',
-                516 => 'Hand iron',
-                517 => 'Normal',
-                518 => 'Normal plus',
-                519 => 'Cooling down',
-                520 => 'Hand iron',
-                521 => 'Anti-crease',
-                522 => 'Finished',
-                523 => 'Extra dry',
-                524 => 'Hand iron',
-                526 => 'Moisten',
-                528 => 'Timed drying',
-                529 => 'Warm air',
-                530 => 'Steam smoothing',
-                531 => 'Comfort cooling',
-                532 => 'Rinse out lint',
-                533 => 'Rinses',
-                534 => 'Smoothing',
-                537 => 'Programmed',
-                538 => 'Slightly dry',
-                539 => 'Safety cooling',
-            ],
-
-            self::$DEVICE_DISHWASHER => [
-                1792 => 'Not running',
-                1793 => 'Reactivating',
-                1794 => 'Pre-wash',
-                1795 => 'Main wash',
-                1796 => 'Rinse',
-                1797 => 'Interim rinse',
-                1798 => 'Final rinse',
-                1799 => 'Drying',
-                1800 => 'Finished',
-                1801 => 'Pre-wash',
-            ],
-
-            self::$DEVICE_OVEN => [
-                3072 => 'Not running',
-                3073 => 'Heating up',
-                3074 => 'In progress',
-                3078 => 'Finished',
-                3840 => 'Save energy',
-            ],
-
-            self::$DEVICE_STEAM_OVEN_COMBINATION => [
-                3840 => 'Rinse',
-                7938 => 'In progress',
-                7940 => 'Heating up',
-                7941 => 'Cooling down',
-                7942 => 'Finished',
-            ],
+            0     => 'Ready',
+            256   => 'Not running',				// Waschmaschine
+            257   => 'Pre-wash',				// Waschmaschine
+            258   => 'Soak',					// Waschmaschine
+            259   => 'Pre-wash',				// Waschmaschine
+            260   => 'Main wash',				// Waschmaschine
+            261   => 'Rinse',					// Waschmaschine
+            262   => 'Rinse hold',				// Waschmaschine
+            263   => 'Main wash',				// Waschmaschine
+            264   => 'Cooling down',			// Waschmaschine
+            265   => 'Drain',					// Waschmaschine
+            266   => 'Spin',					// Waschmaschine
+            267   => 'Anti-crease',				// Waschmaschine
+            268   => 'Finished',				// Waschmaschine
+            269   => 'Venting',					// Waschmaschine
+            270   => 'Starch stop',				// Waschmaschine
+            271   => 'Freshen-up + moisten',	// Waschmaschine
+            272   => 'Steam smoothing',			// Waschmaschine
+            279   => 'Hygiene',					// Waschmaschine
+            280   => 'Drying',					// Waschmaschine
+            285   => 'Disinfection',			// Waschmaschine
+            295   => 'Steam smoothing',			// Waschmaschine
+            512   => 'Not running',				// Trockner
+            513   => 'Program running',			// Trockner
+            514   => 'Drying',					// Trockner
+            515   => 'Machine iron',			// Trockner
+            516   => 'Hand iron',				// Trockner
+            517   => 'Normal',					// Trockner
+            518   => 'Normal plus',				// Trockner
+            519   => 'Cooling down',			// Trockner
+            520   => 'Hand iron',				// Trockner
+            521   => 'Anti-crease',				// Trockner
+            522   => 'Finished',				// Trockner
+            523   => 'Extra dry',				// Trockner
+            524   => 'Hand iron',				// Trockner
+            525   => 'Hygienic drying',			// Trockner
+            526   => 'Moisten',					// Trockner
+            528   => 'Timed drying',			// Trockner
+            529   => 'Warm air',				// Trockner
+            530   => 'Steam smoothing',			// Trockner
+            531   => 'Comfort cooling',			// Trockner
+            532   => 'Rinse out lint',			// Trockner
+            533   => 'Rinses',					// Trockner
+            534   => 'Smoothing',				// Trockner
+            537   => 'Programmed',				// Trockner
+            538   => 'Slightly dry',			// Trockner
+            539   => 'Safety cooling',			// Trockner
+            1792  => 'Not running',				// Geschirrspüler
+            1793  => 'Reactivating',			// Geschirrspüler
+            1794  => 'Pre-wash',				// Geschirrspüler
+            1795  => 'Main wash',				// Geschirrspüler
+            1796  => 'Rinse',					// Geschirrspüler
+            1797  => 'Interim rinse',			// Geschirrspüler
+            1798  => 'Final rinse',				// Geschirrspüler
+            1799  => 'Drying',					// Geschirrspüler
+            1800  => 'Finished',				// Geschirrspüler
+            1801  => 'Pre-wash',				// Geschirrspüler
+            3072  => 'Not running',				// Backofen
+            3073  => 'Heating up',				// Backofen
+            3074  => 'In progress',				// Backofen
+            3075  => 'Door open',				// Wärmeschublade
+            3078  => 'Finished',				// Backofen
+            3088  => 'Cooling down',			// Wärmeschublade
+            3094  => 'Keeping warm',			// Wärmeschublade
+            3329  => 'Heating',					// Mikrowelle
+            3330  => 'Process running',			// Mikrowelle
+            3334  => 'Process finished',		// Mikrowelle
+            3340  => 'Energy save',				// Mikrowelle
+            3840  => 'Save energy',				// Backofen
+            3863  => 'Steam reduction',			// Dampfgarer
+            4352  => 'Not running',
+            4353  => 'Espresso',				// Kaffeemaschine
+            4354  => 'Hot milk',				// Kaffeemaschine
+            4355  => 'Milk foam',				// Kaffeemaschine
+            4361  => 'Dispensing',				// Kaffeemaschine
+            4369  => 'Pre-brewing',				// Kaffeemaschine
+            4377  => 'Grinding',				// Kaffeemaschine
+            4385  => '2nd espresso',			// Kaffeemaschine
+            4393  => '2nd pre-brewing',			// Kaffeemaschine
+            4401  => '2nd Grinding',			// Kaffeemaschine
+            4404  => 'Dispensing',				// Kaffeemaschine
+            4405  => 'Rinse',					// Kaffeemaschine
+            7938  => 'In progress',				// Dampfgarer
+            7940  => 'Heating up',				// Dampfgarer
+            7941  => 'Cooling down',			// Dampfgarer
+            7942  => 'Finished',				// Dampfgarer
+            65535 => 'Not running', 			// Seems to be an API error/default value.
         ];
 
-        if (isset($phase2txt[$model][$phase])) {
-            $txt = $this->Translate($phase2txt[$model][$phase]);
-        } elseif (isset($phase2txt[0][$phase])) {
-            $txt = $this->Translate($phase2txt[0][$phase]);
+        if (isset($phase2txt[$phase])) {
+            $txt = $this->Translate($phase2txt[$phase]);
         } else {
             $txt = $this->Translate('unknown value') . ' ' . $phase;
             $e = 'unknown programPhase ' . $phase;
