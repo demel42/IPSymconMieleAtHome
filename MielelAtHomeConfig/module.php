@@ -112,7 +112,7 @@ class MieleAtHomeConfig extends IPSModule
         }
 
         $guid = '{C2672DE6-E854-40C0-86E0-DE1B6B4C3CAB}'; // Miele@Home Device
-        $instIDs = IPS_GetInstanceListByModuleID($guid);
+        $instIDs = (array) IPS_GetInstanceListByModuleID($guid);
 
         if (is_array($devices)) {
             foreach ($devices as $fabNumber => $device) {

@@ -469,7 +469,9 @@ class MieleAtHomeSplitter extends IPSModule
         } while ($cerrno && $attempt++ <= $curl_exec_attempts);
 
         $curl_info = curl_getinfo($ch);
-        curl_close($ch);
+        if (IPS_GetKernelVersion() < 8.5) {
+            curl_close($ch);
+        }
 
         $httpcode = $curl_info['http_code'];
 
@@ -1271,7 +1273,9 @@ class MieleAtHomeSplitter extends IPSModule
         } while ($cerrno && $attempt++ <= $curl_exec_attempts);
 
         $curl_info = curl_getinfo($ch);
-        curl_close($ch);
+        if (IPS_GetKernelVersion() < 8.5) {
+            curl_close($ch);
+        }
 
         $httpcode = $curl_info['http_code'];
         $redirect_url = $curl_info['redirect_url'];

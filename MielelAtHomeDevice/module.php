@@ -1567,7 +1567,7 @@ class MieleAtHomeDevice extends IPSModule
         }
     }
 
-    private function UpdateVarProfileAssociations(string $ident, $associations = null)
+    private function UpdateVarProfileAssociations(string $ident, ?array $associations = null)
     {
         $varProfile = IPS_GetVariableProfile($ident);
         $old_associations = $varProfile['Associations'];

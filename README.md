@@ -298,6 +298,10 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 2.12 @ 11.05.2026 15:02
+  - Fix: Änderung von deprecated php code
+  - update submodule CommonStubs
+
 - 2.11.1 @ 02.04.2026 11:22
   - Anpassung: Bezeichnung der Programmphasen ergänzt und überarbeitet
 
