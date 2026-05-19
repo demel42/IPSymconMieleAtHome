@@ -298,6 +298,9 @@ Verweise:
 
 ## 7. Versions-Historie
 
+- 2.13 @ 19.05.2026 09:59
+  - Fix: Variablenprofil "MieleAtHome.Status" ergänzt
+
 - 2.12 @ 11.05.2026 15:02
   - Fix: Änderung von deprecated php code
   - update submodule CommonStubs

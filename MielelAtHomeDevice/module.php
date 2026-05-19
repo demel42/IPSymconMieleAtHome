@@ -383,6 +383,10 @@ class MieleAtHomeDevice extends IPSModule
             }
         }
 
+        if ($this->version2num($oldInfo) < $this->version2num('2.13')) {
+            $r[] = $this->Translate('Adjust variableprofile \'MieleAtHome.Status\'');
+        }
+
         return $r;
     }
 
@@ -428,6 +432,13 @@ class MieleAtHomeDevice extends IPSModule
             if (@$varID != false) {
                 $this->UnregisterVariable('EstimatedEnergyConsumption');
             }
+        }
+
+        if ($this->version2num($oldInfo) < $this->version2num('2.13')) {
+            if (IPS_VariableProfileExists('MieleAtHome.Status')) {
+                IPS_DeleteVariableProfile('MieleAtHome.Status');
+            }
+            $this->InstallVarProfiles(false);
         }
 
         return '';
